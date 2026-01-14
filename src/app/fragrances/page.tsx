@@ -1,6 +1,5 @@
 "use client";
 
-import Button from "@/src/components/Button";
 import { fragrances } from "@/src/data/fragrances";
 import { useState } from "react";
 import Link from "next/link";
@@ -54,31 +53,29 @@ function FragranceCard({ fragrance }: any) {
   };
 
   return (
-    <Link href={`/product/${fragrance.id}`}>
-      <div className="group cursor-pointer relative block">
+    <div className="group relative">
+      <Link href={`/product/${fragrance.id}`} className="block">
         {/* Color Block */}
         <div 
-          className="w-full h-80 mb-4 rounded overflow-hidden group-hover:scale-105 transition-transform duration-300 transform group-hover:shadow-lg"
+          className="w-full h-80 mb-4 rounded overflow-hidden group-hover:scale-105 transition-transform duration-300 transform group-hover:shadow-lg cursor-pointer"
           style={{ backgroundColor: fragrance.image }}
         ></div>
-        <h3 className="text-lg font-serif font-light mb-1">{fragrance.name}</h3>
-        <p className="text-sm text-gray-600 mb-3">{fragrance.tagline}</p>
-        <div className="flex justify-between items-center">
-          <span>${fragrance.price}</span>
-          <button 
-            onClick={handleAddToCart}
-            className="text-sm border-b border-black hover:text-gray-600 transition-colors"
-          >
-            Add to Cart
-          </button>
-        </div>
+        <h3 className="text-lg font-serif font-light mb-1 cursor-pointer group-hover:text-gray-600 transition-colors">{fragrance.name}</h3>
+        <p className="text-sm text-gray-600 mb-3 cursor-pointer">{fragrance.tagline}</p>
+        <div className="text-lg font-light cursor-pointer">${fragrance.price}</div>
+      </Link>
+      <button 
+        onClick={handleAddToCart}
+        className="mt-3 text-sm border-b border-black hover:text-gray-600 transition-colors"
+      >
+        Add to Cart
+      </button>
 
-        {showMessage && (
-          <div className="absolute top-0 left-0 right-0 bottom-0 flex items-center justify-center bg-black bg-opacity-80 rounded text-white text-sm font-light animate-fadeIn">
-            Added to cart!
-          </div>
-        )}
-      </div>
-    </Link>
+      {showMessage && (
+        <div className="absolute top-20 right-0 bg-green-50 border border-green-200 rounded px-3 py-2 text-green-700 text-sm font-light animate-fadeIn whitespace-nowrap">
+          ✓ Added to cart!
+        </div>
+      )}
+    </div>
   );
 }

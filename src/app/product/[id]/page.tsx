@@ -1,6 +1,5 @@
 "use client";
 
-import Button from "@/src/components/Button";
 import { fragrances } from "@/src/data/fragrances";
 import { notFound } from "next/navigation";
 import { useState } from "react";
@@ -12,6 +11,7 @@ interface ProductPageProps {
 export default function ProductPage({ params }: ProductPageProps) {
   const fragrance = fragrances.find((f) => f.id === params.id);
   const [showMessage, setShowMessage] = useState(false);
+  const [quantity, setQuantity] = useState(1);
 
   if (!fragrance) {
     notFound();
@@ -22,14 +22,24 @@ export default function ProductPage({ params }: ProductPageProps) {
     const existingItem = cart.find((item: any) => item.id === fragrance.id);
 
     if (existingItem) {
-      existingItem.quantity += 1;
+      existingItem.quantity += quantity;
     } else {
-      cart.push({ ...fragrance, quantity: 1 });
+      cart.push({ ...fragrance, quantity: quantity });
     }
 
     localStorage.setItem("cart", JSON.stringify(cart));
     setShowMessage(true);
     setTimeout(() => setShowMessage(false), 2000);
+  };
+
+  const handleIncrement = () => {
+    setQuantity(prev => prev + 1);
+  };
+
+  const handleDecrement = () => {
+    if (quantity > 1) {
+      setQuantity(prev => prev - 1);
+    }
   };
 
   return (
@@ -61,14 +71,28 @@ export default function ProductPage({ params }: ProductPageProps) {
 
             <div className="flex gap-4 items-center">
               <div className="flex items-center border border-gray-300">
-                <button className="px-4 py-2 hover:bg-gray-50">−</button>
+                <button 
+                  onClick={handleDecrement}
+                  className="px-4 py-2 hover:bg-gray-50 transition-colors"
+                >
+                  −
+                </button>
                 <input
                   type="number"
-                  defaultValue="1"
+                  value={quantity}
+                  onChange={(e) => {
+                    const val = parseInt(e.target.value) || 1;
+                    if (val > 0) setQuantity(val);
+                  }}
                   className="w-12 text-center border-l border-r border-gray-300 py-2 focus:outline-none"
                   min="1"
                 />
-                <button className="px-4 py-2 hover:bg-gray-50">+</button>
+                <button 
+                  onClick={handleIncrement}
+                  className="px-4 py-2 hover:bg-gray-50 transition-colors"
+                >
+                  +
+                </button>
               </div>
               <button 
                 onClick={handleAddToCart}

@@ -1,38 +1,12 @@
 "use client";
 
 import Button from "@/src/components/Button";
-import Toast from "@/src/components/Toast";
-import Footer from "@/src/components/Footer";
 import { fragrances } from "@/src/data/fragrances";
 import Link from "next/link";
-import { useState } from "react";
 
 export default function HomePage() {
-  const [toastVisible, setToastVisible] = useState(false);
-  const [toastMessage, setToastMessage] = useState("");
-
-  const handleAddToCart = (fragrance: any) => {
-    const cart = JSON.parse(localStorage.getItem("cart") || "[]");
-    const existingItem = cart.find((item: any) => item.id === fragrance.id);
-
-    if (existingItem) {
-      existingItem.quantity += 1;
-    } else {
-      cart.push({ ...fragrance, quantity: 1 });
-    }
-
-    localStorage.setItem("cart", JSON.stringify(cart));
-    setToastMessage(`${fragrance.name} added to cart!`);
-    setToastVisible(true);
-  };
-
   return (
     <div className="bg-white">
-      <Toast 
-        message={toastMessage} 
-        visible={toastVisible} 
-        onClose={() => setToastVisible(false)} 
-      />
 
       {/* Hero Section - Redesigned */}
       <section className="min-h-[90vh] flex items-center justify-center pt-20 pb-20 relative overflow-hidden">
@@ -92,9 +66,10 @@ export default function HomePage() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {fragrances.map((fragrance, index) => (
-              <div 
-                key={fragrance.id} 
-                className="group animate-fadeInUp" 
+              <Link 
+                key={fragrance.id}
+                href={`/product/${fragrance.id}`}
+                className="group animate-fadeInUp block" 
                 style={{ animationDelay: `${0.6 + index * 0.1}s` }}
               >
                 {/* Color Block with Hover */}
@@ -104,24 +79,18 @@ export default function HomePage() {
                 ></div>
 
                 {/* Product Info */}
-                <h3 className="text-lg font-serif mb-2 font-light group-hover:text-opacity-70 transition-opacity">
+                <h3 className="text-lg font-serif mb-2 font-light cursor-pointer group-hover:text-opacity-70 transition-opacity">
                   {fragrance.name}
                 </h3>
-                <p className="text-sm text-gray-600 mb-4">
+                <p className="text-sm text-gray-600 mb-4 cursor-pointer">
                   {fragrance.tagline}
                 </p>
 
-                {/* Price and Action */}
-                <div className="flex justify-between items-center">
-                  <span className="text-lg font-semibold">${fragrance.price}</span>
-                  <button 
-                    onClick={() => handleAddToCart(fragrance)}
-                    className="text-sm border-b border-black hover:text-gray-600 transition-all duration-200 hover:border-gray-600"
-                  >
-                    Add to Cart
-                  </button>
+                {/* Price */}
+                <div className="flex items-center">
+                  <span className="text-lg font-semibold cursor-pointer">${fragrance.price}</span>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
         </div>
@@ -159,9 +128,6 @@ export default function HomePage() {
           </div>
         </div>
       </section>
-
-      {/* Footer */}
-      <Footer />
     </div>
   );
 }

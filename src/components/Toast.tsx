@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 
 interface ToastProps {
   message: string;
@@ -9,12 +9,11 @@ interface ToastProps {
 }
 
 export default function Toast({ message, visible, onClose }: ToastProps) {
-  useEffect(() => {
+  useEffect(() =>{
     if (visible) {
       const timer = setTimeout(onClose, 3000);
       return () => clearTimeout(timer);
-    }
-  }, [visible, onClose]);
+    }    return undefined;  }, [visible, onClose]);
 
   if (!visible) return null;
 

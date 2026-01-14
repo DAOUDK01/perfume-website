@@ -41,7 +41,7 @@ export default function AboutPage() {
                 Each fragrance is crafted with intention, using only the finest ingredients. We believe that a scent should evolve with you throughout the day, becoming part of your story rather than overshadowing it.
               </p>
               <p className="text-gray-700 font-light leading-relaxed">
-                From concept to bottle, every detail reflects our commitment to quality and authenticity. e&apos;eora is not just a fragrance—it's a philosophy.
+                From concept to bottle, every detail reflects our commitment to quality and authenticity. e&apos;eora is not just a fragrance&mdash;it&apos;s a philosophy.
               </p>
             </div>
           </div>

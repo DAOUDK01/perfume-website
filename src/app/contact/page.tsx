@@ -145,19 +145,7 @@ export default function ContactPage() {
         </div>
       </section>
 
-      {/* Map or Additional Info */}
-      <section className="bg-gray-50 py-24">
-        <div className="max-w-7xl mx-auto px-6 text-center">
-          <h2 className="text-3xl font-light tracking-wider mb-6">
-            Thank you for your interest
-          </h2>
-          <p className="text-gray-600 font-light text-lg max-w-2xl mx-auto mb-8 leading-relaxed">
-            Whether you have questions about our fragrances, feedback, or just
-            want to share your thoughts, we're here and we're listening.
-            Expect a response within 24 business hours.
-          </p>
-        </div>
-      </section>
+
     </div>
   );
 }

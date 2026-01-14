@@ -1,11 +1,44 @@
-import Button from "@/src/components/Button";
+"use client";
 
-export const metadata = {
-  title: "Checkout | e'eora",
-  description: "Complete your purchase at e'eora",
-};
+import Button from "@/src/components/Button";
+import { useEffect, useState } from "react";
 
 export default function CheckoutPage() {
+  const [cartItems, setCartItems] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const cart = JSON.parse(localStorage.getItem("cart") || "[]");
+    setCartItems(cart);
+    setLoading(false);
+  }, []);
+
+  const updateQuantity = (id: string, quantity: number) => {
+    if (quantity <= 0) {
+      removeItem(id);
+      return;
+    }
+
+    const updatedCart = cartItems.map((item) =>
+      item.id === id ? { ...item, quantity } : item
+    );
+    setCartItems(updatedCart);
+    localStorage.setItem("cart", JSON.stringify(updatedCart));
+  };
+
+  const removeItem = (id: string) => {
+    const updatedCart = cartItems.filter((item) => item.id !== id);
+    setCartItems(updatedCart);
+    localStorage.setItem("cart", JSON.stringify(updatedCart));
+  };
+
+  const subtotal = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const shipping = 15;
+  const tax = Math.round(subtotal * 0.1 * 100) / 100;
+  const total = subtotal + shipping + tax;
+
+  if (loading) return <div className="pt-32">Loading...</div>;
+
   return (
     <div className="bg-white pt-32 pb-20">
       <div className="max-w-7xl mx-auto px-6">
@@ -164,37 +197,74 @@ export default function CheckoutPage() {
                 Order Summary
               </h2>
 
-              {/* Items */}
+              {/* Cart Items */}
               <div className="space-y-4 mb-8 pb-8 border-b border-gray-200">
-                <div className="flex justify-between">
-                  <div>
-                    <p className="font-light">Essence Noir</p>
-                    <p className="text-sm text-gray-600 font-light">
-                      Quantity: 1
-                    </p>
-                  </div>
-                  <p className="font-light">$185.00</p>
-                </div>
+                {cartItems.length === 0 ? (
+                  <p className="text-sm text-gray-600">Your cart is empty</p>
+                ) : (
+                  cartItems.map((item) => (
+                    <div key={item.id} className="flex justify-between items-start pb-4 border-b border-gray-100 last:border-0">
+                      <div className="flex-1">
+                        <p className="font-light">{item.name}</p>
+                        <p className="text-sm text-gray-600 font-light mb-2">
+                          ${item.price} each
+                        </p>
+                        <div className="flex items-center gap-2 bg-white border border-gray-300 w-fit rounded">
+                          <button 
+                            onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                            className="px-2 py-1 hover:bg-gray-100 text-sm"
+                          >
+                            −
+                          </button>
+                          <input
+                            type="number"
+                            value={item.quantity}
+                            onChange={(e) => updateQuantity(item.id, parseInt(e.target.value) || 1)}
+                            className="w-8 text-center text-sm border-l border-r border-gray-300 py-1 focus:outline-none"
+                            min="1"
+                          />
+                          <button 
+                            onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                            className="px-2 py-1 hover:bg-gray-100 text-sm"
+                          >
+                            +
+                          </button>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <p className="font-light text-sm mb-2">
+                          ${(item.price * item.quantity).toFixed(2)}
+                        </p>
+                        <button 
+                          onClick={() => removeItem(item.id)}
+                          className="text-xs text-red-600 hover:text-red-700"
+                        >
+                          Remove
+                        </button>
+                      </div>
+                    </div>
+                  ))
+                )}
               </div>
 
               {/* Totals */}
               <div className="space-y-3 mb-8">
                 <div className="flex justify-between text-sm font-light">
                   <span>Subtotal</span>
-                  <span>$185.00</span>
+                  <span>${subtotal.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between text-sm font-light">
                   <span>Shipping</span>
-                  <span>$15.00</span>
+                  <span>${shipping.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between text-sm font-light">
                   <span>Tax</span>
-                  <span>$16.00</span>
+                  <span>${tax.toFixed(2)}</span>
                 </div>
                 <div className="h-px bg-gray-200" />
                 <div className="flex justify-between text-lg font-light">
                   <span>Total</span>
-                  <span>$216.00</span>
+                  <span>${total.toFixed(2)}</span>
                 </div>
               </div>
 

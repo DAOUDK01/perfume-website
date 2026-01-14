@@ -1,32 +1,36 @@
+"use client";
+
 import Button from "@/src/components/Button";
 import { fragrances } from "@/src/data/fragrances";
 import { notFound } from "next/navigation";
-import Link from "next/link";
+import { useState } from "react";
 
 interface ProductPageProps {
   params: { id: string };
 }
 
-export async function generateStaticParams() {
-  return fragrances.map((fragrance) => ({
-    id: fragrance.id,
-  }));
-}
-
-export function generateMetadata({ params }: ProductPageProps) {
-  const fragrance = fragrances.find((f) => f.id === params.id);
-  return {
-    title: `${fragrance?.name} | e'eora`,
-    description: fragrance?.tagline,
-  };
-}
-
 export default function ProductPage({ params }: ProductPageProps) {
   const fragrance = fragrances.find((f) => f.id === params.id);
+  const [showMessage, setShowMessage] = useState(false);
 
   if (!fragrance) {
     notFound();
   }
+
+  const handleAddToCart = () => {
+    const cart = JSON.parse(localStorage.getItem("cart") || "[]");
+    const existingItem = cart.find((item: any) => item.id === fragrance.id);
+
+    if (existingItem) {
+      existingItem.quantity += 1;
+    } else {
+      cart.push({ ...fragrance, quantity: 1 });
+    }
+
+    localStorage.setItem("cart", JSON.stringify(cart));
+    setShowMessage(true);
+    setTimeout(() => setShowMessage(false), 2000);
+  };
 
   return (
     <div className="bg-white pt-24">
@@ -42,24 +46,19 @@ export default function ProductPage({ params }: ProductPageProps) {
 
           {/* Product Details */}
           <div>
-            {/* Product Header */}
             <h1 className="text-4xl font-serif mb-2">{fragrance.name}</h1>
             <p className="text-gray-600 mb-8">{fragrance.tagline}</p>
 
-            {/* Price */}
             <p className="text-2xl font-semibold mb-8">${fragrance.price}</p>
 
-            {/* Description */}
             <div className="mb-8">
               <p className="text-gray-700 leading-relaxed">
                 {fragrance.fullDescription}
               </p>
             </div>
 
-            {/* Divider */}
             <div className="h-px bg-gray-200 my-8" />
 
-            {/* Quantity and Buy */}
             <div className="flex gap-4 items-center">
               <div className="flex items-center border border-gray-300">
                 <button className="px-4 py-2 hover:bg-gray-50">−</button>
@@ -71,10 +70,19 @@ export default function ProductPage({ params }: ProductPageProps) {
                 />
                 <button className="px-4 py-2 hover:bg-gray-50">+</button>
               </div>
-              <Link href="/checkout">
-                <Button variant="primary">Add to Cart</Button>
-              </Link>
+              <button 
+                onClick={handleAddToCart}
+                className="border border-black bg-white hover:bg-black hover:text-white transition-colors px-6 py-2 text-sm font-light"
+              >
+                Add to Cart
+              </button>
             </div>
+
+            {showMessage && (
+              <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded text-green-700 text-sm font-light">
+                ✓ {fragrance.name} added to cart!
+              </div>
+            )}
           </div>
         </div>
 
@@ -144,9 +152,12 @@ export default function ProductPage({ params }: ProductPageProps) {
               </button>
             </div>
 
-            <Link href="/checkout">
-              <Button variant="primary">Add to Cart</Button>
-            </Link>
+            <button 
+              onClick={handleAddToCart}
+              className="border border-black bg-white hover:bg-black hover:text-white transition-colors px-6 py-2 text-sm font-light"
+            >
+              Add to Cart
+            </button>
           </div>
         </div>
       </div>

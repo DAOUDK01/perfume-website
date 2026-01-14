@@ -1,4 +1,5 @@
 import Button from "@/src/components/Button";
+import Link from "next/link";
 
 export const metadata = {
   title: "About | e'eora",
@@ -7,101 +8,40 @@ export const metadata = {
 
 export default function AboutPage() {
   return (
-    <div className="bg-white pt-32">
+    <div className="bg-white">
       {/* Hero Section */}
-      <section className="py-24 border-b border-gray-100">
-        <div className="max-w-4xl mx-auto px-6">
-          <h1 className="text-6xl md:text-7xl font-light tracking-wider mb-12 leading-tight">
-            The e&apos;eora Story
+      <section className="pt-32 pb-24 border-b border-gray-200">
+        <div className="max-w-3xl mx-auto px-6 text-center">
+          <h1 className="text-6xl md:text-7xl font-serif font-light mb-6">
+            About e&apos;eora
           </h1>
-          <p className="text-xl font-light text-gray-700 leading-relaxed">
-            In the quiet corners of luxury, where craftsmanship meets philosophy,
-            e&apos;eora was born. Not from noise or necessity, but from the conviction
-            that true elegance requires restraint, intention, and the passage of
-            time.
+          <p className="text-xl text-gray-600 font-light leading-relaxed">
+            Quiet luxury. Thoughtful design. Timeless fragrance.
           </p>
         </div>
       </section>
 
-      {/* Our Philosophy Section */}
-      <section className="py-24">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-16 items-center mb-24">
-            <div>
-              <img
-                src="https://images.unsplash.com/photo-1559056199-641a0ac8b3f4?w=500&h=600&fit=crop"
-                alt="Craftsmanship"
-                className="w-full aspect-square object-cover"
-              />
-            </div>
-            <div>
-              <h2 className="text-4xl font-light tracking-wider mb-6">
-                Timeless Craftsmanship
-              </h2>
-              <p className="text-gray-700 font-light leading-relaxed mb-4">
-                Every e&apos;eora fragrance is a result of meticulous research,
-                thoughtful composition, and an unwavering commitment to quality.
-                We source the finest raw materials from around the world,
-                partnering with master perfumers who understand that true luxury
-                cannot be rushed.
-              </p>
-              <p className="text-gray-700 font-light leading-relaxed">
-                Our formulations are concentrated and enduring, meant to evolve
-                with your skin throughout the day—a living, breathing companion
-                rather than a fleeting impression.
-              </p>
-            </div>
-          </div>
-
-          <div className="h-px bg-gray-200 my-24" />
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-16 items-center mb-24">
-            <div className="order-2 md:order-1">
-              <h2 className="text-4xl font-light tracking-wider mb-6">
-                Pure Ingredients
-              </h2>
-              <p className="text-gray-700 font-light leading-relaxed mb-4">
-                We believe in transparency. e&apos;eora fragrances contain no
-                synthetic fillers or unnecessary additives. Each note serves a
-                purpose, each ingredient a story.
-              </p>
-              <p className="text-gray-700 font-light leading-relaxed">
-                Our commitment to ethical sourcing ensures that luxury comes
-                without compromise—for you, and for the world we share.
-              </p>
-            </div>
-            <div className="order-1 md:order-2">
-              <img
-                src="https://images.unsplash.com/photo-1608571423902-eed4a5ad8108?w=500&h=600&fit=crop"
-                alt="Ingredients"
-                className="w-full aspect-square object-cover"
-              />
-            </div>
-          </div>
-
-          <div className="h-px bg-gray-200 my-24" />
-
+      {/* Story Section */}
+      <section className="py-24 border-b border-gray-200">
+        <div className="max-w-4xl mx-auto px-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
             <div>
-              <img
-                src="https://images.unsplash.com/photo-1595955707802-6b2ecef7cc14?w=500&h=600&fit=crop"
-                alt="Philosophy"
-                className="w-full aspect-square object-cover"
-              />
+              <div 
+                className="w-full h-96 rounded bg-gradient-to-br from-gray-300 to-gray-200"
+              ></div>
             </div>
             <div>
-              <h2 className="text-4xl font-light tracking-wider mb-6">
-                Quiet Luxury
+              <h2 className="text-4xl font-serif font-light mb-6">
+                Our Story
               </h2>
               <p className="text-gray-700 font-light leading-relaxed mb-4">
-                We reject loud marketing in favor of authentic storytelling. An
-                e&apos;eora fragrance speaks for itself—a whisper rather than a
-                shout.
+                e&apos;eora began with a simple philosophy: that true elegance requires restraint. In a world of excess, we chose simplicity. In a culture of noise, we chose quiet.
+              </p>
+              <p className="text-gray-700 font-light leading-relaxed mb-4">
+                Each fragrance is crafted with intention, using only the finest ingredients. We believe that a scent should evolve with you throughout the day, becoming part of your story rather than overshadowing it.
               </p>
               <p className="text-gray-700 font-light leading-relaxed">
-                Our community consists of those who understand that true luxury
-                is not about being seen—it&apos;s about being felt. It&apos;s an
-                essence beyond presence.
+                From concept to bottle, every detail reflects our commitment to quality and authenticity. e&apos;eora is not just a fragrance—it's a philosophy.
               </p>
             </div>
           </div>
@@ -109,55 +49,71 @@ export default function AboutPage() {
       </section>
 
       {/* Values Section */}
-      <section className="bg-gray-50 py-24">
-        <div className="max-w-7xl mx-auto px-6">
-          <h2 className="text-4xl font-light tracking-wider mb-16 text-center">
+      <section className="py-24 border-b border-gray-200">
+        <div className="max-w-6xl mx-auto px-6">
+          <h2 className="text-4xl font-serif font-light text-center mb-16">
             Our Values
           </h2>
-
           <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
-            <div className="text-center">
-              <h3 className="text-xl font-light tracking-wide mb-4">Integrity</h3>
-              <p className="text-gray-600 font-light leading-relaxed">
-                Every fragrance is honest. No pretense, no excess. Just pure,
-                intentional composition.
+            {[
+              {
+                title: "Craftsmanship",
+                desc: "Meticulous attention to every detail. We work with master perfumers and ethically sourced ingredients to create fragrances that last."
+              },
+              {
+                title: "Minimalism",
+                desc: "Less is more. Our designs are clean and timeless. We believe elegance speaks loudly in silence."
+              },
+              {
+                title: "Authenticity",
+                desc: "No shortcuts. No unnecessary additives. Just pure, concentrated fragrance that tells a story."
+              }
+            ].map((value, index) => (
+              <div key={index} className="text-center">
+                <h3 className="text-2xl font-serif font-light mb-4">{value.title}</h3>
+                <p className="text-gray-600 font-light leading-relaxed">{value.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Philosophy Section */}
+      <section className="py-24 border-b border-gray-200">
+        <div className="max-w-4xl mx-auto px-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
+            <div>
+              <h2 className="text-4xl font-serif font-light mb-6">
+                Our Philosophy
+              </h2>
+              <p className="text-gray-700 font-light leading-relaxed mb-4">
+                In a world that celebrates excess, we celebrate restraint. Every e&apos;eora fragrance is a conversation between you and the scent—intimate, personal, never demanding.
+              </p>
+              <p className="text-gray-700 font-light leading-relaxed">
+                We source ingredients ethically. We create sustainably. We believe that luxury should enhance your life without compromising the world around us.
               </p>
             </div>
-
-            <div className="text-center">
-              <h3 className="text-xl font-light tracking-wide mb-4">
-                Sustainability
-              </h3>
-              <p className="text-gray-600 font-light leading-relaxed">
-                We honor the earth. Ethical sourcing and sustainable practices
-                are non-negotiable.
-              </p>
-            </div>
-
-            <div className="text-center">
-              <h3 className="text-xl font-light tracking-wide mb-4">
-                Timelessness
-              </h3>
-              <p className="text-gray-600 font-light leading-relaxed">
-                We create fragrances that transcend trends. Meant to be cherished
-                for years to come.
-              </p>
+            <div>
+              <div 
+                className="w-full h-96 rounded bg-gradient-to-br from-gray-200 to-gray-100"
+              ></div>
             </div>
           </div>
         </div>
       </section>
 
       {/* CTA Section */}
-      <section className="py-24">
-        <div className="max-w-4xl mx-auto px-6 text-center">
-          <h2 className="text-4xl font-light tracking-wider mb-6">
-            Join Our Journey
+      <section className="py-24 bg-gray-50">
+        <div className="max-w-3xl mx-auto px-6 text-center">
+          <h2 className="text-4xl font-serif font-light mb-6">
+            Explore Our Collection
           </h2>
-          <p className="text-lg text-gray-700 font-light mb-12 leading-relaxed">
-            Experience the e&apos;eora difference. Discover fragrances designed
-            for those who understand that luxury whispers rather than shouts.
+          <p className="text-gray-600 mb-8 font-light">
+            Discover the fragrances that define quiet luxury
           </p>
-          <Button variant="primary">EXPLORE OUR FRAGRANCES</Button>
+          <Link href="/fragrances">
+            <Button variant="primary">Shop Now</Button>
+          </Link>
         </div>
       </section>
     </div>

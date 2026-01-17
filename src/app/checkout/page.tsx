@@ -1,16 +1,23 @@
 "use client";
 
 import Button from "@/src/components/Button";
-import { useEffect, useState } from "react";
+import ScrollReveal from "@/src/components/ScrollReveal";
+import { useEffect, useRef, useState } from "react";
 
 export default function CheckoutPage() {
   const [cartItems, setCartItems] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const emailRef = useRef<HTMLInputElement>(null);
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
     const cart = JSON.parse(localStorage.getItem("cart") || "[]");
     setCartItems(cart);
     setLoading(false);
+
+    // Auto-focus email after load
+    setTimeout(() => emailRef.current?.focus(), 500);
   }, []);
 
   const updateQuantity = (id: string, quantity: number) => {
@@ -32,7 +39,44 @@ export default function CheckoutPage() {
     localStorage.setItem("cart", JSON.stringify(updatedCart));
   };
 
-  const subtotal = cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const newErrors: Record<string, string> = {};
+
+    // Validate fields
+    const formData = new FormData(e.currentTarget as HTMLFormElement);
+    const email = formData.get("email") as string;
+    const firstName = formData.get("firstName") as string;
+
+    if (!firstName) newErrors.firstName = "Please complete this field.";
+    if (!email) newErrors.email = "Please complete this field.";
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    // Simulate order processing
+    setTimeout(() => {
+      localStorage.setItem(
+        "lastOrder",
+        JSON.stringify({
+          email,
+          items: cartItems,
+          timestamp: new Date().toISOString(),
+        })
+      );
+      localStorage.removeItem("cart");
+      window.location.href = "/checkout/confirmation";
+    }, 1500);
+  };
+
+  const subtotal = cartItems.reduce(
+    (sum, item) => sum + item.price * item.quantity,
+    0
+  );
   const shipping = 15;
   const tax = Math.round(subtotal * 0.1 * 100) / 100;
   const total = subtotal + shipping + tax;
@@ -43,155 +87,204 @@ export default function CheckoutPage() {
     <div className="bg-white pt-32 pb-20">
       <div className="max-w-7xl mx-auto px-6">
         {/* Header */}
-        <div className="mb-20">
+        <ScrollReveal className="mb-20">
           <h1 className="text-5xl font-light tracking-wide font-serif mb-4">
-            Checkout
+            Complete Purchase
           </h1>
           <p className="text-gray-600 font-light">
-            Complete your order
+            Secure checkout. All your information is safe.
           </p>
-        </div>
+        </ScrollReveal>
 
         {/* Main Checkout Section */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-16">
           {/* Checkout Form */}
-          <div className="lg:col-span-2 space-y-16">
+          <form onSubmit={handleSubmit} className="lg:col-span-2 space-y-16">
             {/* Customer Information */}
-            <section>
-              <div className="flex items-center gap-4 mb-12">
-                <div className="w-8 h-8 bg-black text-white flex items-center justify-center rounded-full text-sm font-light">
-                  1
+            <ScrollReveal>
+              <section>
+                <div className="flex items-center gap-4 mb-12">
+                  <div className="w-8 h-8 bg-black text-white flex items-center justify-center rounded-full text-sm font-light">
+                    1
+                  </div>
+                  <h2 className="text-2xl font-light tracking-wide font-serif">
+                    Your Information
+                  </h2>
                 </div>
-                <h2 className="text-2xl font-light tracking-wide font-serif">
-                  Customer Information
-                </h2>
-              </div>
 
-              <div className="space-y-4 ml-12">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-6 ml-12">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <input
+                        type="text"
+                        name="firstName"
+                        placeholder="First Name"
+                        className={`w-full px-4 py-3 border transition-colors bg-white focus:outline-none ${
+                          errors.firstName
+                            ? "border-gray-300 focus:border-gray-400"
+                            : "border-gray-300 focus:border-black"
+                        }`}
+                      />
+                      {errors.firstName && (
+                        <p className="text-xs text-gray-500 mt-2 font-light">
+                          {errors.firstName}
+                        </p>
+                      )}
+                    </div>
+                    <input
+                      type="text"
+                      name="lastName"
+                      placeholder="Last Name"
+                      className="w-full px-4 py-3 border border-gray-300 focus:outline-none focus:border-black transition-colors bg-white"
+                    />
+                  </div>
+
+                  <div>
+                    <input
+                      ref={emailRef}
+                      type="email"
+                      name="email"
+                      placeholder="Email Address"
+                      className={`w-full px-4 py-3 border transition-colors bg-white focus:outline-none ${
+                        errors.email
+                          ? "border-gray-300 focus:border-gray-400"
+                          : "border-gray-300 focus:border-black"
+                      }`}
+                    />
+                    <p className="text-xs text-gray-500 mt-2 font-light">
+                      We'll only use your email for order updates.
+                    </p>
+                    {errors.email && (
+                      <p className="text-xs text-gray-500 mt-1 font-light">
+                        {errors.email}
+                      </p>
+                    )}
+                  </div>
+
                   <input
-                    type="text"
-                    placeholder="First Name"
-                    className="px-4 py-3 border border-gray-300 focus:outline-none focus:border-black transition-colors bg-white"
-                  />
-                  <input
-                    type="text"
-                    placeholder="Last Name"
-                    className="px-4 py-3 border border-gray-300 focus:outline-none focus:border-black transition-colors bg-white"
+                    type="tel"
+                    name="phone"
+                    placeholder="Phone Number"
+                    className="w-full px-4 py-3 border border-gray-300 focus:outline-none focus:border-black transition-colors bg-white"
                   />
                 </div>
-                <input
-                  type="email"
-                  placeholder="Email Address"
-                  className="w-full px-4 py-3 border border-gray-300 focus:outline-none focus:border-black transition-colors bg-white"
-                />
-                <input
-                  type="tel"
-                  placeholder="Phone Number"
-                  className="w-full px-4 py-3 border border-gray-300 focus:outline-none focus:border-black transition-colors bg-white"
-                />
-              </div>
-            </section>
+              </section>
+            </ScrollReveal>
 
             {/* Divider */}
             <div className="h-px bg-gray-200" />
 
             {/* Shipping Address */}
-            <section>
-              <div className="flex items-center gap-4 mb-12">
-                <div className="w-8 h-8 bg-gray-300 text-black flex items-center justify-center rounded-full text-sm font-light">
-                  2
+            <ScrollReveal>
+              <section>
+                <div className="flex items-center gap-4 mb-12">
+                  <div className="w-8 h-8 bg-gray-300 text-black flex items-center justify-center rounded-full text-sm font-light">
+                    2
+                  </div>
+                  <h2 className="text-2xl font-light tracking-wide font-serif">
+                    Shipping Address
+                  </h2>
                 </div>
-                <h2 className="text-2xl font-light tracking-wide font-serif">
-                  Shipping Address
-                </h2>
-              </div>
 
-              <div className="space-y-4 ml-12">
-                <input
-                  type="text"
-                  placeholder="Street Address"
-                  className="w-full px-4 py-3 border border-gray-300 focus:outline-none focus:border-black transition-colors bg-white"
-                />
-                <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-4 ml-12">
                   <input
                     type="text"
-                    placeholder="City"
-                    className="px-4 py-3 border border-gray-300 focus:outline-none focus:border-black transition-colors bg-white"
+                    placeholder="Street Address"
+                    className="w-full px-4 py-3 border border-gray-300 focus:outline-none focus:border-black transition-colors bg-white"
                   />
-                  <input
-                    type="text"
-                    placeholder="State"
-                    className="px-4 py-3 border border-gray-300 focus:outline-none focus:border-black transition-colors bg-white"
-                  />
+                  <div className="grid grid-cols-2 gap-4">
+                    <input
+                      type="text"
+                      placeholder="City"
+                      className="px-4 py-3 border border-gray-300 focus:outline-none focus:border-black transition-colors bg-white"
+                    />
+                    <input
+                      type="text"
+                      placeholder="State"
+                      className="px-4 py-3 border border-gray-300 focus:outline-none focus:border-black transition-colors bg-white"
+                    />
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <input
+                      type="text"
+                      placeholder="ZIP Code"
+                      className="px-4 py-3 border border-gray-300 focus:outline-none focus:border-black transition-colors bg-white"
+                    />
+                    <input
+                      type="text"
+                      placeholder="Country"
+                      className="px-4 py-3 border border-gray-300 focus:outline-none focus:border-black transition-colors bg-white"
+                    />
+                  </div>
                 </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <input
-                    type="text"
-                    placeholder="ZIP Code"
-                    className="px-4 py-3 border border-gray-300 focus:outline-none focus:border-black transition-colors bg-white"
-                  />
-                  <input
-                    type="text"
-                    placeholder="Country"
-                    className="px-4 py-3 border border-gray-300 focus:outline-none focus:border-black transition-colors bg-white"
-                  />
-                </div>
-              </div>
-            </section>
+              </section>
+            </ScrollReveal>
 
             {/* Divider */}
             <div className="h-px bg-gray-200" />
 
             {/* Payment Information */}
-            <section>
-              <div className="flex items-center gap-4 mb-12">
-                <div className="w-8 h-8 bg-gray-300 text-black flex items-center justify-center rounded-full text-sm font-light">
-                  3
-                </div>
-                <h2 className="text-2xl font-light tracking-wide font-serif">
-                  Payment Information
-                </h2>
-              </div>
-
-              <div className="space-y-4 ml-12">
-                <div className="p-4 bg-gray-50 border border-gray-200 rounded">
-                  <p className="text-sm font-light text-gray-700">
-                    ⚠️ Demo mode: No actual transactions will be processed.
-                  </p>
+            <ScrollReveal>
+              <section>
+                <div className="flex items-center gap-4 mb-12">
+                  <div className="w-8 h-8 bg-gray-300 text-black flex items-center justify-center rounded-full text-sm font-light">
+                    3
+                  </div>
+                  <h2 className="text-2xl font-light tracking-wide font-serif">
+                    Payment
+                  </h2>
                 </div>
 
-                <input
-                  type="text"
-                  placeholder="Card Number"
-                  className="w-full px-4 py-3 border border-gray-300 focus:outline-none focus:border-black transition-colors bg-white"
-                />
+                <div className="space-y-4 ml-12">
+                  <div className="p-4 bg-gray-50 border border-gray-200 rounded">
+                    <p className="text-sm font-light text-gray-600">
+                      Demo mode: No actual transactions will be processed.
+                    </p>
+                  </div>
 
-                <div className="grid grid-cols-2 gap-4">
                   <input
                     type="text"
-                    placeholder="MM/YY"
-                    className="px-4 py-3 border border-gray-300 focus:outline-none focus:border-black transition-colors bg-white"
+                    placeholder="Card Number"
+                    className="w-full px-4 py-3 border border-gray-300 focus:outline-none focus:border-black transition-colors bg-white"
                   />
-                  <input
-                    type="text"
-                    placeholder="CVC"
-                    className="px-4 py-3 border border-gray-300 focus:outline-none focus:border-black transition-colors bg-white"
-                  />
-                </div>
 
-                <label className="flex items-center gap-3 cursor-pointer">
-                  <input type="checkbox" className="w-4 h-4" defaultChecked />
-                  <span className="text-sm font-light">
-                    Billing address same as shipping
-                  </span>
-                </label>
-              </div>
-            </section>
-          </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <input
+                      type="text"
+                      placeholder="MM/YY"
+                      className="px-4 py-3 border border-gray-300 focus:outline-none focus:border-black transition-colors bg-white"
+                    />
+                    <input
+                      type="text"
+                      placeholder="CVC"
+                      className="px-4 py-3 border border-gray-300 focus:outline-none focus:border-black transition-colors bg-white"
+                    />
+                  </div>
+
+                  <label className="flex items-center gap-3 cursor-pointer">
+                    <input type="checkbox" className="w-4 h-4" defaultChecked />
+                    <span className="text-sm font-light">
+                      Billing address same as shipping
+                    </span>
+                  </label>
+                </div>
+              </section>
+            </ScrollReveal>
+
+            {/* Submit Button */}
+            <ScrollReveal>
+              <Button
+                variant="primary"
+                className="w-full py-4"
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? "Processing..." : "Complete Purchase"}
+              </Button>
+            </ScrollReveal>
+          </form>
 
           {/* Order Summary */}
-          <div className="lg:sticky lg:top-40 h-fit">
+          <ScrollReveal className="lg:sticky lg:top-40 h-fit">
             <div className="border border-gray-200 p-8 bg-gray-50">
               <h2 className="text-2xl font-light tracking-wide font-serif mb-8">
                 Order Summary
@@ -203,15 +296,20 @@ export default function CheckoutPage() {
                   <p className="text-sm text-gray-600">Your cart is empty</p>
                 ) : (
                   cartItems.map((item) => (
-                    <div key={item.id} className="flex justify-between items-start pb-4 border-b border-gray-100 last:border-0">
+                    <div
+                      key={item.id}
+                      className="flex justify-between items-start pb-4 border-b border-gray-100 last:border-0"
+                    >
                       <div className="flex-1">
                         <p className="font-light">{item.name}</p>
                         <p className="text-sm text-gray-600 font-light mb-2">
                           ${item.price} each
                         </p>
                         <div className="flex items-center gap-2 bg-white border border-gray-300 w-fit rounded">
-                          <button 
-                            onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                          <button
+                            onClick={() =>
+                              updateQuantity(item.id, item.quantity - 1)
+                            }
                             className="px-2 py-1 hover:bg-gray-100 text-sm"
                           >
                             −
@@ -219,12 +317,19 @@ export default function CheckoutPage() {
                           <input
                             type="number"
                             value={item.quantity}
-                            onChange={(e) => updateQuantity(item.id, parseInt(e.target.value) || 1)}
+                            onChange={(e) =>
+                              updateQuantity(
+                                item.id,
+                                parseInt(e.target.value) || 1
+                              )
+                            }
                             className="w-8 text-center text-sm border-l border-r border-gray-300 py-1 focus:outline-none"
                             min="1"
                           />
-                          <button 
-                            onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                          <button
+                            onClick={() =>
+                              updateQuantity(item.id, item.quantity + 1)
+                            }
                             className="px-2 py-1 hover:bg-gray-100 text-sm"
                           >
                             +
@@ -235,9 +340,9 @@ export default function CheckoutPage() {
                         <p className="font-light text-sm mb-2">
                           ${(item.price * item.quantity).toFixed(2)}
                         </p>
-                        <button 
+                        <button
                           onClick={() => removeItem(item.id)}
-                          className="text-xs text-red-600 hover:text-red-700"
+                          className="text-xs text-gray-500 hover:text-gray-700"
                         >
                           Remove
                         </button>
@@ -268,49 +373,23 @@ export default function CheckoutPage() {
                 </div>
               </div>
 
-              {/* CTA */}
-              <Button variant="primary" className="w-full mb-4">
-                Complete Purchase
-              </Button>
-              <Button variant="secondary" className="w-full">
-                Continue Shopping
-              </Button>
-
               {/* Trust Elements */}
-              <div className="mt-8 pt-8 border-t border-gray-200 space-y-3 text-xs font-light text-gray-600">
-                <div className="flex items-center gap-2">
-                  <svg
-                    className="w-4 h-4"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                  >
-                    <path d="M5 13l4 4L19 7" />
-                  </svg>
-                  Secure SSL Encryption
+              <div className="space-y-3 text-xs font-light text-gray-600">
+                <div className="flex items-start gap-2">
+                  <span className="mt-0.5">✓</span>
+                  <span>Secure checkout</span>
                 </div>
-                <div className="flex items-center gap-2">
-                  <svg
-                    className="w-4 h-4"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                  >
-                    <path d="M5 13l4 4L19 7" />
-                  </svg>
-                  30-Day Money Back Guarantee
+                <div className="flex items-start gap-2">
+                  <span className="mt-0.5">✓</span>
+                  <span>30-day returns</span>
                 </div>
-                <div className="flex items-center gap-2">
-                  <svg
-                    className="w-4 h-4"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                  >
-                    <path d="M5 13l4 4L19 7" />
-                  </svg>
-                  Free Shipping Over $100
+                <div className="flex items-start gap-2">
+                  <span className="mt-0.5">✓</span>
+                  <span>Free shipping over $100</span>
                 </div>
               </div>
             </div>
-          </div>
+          </ScrollReveal>
         </div>
       </div>
     </div>

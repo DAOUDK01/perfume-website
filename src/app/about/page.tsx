@@ -1,49 +1,58 @@
 import Button from "@/src/components/Button";
+import ScrollReveal from "@/src/components/ScrollReveal";
 import Link from "next/link";
 
 export const metadata = {
-  title: "About | e'eora",
-  description: "Discover the story behind e'eora fragrances",
+  title: "About e'eora | Why This Brand",
+  description:
+    "Discover why e'eora was founded. Our philosophy on quiet luxury, thoughtful design, and timeless fragrances.",
 };
 
 export default function AboutPage() {
   return (
     <div className="bg-white">
-      {/* Hero Section */}
+      {/* Hero Section - Answer: Why this brand? */}
       <section className="pt-32 pb-24 border-b border-gray-200">
-        <div className="max-w-3xl mx-auto px-6 text-center">
+        <ScrollReveal className="max-w-3xl mx-auto px-6 text-center">
           <h1 className="text-6xl md:text-7xl font-serif font-light mb-6">
-            About e&apos;eora
+            Why e&apos;eora
           </h1>
           <p className="text-xl text-gray-600 font-light leading-relaxed">
-            Quiet luxury. Thoughtful design. Timeless fragrance.
+            We believe in quiet luxury. Thoughtful design. Timeless fragrance.
           </p>
-        </div>
+        </ScrollReveal>
       </section>
 
       {/* Story Section */}
       <section className="py-24 border-b border-gray-200">
         <div className="max-w-4xl mx-auto px-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
-            <div>
-              <div 
-                className="w-full h-96 rounded bg-gradient-to-br from-gray-300 to-gray-200"
-              ></div>
-            </div>
-            <div>
-              <h2 className="text-4xl font-serif font-light mb-6">
-                Our Story
-              </h2>
-              <p className="text-gray-700 font-light leading-relaxed mb-4">
-                e&apos;eora began with a simple philosophy: that true elegance requires restraint. In a world of excess, we chose simplicity. In a culture of noise, we chose quiet.
-              </p>
-              <p className="text-gray-700 font-light leading-relaxed mb-4">
-                Each fragrance is crafted with intention, using only the finest ingredients. We believe that a scent should evolve with you throughout the day, becoming part of your story rather than overshadowing it.
-              </p>
-              <p className="text-gray-700 font-light leading-relaxed">
-                From concept to bottle, every detail reflects our commitment to quality and authenticity. e&apos;eora is not just a fragrance&mdash;it&apos;s a philosophy.
-              </p>
-            </div>
+            <ScrollReveal>
+              <div className="w-full h-96 rounded bg-gradient-to-br from-gray-300 to-gray-200" />
+            </ScrollReveal>
+            <ScrollReveal delay={100}>
+              <div>
+                <h2 className="text-4xl font-serif font-light mb-6">
+                  Our Philosophy
+                </h2>
+                <p className="text-gray-700 font-light leading-relaxed mb-4">
+                  e&apos;eora began with a simple belief: that true elegance
+                  requires restraint. In a world of excess, we chose simplicity.
+                  In a culture of noise, we chose quiet.
+                </p>
+                <p className="text-gray-700 font-light leading-relaxed mb-4">
+                  Each fragrance is crafted with intention, using only the
+                  finest ingredients. We believe that a scent should evolve with
+                  you throughout the day, becoming part of your story rather
+                  than overshadowing it.
+                </p>
+                <p className="text-gray-700 font-light leading-relaxed">
+                  From concept to bottle, every detail reflects our commitment
+                  to quality and authenticity. e&apos;eora is not just a
+                  fragrance—it&apos;s a philosophy.
+                </p>
+              </div>
+            </ScrollReveal>
           </div>
         </div>
       </section>

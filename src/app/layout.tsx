@@ -2,11 +2,17 @@ import type { Metadata } from "next";
 import "./globals.css";
 import Navigation from "@/src/components/Navigation";
 import Footer from "@/src/components/Footer";
+import ScrollToTop from "@/src/components/ScrollToTop";
 
 export const metadata: Metadata = {
-  title: "e'eora | Fragrances",
+  title: "e'eora | Quiet Fragrances",
   description:
-    "e'eora. A quiet expression of scent.",
+    "e'eora. A quiet expression of scent. Thoughtfully crafted fragrances that speak softly.",
+  keywords: "fragrance, perfume, luxury, minimal, scent",
+  openGraph: {
+    title: "e'eora | Quiet Fragrances",
+    description: "A quiet expression of scent",
+  },
 };
 
 export default function RootLayout({
@@ -31,6 +37,7 @@ export default function RootLayout({
       <body className="bg-white">
         <Navigation />
         {children}
+        <ScrollToTop />
         <Footer />
       </body>
     </html>

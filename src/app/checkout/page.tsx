@@ -39,7 +39,7 @@ export default function CheckoutPage() {
     localStorage.setItem("cart", JSON.stringify(updatedCart));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const newErrors: Record<string, string> = {};
 
@@ -47,9 +47,16 @@ export default function CheckoutPage() {
     const formData = new FormData(e.currentTarget as HTMLFormElement);
     const email = formData.get("email") as string;
     const firstName = formData.get("firstName") as string;
+    const lastName = formData.get("lastName") as string;
+    const street = formData.get("street") as string;
+    const city = formData.get("city") as string;
+    const state = formData.get("state") as string;
+    const zipCode = formData.get("zipCode") as string;
 
     if (!firstName) newErrors.firstName = "Please complete this field.";
     if (!email) newErrors.email = "Please complete this field.";
+    if (!street) newErrors.street = "Please complete this field.";
+    if (!city) newErrors.city = "Please complete this field.";
 
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
@@ -58,8 +65,40 @@ export default function CheckoutPage() {
 
     setIsSubmitting(true);
 
-    // Simulate order processing
-    setTimeout(() => {
+    try {
+      // Build full name and address
+      const fullName = `${firstName}${lastName ? " " + lastName : ""}`;
+      const fullAddress = `${street}, ${city}, ${state} ${zipCode}`;
+
+      // Prepare order data
+      const orderData = {
+        name: fullName,
+        email,
+        address: fullAddress,
+        items: cartItems.map((item) => ({
+          id: item.id,
+          name: item.name,
+          quantity: item.quantity,
+          price: item.price,
+        })),
+      };
+
+      // Send to API
+      const response = await fetch("/api/orders", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(orderData),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error || "Failed to save order");
+      }
+
+      // Store order info and clear cart
       localStorage.setItem(
         "lastOrder",
         JSON.stringify({
@@ -69,8 +108,16 @@ export default function CheckoutPage() {
         })
       );
       localStorage.removeItem("cart");
+
+      // Redirect to confirmation
       window.location.href = "/checkout/confirmation";
-    }, 1500);
+    } catch (error) {
+      console.error("Order submission error:", error);
+      setErrors({
+        submit: error instanceof Error ? error.message : "Failed to save order",
+      });
+      setIsSubmitting(false);
+    }
   };
 
   const subtotal = cartItems.reduce(
@@ -189,17 +236,40 @@ export default function CheckoutPage() {
                 <div className="space-y-4 ml-12">
                   <input
                     type="text"
+                    name="street"
                     placeholder="Street Address"
-                    className="w-full px-4 py-3 border border-gray-300 focus:outline-none focus:border-black transition-colors bg-white"
+                    className={`w-full px-4 py-3 border transition-colors bg-white focus:outline-none ${
+                      errors.street
+                        ? "border-gray-300 focus:border-gray-400"
+                        : "border-gray-300 focus:border-black"
+                    }`}
                   />
+                  {errors.street && (
+                    <p className="text-xs text-gray-500 mt-1 font-light">
+                      {errors.street}
+                    </p>
+                  )}
                   <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <input
+                        type="text"
+                        name="city"
+                        placeholder="City"
+                        className={`w-full px-4 py-3 border transition-colors bg-white focus:outline-none ${
+                          errors.city
+                            ? "border-gray-300 focus:border-gray-400"
+                            : "border-gray-300 focus:border-black"
+                        }`}
+                      />
+                      {errors.city && (
+                        <p className="text-xs text-gray-500 mt-1 font-light">
+                          {errors.city}
+                        </p>
+                      )}
+                    </div>
                     <input
                       type="text"
-                      placeholder="City"
-                      className="px-4 py-3 border border-gray-300 focus:outline-none focus:border-black transition-colors bg-white"
-                    />
-                    <input
-                      type="text"
+                      name="state"
                       placeholder="State"
                       className="px-4 py-3 border border-gray-300 focus:outline-none focus:border-black transition-colors bg-white"
                     />
@@ -207,11 +277,13 @@ export default function CheckoutPage() {
                   <div className="grid grid-cols-2 gap-4">
                     <input
                       type="text"
+                      name="zipCode"
                       placeholder="ZIP Code"
                       className="px-4 py-3 border border-gray-300 focus:outline-none focus:border-black transition-colors bg-white"
                     />
                     <input
                       type="text"
+                      name="country"
                       placeholder="Country"
                       className="px-4 py-3 border border-gray-300 focus:outline-none focus:border-black transition-colors bg-white"
                     />
@@ -273,6 +345,13 @@ export default function CheckoutPage() {
 
             {/* Submit Button */}
             <ScrollReveal>
+              {errors.submit && (
+                <div className="p-4 bg-red-50 border border-red-200 rounded mb-4">
+                  <p className="text-sm font-light text-red-700">
+                    {errors.submit}
+                  </p>
+                </div>
+              )}
               <Button
                 variant="primary"
                 className="w-full py-4"

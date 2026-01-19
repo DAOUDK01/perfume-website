@@ -1,8 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import Navigation from "@/src/components/Navigation";
-import Footer from "@/src/components/Footer";
-import ScrollToTop from "@/src/components/ScrollToTop";
+import AppShell from "./AppShell";
 
 export const metadata: Metadata = {
   title: "e'eora | Quiet Fragrances",
@@ -35,10 +33,7 @@ export default function RootLayout({
         />
       </head>
       <body className="bg-white">
-        <Navigation />
-        {children}
-        <ScrollToTop />
-        <Footer />
+        <AppShell>{children}</AppShell>
       </body>
     </html>
   );

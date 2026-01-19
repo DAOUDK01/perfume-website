@@ -1,5 +1,39 @@
 import { getOrdersCollection } from "@/lib/mongodb";
 
+export async function GET(request) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const q = (searchParams.get("q") || "").trim();
+    const status = (searchParams.get("status") || "").trim();
+
+    const filter = {};
+    if (q) {
+      filter.$or = [
+        { customerName: { $regex: q, $options: "i" } },
+        { email: { $regex: q, $options: "i" } },
+      ];
+    }
+    if (status) filter.status = status;
+
+    const ordersCollection = await getOrdersCollection();
+    const orders = await ordersCollection
+      .find(filter)
+      .sort({ createdAt: -1 })
+      .toArray();
+
+    return Response.json({
+      success: true,
+      orders: orders.map((o) => ({
+        ...o,
+        _id: o._id?.toString?.() || o._id,
+      })),
+    });
+  } catch (error) {
+    console.error("Error fetching orders:", error);
+    return Response.json({ error: "Failed to fetch orders" }, { status: 500 });
+  }
+}
+
 export async function POST(request) {
   try {
     const body = await request.json();
@@ -56,7 +90,9 @@ export async function POST(request) {
         price: item.price,
       })),
       totalAmount,
+      status: "new",
       createdAt: new Date(),
+      updatedAt: new Date(),
     };
 
     // Insert into MongoDB

@@ -11,6 +11,7 @@ const config: Config = {
       fontFamily: {
         serif: ['"Playfair Display"', 'serif'],
         sans: ['-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'sans-serif'],
+        agrandir: ['Agrandir', 'system-ui', 'sans-serif'],
       },
       colors: {
         black: "#000000",

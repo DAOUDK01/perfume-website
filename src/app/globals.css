@@ -2,6 +2,15 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Agrandir (Bold) for e'eora brand heading – compact, no space */
+@font-face {
+  font-family: "Agrandir";
+  src: url("https://db.onlinewebfonts.com/t/1dc7840abb13fcda12aa8d1cb21fb832.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
 * {
   margin: 0;
   padding: 0;

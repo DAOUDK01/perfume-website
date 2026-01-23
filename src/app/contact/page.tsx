@@ -3,6 +3,7 @@
 import Button from "@/src/components/Button";
 import ScrollReveal from "@/src/components/ScrollReveal";
 import { useState, useRef } from "react";
+import { Mail, Phone, Instagram, Twitter, Clock, MapPin } from "lucide-react";
 
 export default function ContactPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -51,96 +52,98 @@ export default function ContactPage() {
   };
 
   return (
-    <div className="bg-white pt-32 pb-20">
+    <div className="bg-[#fafafa] pt-32 pb-20">
       {/* Page Header */}
-      <section className="border-b border-gray-100 py-16 mb-24">
-        <ScrollReveal className="max-w-7xl mx-auto px-6 text-center">
-          <h1 className="text-5xl md:text-6xl font-light tracking-wider mb-4 font-serif">
+      <section className="relative py-20 mb-20 bg-white border-b border-gray-100 overflow-hidden">
+         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-gray-50 via-white to-white opacity-60" />
+        <ScrollReveal className="relative z-10 max-w-7xl mx-auto px-6 text-center">
+          <span className="text-xs tracking-[0.3em] uppercase text-gray-400 font-medium mb-4 block">
+            Contact Us
+          </span>
+          <h1 className="text-5xl md:text-7xl font-light tracking-tight mb-6 font-serif text-gray-900">
             Get In Touch
           </h1>
-          <p className="text-gray-600 font-light text-lg max-w-2xl mx-auto">
-            We&apos;d love to hear from you. Questions? Feedback? Send us a message.
+          <p className="text-gray-500 font-light text-lg md:text-xl max-w-2xl mx-auto leading-relaxed">
+            We&apos;d love to hear from you. Questions about our fragrances? Feedback on your experience? We are here to help.
           </p>
         </ScrollReveal>
       </section>
 
       {/* Contact Content */}
       <section>
-        <div className="max-w-6xl mx-auto px-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-24">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24">
             {/* Contact Form */}
-            <ScrollReveal>
+            <ScrollReveal className="bg-white p-8 md:p-12 rounded-2xl shadow-sm border border-gray-100">
               <div>
-                <h2 className="text-3xl font-light tracking-wider mb-12 font-serif">
-                  Send us a message
+                <h2 className="text-3xl font-light tracking-tight mb-2 font-serif">
+                  Send a message
                 </h2>
+                <p className="text-gray-500 font-light mb-10">We usually respond within 24 hours.</p>
 
                 <form onSubmit={handleSubmit} className="space-y-8">
                   {/* Name */}
-                  <div>
-                    <label className="block text-xs font-light tracking-widest uppercase text-gray-600 mb-3">
+                  <div className="group">
+                    <label className="block text-xs font-medium tracking-widest uppercase text-gray-500 mb-2 group-focus-within:text-black transition-colors">
                       Full Name
                     </label>
                     <input
                       ref={nameRef}
                       type="text"
                       name="name"
-                      className={`w-full px-4 py-3 border transition-colors bg-white focus:outline-none ${
+                      className={`w-full px-4 py-3 bg-gray-50 border-b-2 border-transparent focus:border-black transition-all duration-300 focus:bg-white outline-none ${
                         errors.name
-                          ? "border-gray-300 focus:border-gray-400"
-                          : "border-gray-300 focus:border-black"
+                          ? "bg-red-50 border-red-300"
+                          : "hover:bg-gray-100"
                       }`}
-                      placeholder="Your name"
+                      placeholder="e.g. Jane Doe"
                     />
                     {errors.name && (
-                      <p className="text-xs text-gray-500 mt-2 font-light">
+                      <p className="text-xs text-red-500 mt-2 font-light">
                         {errors.name}
                       </p>
                     )}
                   </div>
 
                   {/* Email */}
-                  <div>
-                    <label className="block text-xs font-light tracking-widest uppercase text-gray-600 mb-3">
+                  <div className="group">
+                    <label className="block text-xs font-medium tracking-widest uppercase text-gray-500 mb-2 group-focus-within:text-black transition-colors">
                       Email Address
                     </label>
                     <input
                       type="email"
                       name="email"
-                      className={`w-full px-4 py-3 border transition-colors bg-white focus:outline-none ${
+                      className={`w-full px-4 py-3 bg-gray-50 border-b-2 border-transparent focus:border-black transition-all duration-300 focus:bg-white outline-none ${
                         errors.email
-                          ? "border-gray-300 focus:border-gray-400"
-                          : "border-gray-300 focus:border-black"
+                          ? "bg-red-50 border-red-300"
+                          : "hover:bg-gray-100"
                       }`}
-                      placeholder="your@email.com"
+                      placeholder="e.g. jane@example.com"
                     />
-                    <p className="text-xs text-gray-500 mt-2 font-light">
-                      We&apos;ll only use this to respond to you.
-                    </p>
                     {errors.email && (
-                      <p className="text-xs text-gray-500 mt-1 font-light">
+                      <p className="text-xs text-red-500 mt-1 font-light">
                         {errors.email}
                       </p>
                     )}
                   </div>
 
                   {/* Message */}
-                  <div>
-                    <label className="block text-xs font-light tracking-widest uppercase text-gray-600 mb-3">
+                  <div className="group">
+                    <label className="block text-xs font-medium tracking-widest uppercase text-gray-500 mb-2 group-focus-within:text-black transition-colors">
                       Message
                     </label>
                     <textarea
                       name="message"
                       rows={6}
-                      className={`w-full px-4 py-3 border transition-colors bg-white focus:outline-none resize-none ${
+                      className={`w-full px-4 py-3 bg-gray-50 border-b-2 border-transparent focus:border-black transition-all duration-300 focus:bg-white outline-none resize-none ${
                         errors.message
-                          ? "border-gray-300 focus:border-gray-400"
-                          : "border-gray-300 focus:border-black"
+                          ? "bg-red-50 border-red-300"
+                          : "hover:bg-gray-100"
                       }`}
-                      placeholder="Your message..."
+                      placeholder="How can we help you?"
                     />
                     {errors.message && (
-                      <p className="text-xs text-gray-500 mt-2 font-light">
+                      <p className="text-xs text-red-500 mt-2 font-light">
                         {errors.message}
                       </p>
                     )}
@@ -148,7 +151,7 @@ export default function ContactPage() {
 
                   <Button
                     variant="primary"
-                    className="w-full py-3"
+                    className="w-full py-4 text-sm tracking-widest uppercase"
                     disabled={isSubmitting}
                   >
                     {isSubmitting ? "Sending..." : "Send Message"}
@@ -158,69 +161,89 @@ export default function ContactPage() {
             </ScrollReveal>
 
             {/* Contact Info */}
-            <ScrollReveal delay={100}>
+            <ScrollReveal delay={100} className="space-y-12 lg:pt-12">
               <div>
-                <h2 className="text-3xl font-light tracking-wider mb-12 font-serif">
-                  Other ways to connect
+                <h2 className="text-3xl font-light tracking-tight mb-8 font-serif">
+                  Connect with us
                 </h2>
 
-                <div className="space-y-12">
+                <div className="grid gap-8">
                   {/* Email */}
-                  <div>
-                    <p className="text-xs font-light tracking-widest uppercase text-gray-600 mb-3">
-                      Email
-                    </p>
-                    <a
-                      href="mailto:hello@eora.com"
-                      className="text-lg font-light hover:text-gray-600 transition-colors"
-                    >
-                      eeora@gmail.com
-                    </a>
+                  <div className="flex items-start gap-5 p-6 rounded-xl hover:bg-white hover:shadow-lg hover:-translate-y-1 transition-all duration-300 border border-transparent hover:border-gray-100 group">
+                    <div className="p-3 bg-gray-100 rounded-full group-hover:bg-black group-hover:text-white transition-colors duration-300">
+                      <Mail className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <p className="text-xs font-medium tracking-widest uppercase text-gray-400 mb-1">
+                        Email
+                      </p>
+                      <a
+                        href="mailto:hello@eeora.com"
+                        className="text-lg font-light text-gray-900 hover:text-gray-600 transition-colors"
+                      >
+                        hello@eeora.com
+                      </a>
+                    </div>
                   </div>
 
                   {/* Phone */}
-                  <div>
-                    <p className="text-xs font-light tracking-widest uppercase text-gray-600 mb-3">
-                      Phone
-                    </p>
-                    <a
-                      href="tel:+1234567890"
-                      className="text-lg font-light hover:text-gray-600 transition-colors"
-                    >
-                      +92 3105018825
-                    </a>
-                  </div>
-
-                  {/* Social */}
-                  <div>
-                    <p className="text-xs font-light tracking-widest uppercase text-gray-600 mb-3">
-                      Follow
-                    </p>
-                    <div className="flex gap-6">
+                  <div className="flex items-start gap-5 p-6 rounded-xl hover:bg-white hover:shadow-lg hover:-translate-y-1 transition-all duration-300 border border-transparent hover:border-gray-100 group">
+                    <div className="p-3 bg-gray-100 rounded-full group-hover:bg-black group-hover:text-white transition-colors duration-300">
+                      <Phone className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <p className="text-xs font-medium tracking-widest uppercase text-gray-400 mb-1">
+                        Phone
+                      </p>
                       <a
-                        href="#instagram"
-                        className="text-lg font-light hover:text-gray-600 transition-colors"
+                        href="tel:+923105018825"
+                        className="text-lg font-light text-gray-900 hover:text-gray-600 transition-colors"
                       >
-                        Instagram
-                      </a>
-                      <a
-                        href="#twitter"
-                        className="text-lg font-light hover:text-gray-600 transition-colors"
-                      >
-                        Twitter
+                        +92 310 5018825
                       </a>
                     </div>
                   </div>
 
                   {/* Hours */}
-                  <div>
-                    <p className="text-xs font-light tracking-widest uppercase text-gray-600 mb-3">
-                      Hours
-                    </p>
-                    <div className="space-y-2 text-sm font-light">
-                      <p>Monday - Friday: 9:00 AM - 6:00 PM</p>
-                      <p>Saturday - Sunday: 10:00 AM - 4:00 PM</p>
-                      <p className="text-gray-500 pt-2">(All times in EST)</p>
+                  <div className="flex items-start gap-5 p-6 rounded-xl hover:bg-white hover:shadow-lg hover:-translate-y-1 transition-all duration-300 border border-transparent hover:border-gray-100 group">
+                    <div className="p-3 bg-gray-100 rounded-full group-hover:bg-black group-hover:text-white transition-colors duration-300">
+                      <Clock className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <p className="text-xs font-medium tracking-widest uppercase text-gray-400 mb-1">
+                        Hours
+                      </p>
+                      <div className="space-y-1 text-gray-600 font-light">
+                        <p>Mon - Fri: 9:00 AM - 6:00 PM</p>
+                        <p>Sat - Sun: 10:00 AM - 4:00 PM</p>
+                        <p className="text-xs text-gray-400 mt-1">(EST)</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Social */}
+                  <div className="flex items-start gap-5 p-6 rounded-xl hover:bg-white hover:shadow-lg hover:-translate-y-1 transition-all duration-300 border border-transparent hover:border-gray-100 group">
+                     <div className="p-3 bg-gray-100 rounded-full group-hover:bg-black group-hover:text-white transition-colors duration-300">
+                      <Instagram className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <p className="text-xs font-medium tracking-widest uppercase text-gray-400 mb-3">
+                        Social Media
+                      </p>
+                      <div className="flex gap-6">
+                        <a
+                          href="#instagram"
+                          className="text-base font-light hover:underline underline-offset-4 decoration-gray-300 transition-all"
+                        >
+                          Instagram
+                        </a>
+                        <a
+                          href="#twitter"
+                          className="text-base font-light hover:underline underline-offset-4 decoration-gray-300 transition-all"
+                        >
+                          Twitter
+                        </a>
+                      </div>
                     </div>
                   </div>
                 </div>

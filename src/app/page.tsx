@@ -5,6 +5,7 @@ import ScrollProgress from "@/src/components/ScrollProgress";
 import ScrollReveal from "@/src/components/ScrollReveal";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { ContentItem, getContent } from "@/src/types/content";
 
 type FragranceItem = {
   id: string;
@@ -15,6 +16,29 @@ type FragranceItem = {
 };
 
 export default function HomePage() {
+  const [content, setContent] = useState<ContentItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    async function fetchContent() {
+      try {
+        const res = await fetch("/api/admin/content");
+        const data = await res.json();
+        if (res.ok) {
+          setContent(data.content.filter((item: ContentItem) => item.page === "Home") || []);
+        } else {
+          setError(data.error);
+        }
+      } catch (err) {
+        setError("Failed to load content");
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchContent();
+  }, []);
+
   const sections = ["What is e'eora?", "Why us", "Collection", "Stay Updated"];
   const [featuredList, setFeaturedList] = useState<FragranceItem[]>([]);
 
@@ -73,6 +97,22 @@ export default function HomePage() {
     return () => { cancelled = true; };
   }, []);
 
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-[#fafafa]">
+        <p className="text-gray-600">Loading home page content...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-[#fafafa]">
+        <p className="text-red-600">Error: {error}</p>
+      </div>
+    );
+  }
+
   return (
     <div className="bg-[#fafafa]">
       <ScrollProgress sections={sections} />
@@ -89,14 +129,14 @@ export default function HomePage() {
             className="font-agrandir font-bold tracking-tighter text-[clamp(4rem,15vw,10rem)] leading-[0.9] text-gray-900 mb-6 animate-fade-in-up"
             style={{ letterSpacing: "-0.05em" }}
           >
-            e&apos;eora
+            {getContent(content, "Hero", "Title", "text", "e'eora")}
           </h1>
           <div className="space-y-4 animate-fade-in-up delay-100">
             <p className="text-xl sm:text-2xl md:text-3xl text-gray-600 font-light tracking-wide">
-              A quiet expression of scent
+              {getContent(content, "Hero", "Subtitle", "text", "A quiet expression of scent")}
             </p>
             <p className="text-sm md:text-base text-gray-400 font-light max-w-lg mx-auto leading-relaxed">
-              Thoughtfully crafted fragrances that speak softly, designed to linger in memory rather than dominate the room.
+              {getContent(content, "Hero", "Description", "text", "Thoughtfully crafted fragrances that speak softly, designed to linger in memory rather than dominate the room.")}
             </p>
           </div>
           <div className="flex flex-col sm:flex-row gap-6 justify-center mt-12 animate-fade-in-up delay-200">
@@ -120,9 +160,11 @@ export default function HomePage() {
         <div className="max-w-2xl mx-auto px-4 sm:px-6 text-center">
           <ScrollReveal>
             <p className="text-xl sm:text-2xl md:text-3xl text-gray-700 font-light leading-relaxed">
-              We believe fragrance should be intentional, not loud. Each scent is designed to complement, not overwhelm.
+              {getContent(content, "Philosophy", "Quote", "text", "We believe fragrance should be intentional, not loud. Each scent is designed to complement, not overwhelm.")}
             </p>
-            <span className="inline-block mt-8 text-[10px] tracking-[0.35em] text-gray-400 uppercase">Philosophy</span>
+            <span className="inline-block mt-8 text-[10px] tracking-[0.35em] text-gray-400 uppercase">
+              {getContent(content, "Philosophy", "Label", "text", "Philosophy")}
+            </span>
           </ScrollReveal>
         </div>
       </section>
@@ -134,14 +176,19 @@ export default function HomePage() {
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <ScrollReveal className="text-center mb-14 md:mb-20">
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-serif font-light tracking-tight text-gray-900 mb-3">Why <span className="font-agrandir">e'eora</span></h2>
-            <p className="text-gray-500 font-light text-lg">Three pillars of our philosophy</p>
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-serif font-light tracking-tight text-gray-900 mb-3">
+              {getContent(content, "Why e'eora", "Title", "text", "Why ")}
+              <span className="font-agrandir">e'eora</span>
+            </h2>
+            <p className="text-gray-500 font-light text-lg">
+              {getContent(content, "Why e'eora", "Subtitle", "text", "Three pillars of our philosophy")}
+            </p>
           </ScrollReveal>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-10">
             {[
-              { number: "01", title: "Carefully Selected", desc: "Premium ingredients sourced responsibly from trusted suppliers. Each component is vetted for quality and sustainability." },
-              { number: "02", title: "Minimal Design", desc: "Clean, timeless bottles that reflect understated elegance. Form follows function in every detail." },
-              { number: "03", title: "Long Lasting", desc: "High concentration eau de parfum for all-day wear. Crafted to evolve beautifully on your skin." },
+              { number: getContent(content, "Why e'eora", "Pillar 1 Number", "text", "01"), title: getContent(content, "Why e'eora", "Pillar 1 Title", "text", "Carefully Selected"), desc: getContent(content, "Why e'eora", "Pillar 1 Description", "text", "Premium ingredients sourced responsibly from trusted suppliers. Each component is vetted for quality and sustainability.") },
+              { number: getContent(content, "Why e'eora", "Pillar 2 Number", "text", "02"), title: getContent(content, "Why e'eora", "Pillar 2 Title", "text", "Minimal Design"), desc: getContent(content, "Why e'eora", "Pillar 2 Description", "text", "Clean, timeless bottles that reflect understated elegance. Form follows function in every detail.") },
+              { number: getContent(content, "Why e'eora", "Pillar 3 Number", "text", "03"), title: getContent(content, "Why e'eora", "Pillar 3 Title", "text", "Long Lasting"), desc: getContent(content, "Why e'eora", "Pillar 3 Description", "text", "High concentration eau de parfum for all-day wear. Crafted to evolve beautifully on your skin.") },
             ].map((item, i) => (
               <ScrollReveal
                 key={item.number}
@@ -164,8 +211,12 @@ export default function HomePage() {
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <ScrollReveal className="text-center mb-14 md:mb-20">
-            <h2 className="text-3xl sm:text-4xl md:text-5xl font-serif font-light tracking-tight text-gray-900 mb-3">Featured Collection</h2>
-            <p className="text-gray-500 font-light">Select from our curated fragrances</p>
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-serif font-light tracking-tight text-gray-900 mb-3">
+              {getContent(content, "Featured Collection", "Title", "text", "Featured Collection")}
+            </h2>
+            <p className="text-gray-500 font-light">
+              {getContent(content, "Featured Collection", "Subtitle", "text", "Select from our curated fragrances")}
+            </p>
           </ScrollReveal>
           <ProductCarousel fragrances={featuredList} />
           <ScrollReveal className="text-center mt-12 md:mt-16">
@@ -181,21 +232,26 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
             <ScrollReveal>
-              <div className="rounded-2xl border  p-12 sm:p-16 flex flex-col items-center justify-center min-h-[380px] sm:min-h-[460px]">
-                <img src="https://tse3.mm.bing.net/th/id/OIP.em5gobhJqjf9K0-pJqGbuwHaFj?w=1280&h=959&rs=1&pid=ImgDetMain&o=7&rm=33" alt="" />
+              <div className="rounded-2xl border border-gray-100 p-12 sm:p-16 flex flex-col items-center justify-center min-h-[380px] sm:min-h-[460px]">
+                <img 
+                  src={getContent(content, "Craftsmanship", "Image", "image", "https://tse3.mm.bing.net/th/id/OIP.em5gobhJqjf9K0-pJqGbuwHaFj?w=1280&h=959&rs=1&pid=ImgDetMain&o=7&rm=33")} 
+                  alt={getContent(content, "Craftsmanship", "Image Alt Text", "text", "Craftsmanship Image")} 
+                />
               </div>
             </ScrollReveal>
             <ScrollReveal delay={150}>
               <div>
-                <h3 className="text-2xl sm:text-3xl md:text-4xl font-serif font-light text-gray-900 mb-6">Crafted with intention</h3>
+                <h3 className="text-2xl sm:text-3xl md:text-4xl font-serif font-light text-gray-900 mb-6">
+                  {getContent(content, "Craftsmanship", "Title", "text", "Crafted with intention")}
+                </h3>
                 <p className="text-gray-600 font-light leading-relaxed mb-6">
-                  Every bottle is a result of careful consideration. We work with master perfumers to create scents that are both timeless and contemporary.
+                  {getContent(content, "Craftsmanship", "Description 1", "text", "Every bottle is a result of careful consideration. We work with master perfumers to create scents that are both timeless and contemporary.")}
                 </p>
                 <p className="text-gray-500 font-light text-sm leading-relaxed mb-8">
-                  Our commitment to quality means using only the finest ingredients, blended in precise concentrations for optimal performance and longevity.
+                  {getContent(content, "Craftsmanship", "Description 2", "text", "Our commitment to quality means using only the finest ingredients, blended in precise concentrations for optimal performance and longevity.")}
                 </p>
                 <Link href="/about" className="inline-flex items-center gap-2 text-sm font-light border-b border-black pb-1 hover:text-gray-600 hover:border-gray-600 transition-colors">
-                  Learn about our process <span>→</span>
+                  {getContent(content, "Craftsmanship", "Button Text", "text", "Learn about our process")} <span>→</span>
                 </Link>
               </div>
             </ScrollReveal>
@@ -209,10 +265,16 @@ export default function HomePage() {
         data-scroll-section="3"
       >
         <ScrollReveal className="max-w-xl mx-auto px-4 sm:px-6 text-center">
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-serif font-light text-gray-900 mb-6">Stay Updated</h2>
-          <p className="text-gray-600 font-light text-lg mb-2">New releases and exclusive offers</p>
-          <p className="text-sm text-gray-400 mb-10 font-light">Order updates and collection announcements only.</p>
-          
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-serif font-light text-gray-900 mb-6">
+            {getContent(content, "Stay Updated", "Title", "text", "Stay Updated")}
+          </h2>
+          <p className="text-gray-600 font-light text-lg mb-2">
+            {getContent(content, "Stay Updated", "Subtitle", "text", "New releases and exclusive offers")}
+          </p>
+          <p className="text-sm text-gray-400 mb-10 font-light">
+            {getContent(content, "Stay Updated", "Description", "text", "Order updates and collection announcements only.")}
+          </p>
+         
           <form onSubmit={handleSubscribe} className="flex flex-col sm:flex-row gap-4 relative">
             <div className="relative flex-1 group">
               <input
@@ -228,7 +290,7 @@ export default function HomePage() {
               {isSubmitting ? "Subscribing..." : "Subscribe"}
             </Button>
           </form>
-          
+         
           {message && (
             <div className={`mt-6 p-4 rounded-xl border ${message.includes("successfully") ? "bg-green-50 border-green-100 text-green-800" : "bg-red-50 border-red-100 text-red-800"} text-sm font-light animate-fade-in`}>
               {message}
@@ -350,7 +412,7 @@ function ProductCarousel({ fragrances }: { fragrances: any[] }) {
                         <div className="flex items-center justify-center gap-2 pt-2">
                           <span className="text-lg font-medium text-gray-900">Rs {fragrance.price}</span>
                         </div>
-                        <span className="inline-block text-xs font-medium tracking-widest uppercase border-b border-transparent group-hover:border-black transition-all pb-0.5">
+                        <span className="inline-block text-xs font-normal tracking-widest uppercase border-b border-transparent group-hover:border-black transition-all pb-0.5">
                           View Details
                         </span>
                       </div>
@@ -377,20 +439,6 @@ function ProductCarousel({ fragrances }: { fragrances: any[] }) {
             >
               <span className="text-gray-600">→</span>
             </button>
-          </div>
-
-          {/* Dots Indicator */}
-          <div className="flex justify-center gap-2 mt-6">
-            {fragrances.map((_, index) => (
-              <button
-                key={index}
-                onClick={() => setCurrentIndex(index)}
-                className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                  index === currentIndex ? 'bg-gray-600 w-8' : 'bg-gray-300'
-                }`}
-                aria-label={`Go to slide ${index + 1}`}
-              />
-            ))}
           </div>
         </>
       )}

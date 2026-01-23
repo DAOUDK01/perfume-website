@@ -418,7 +418,7 @@ export default function CheckoutPage() {
                             }
                             className="px-2 py-1 hover:bg-gray-100 text-sm"
                           >
-                            −
+                            &minus;
                           </button>
                           <input
                             type="number"
@@ -482,15 +482,15 @@ export default function CheckoutPage() {
               {/* Trust Elements */}
               <div className="space-y-3 text-xs font-light text-gray-600">
                 <div className="flex items-start gap-2">
-                  <span className="mt-0.5">✓</span>
+                  <span className="mt-0.5">&check;</span>
                   <span>Secure checkout</span>
                 </div>
                 <div className="flex items-start gap-2">
-                  <span className="mt-0.5">✓</span>
+                  <span className="mt-0.5">&check;</span>
                   <span>30-day returns</span>
                 </div>
                 <div className="flex items-start gap-2">
-                  <span className="mt-0.5">✓</span>
+                  <span className="mt-0.5">&check;</span>
                   <span>Free shipping over Rs100</span>
                 </div>
               </div>

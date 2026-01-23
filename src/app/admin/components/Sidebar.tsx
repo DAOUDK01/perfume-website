@@ -25,10 +25,10 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }: { sidebarOpen: 
   return (
     <>
       <div
-        className={`lg:hidden fixed inset-0 z-40 bg-black/50 transition-opacity ${sidebarOpen ? "opacity-100" : "opacity-0 pointer-events-none"}`}
+        className={`lg:hidden fixed inset-0 z-40 bg-black/70 transition-opacity ${sidebarOpen ? "opacity-100" : "opacity-0 pointer-events-none"}`}
         onClick={() => setSidebarOpen(false)}
       />
-      <aside className={`fixed lg:static z-50 top-0 left-0 h-full w-64 bg-white border-r border-gray-200 transform ${sidebarOpen ? "translate-x-0" : "-translate-x-full"} lg:translate-x-0 transition-transform duration-300 shadow-lg`}>
+      <aside className={`fixed lg:static z-50 top-0 left-0 h-full w-64 bg-white border-r border-gray-200 transform ${sidebarOpen ? "translate-x-0" : "-translate-x-full"} lg:translate-x-0 transition-transform duration-300 shadow-xl`}>
         <div className="flex flex-col h-full">
           <div className="p-6 border-b border-gray-200">
             <h1 className="text-2xl font-light text-gray-900"><span className="font-agrandir font-bold">e&apos;eora</span> Admin</h1>
@@ -38,7 +38,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }: { sidebarOpen: 
               const Icon = item.icon;
               const isActive = pathname === item.href;
               return (
-                <Link key={item.href} href={item.href} className={`flex items-center px-4 py-3 rounded-xl transition-all duration-200 group ${isActive ? "bg-black text-white shadow-lg" : "text-gray-700 hover:bg-gray-100 hover:text-gray-900"}`}>
+                <Link key={item.href} href={item.href} className={`flex items-center px-4 py-3 rounded-xl transition-all duration-200 group ${isActive ? "bg-gray-900 text-white shadow-lg" : "text-gray-700 hover:bg-gray-100 hover:text-gray-900"}`}>
                   <Icon className="w-5 h-5 mr-3 group-hover:scale-110 transition-transform" />
                   {item.label}
                 </Link>
@@ -46,7 +46,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }: { sidebarOpen: 
             })}
           </nav>
           <div className="p-6 border-t border-gray-200">
-            <button onClick={handleLogout} className="w-full flex items-center px-4 py-3 text-red-600 hover:bg-red-50 rounded-xl transition-all duration-200 group">
+            <button onClick={handleLogout} className="w-full flex items-center px-4 py-3 text-red-500 hover:bg-gray-100 hover:text-red-600 rounded-xl transition-all duration-200 group">
               <LogOut className="w-5 h-5 mr-3 group-hover:rotate-180 transition-transform" />
               Logout
             </button>

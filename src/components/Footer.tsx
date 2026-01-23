@@ -25,7 +25,7 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/product/essence-noir" className="hover:text-black hover:pl-2 transition-all duration-300 block">
+                <Link href="/fragrances" className="hover:text-black hover:pl-2 transition-all duration-300 block">
                   Collections
                 </Link>
               </li>
@@ -49,14 +49,9 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <a href="#" className="hover:text-black hover:pl-2 transition-all duration-300 block">
-                  Sustainability
-                </a>
-              </li>
-              <li>
-                <a href="#" className="hover:text-black hover:pl-2 transition-all duration-300 block">
+                <Link href="/contact" className="hover:text-black hover:pl-2 transition-all duration-300 block">
                   Contact
-                </a>
+                </Link>
               </li>
             </ul>
           </div>
@@ -68,18 +63,18 @@ export default function Footer() {
             </h4>
             <ul className="space-y-3 text-sm text-gray-600 font-light">
               <li>
-                <a href="#" className="hover:text-black hover:pl-2 transition-all duration-300 block">
+                <a href="https://www.instagram.com/eeora" target="_blank" rel="noopener noreferrer" className="hover:text-black hover:pl-2 transition-all duration-300 block">
                   Instagram
                 </a>
               </li>
               <li>
-                <a href="#" className="hover:text-black hover:pl-2 transition-all duration-300 block">
+                <a href="https://www.facebook.com/eeora" target="_blank" rel="noopener noreferrer" className="hover:text-black hover:pl-2 transition-all duration-300 block">
                   Facebook
                 </a>
               </li>
               <li>
-                <a href="#" className="hover:text-black hover:pl-2 transition-all duration-300 block">
-                  Newsletter
+                <a href="https://twitter.com/eeora" target="_blank" rel="noopener noreferrer" className="hover:text-black hover:pl-2 transition-all duration-300 block">
+                  Twitter
                 </a>
               </li>
             </ul>
@@ -91,7 +86,7 @@ export default function Footer() {
 
         {/* Bottom */}
         <div className="flex flex-col md:flex-row justify-between items-center text-xs text-gray-600 font-light">
-          <p>&copy; 2026 <span className="font-agrandir">e'eora</span>. All rights reserved.</p>
+          <p>&copy; 2026 <span className="font-agrandir">e&apos;eora</span>. All rights reserved.</p>
           <div className="flex gap-6 mt-4 md:mt-0">
             <a href="#" className="hover:text-black transition-colors">
               Privacy Policy

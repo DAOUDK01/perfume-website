@@ -1,14 +1,38 @@
 "use client";
 
-import Button from "@/src/components/Button";
+import { ContentItem, getContent } from "@/src/types/content";
 import ScrollReveal from "@/src/components/ScrollReveal";
-import { useState, useRef } from "react";
+import Button from "@/src/components/Button";
+import { useState, useRef, useEffect } from "react";
 import { Mail, Phone, Instagram, Twitter, Clock, MapPin } from "lucide-react";
 
 export default function ContactPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const nameRef = useRef<HTMLInputElement>(null);
+
+  const [content, setContent] = useState<ContentItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    async function fetchContent() {
+      try {
+        const res = await fetch("/api/admin/content");
+        const data = await res.json();
+        if (res.ok) {
+          setContent(data.content.filter((item: ContentItem) => item.page === "Contact") || []);
+        } else {
+          setError(data.error);
+        }
+      } catch (err) {
+        setError("Failed to load content");
+      } finally {
+        setLoading(false);
+      }
+    }
+    fetchContent();
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -51,6 +75,22 @@ export default function ContactPage() {
     }
   };
 
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <p className="text-gray-500">Loading content...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <p className="text-red-500">Error: {error}</p>
+      </div>
+    );
+  }
+
   return (
     <div className="bg-[#fafafa] pt-32 pb-20">
       {/* Page Header */}
@@ -58,13 +98,13 @@ export default function ContactPage() {
          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-gray-50 via-white to-white opacity-60" />
         <ScrollReveal className="relative z-10 max-w-7xl mx-auto px-6 text-center">
           <span className="text-xs tracking-[0.3em] uppercase text-gray-400 font-medium mb-4 block">
-            Contact Us
+            {getContent(content, "Header", "Subtitle", "text", "Contact Us")}
           </span>
           <h1 className="text-5xl md:text-7xl font-light tracking-tight mb-6 font-serif text-gray-900">
-            Get In Touch
+            {getContent(content, "Header", "Title", "text", "Get In Touch")}
           </h1>
           <p className="text-gray-500 font-light text-lg md:text-xl max-w-2xl mx-auto leading-relaxed">
-            We&apos;d love to hear from you. Questions about our fragrances? Feedback on your experience? We are here to help.
+            {getContent(content, "Header", "Description", "text", "We'd love to hear from you. Questions about our fragrances? Feedback on your experience? We are here to help.")}
           </p>
         </ScrollReveal>
       </section>
@@ -77,9 +117,9 @@ export default function ContactPage() {
             <ScrollReveal className="bg-white p-8 md:p-12 rounded-2xl shadow-sm border border-gray-100">
               <div>
                 <h2 className="text-3xl font-light tracking-tight mb-2 font-serif">
-                  Send a message
+                  {getContent(content, "Contact Form", "Title", "text", "Send a message")}
                 </h2>
-                <p className="text-gray-500 font-light mb-10">We usually respond within 24 hours.</p>
+                <p className="text-gray-500 font-light mb-10">{getContent(content, "Contact Form", "Description", "text", "We usually respond within 24 hours.")}</p>
 
                 <form onSubmit={handleSubmit} className="space-y-8">
                   {/* Name */}
@@ -164,7 +204,7 @@ export default function ContactPage() {
             <ScrollReveal delay={100} className="space-y-12 lg:pt-12">
               <div>
                 <h2 className="text-3xl font-light tracking-tight mb-8 font-serif">
-                  Connect with us
+                  {getContent(content, "Contact Info", "Title", "text", "Connect with us")}
                 </h2>
 
                 <div className="grid gap-8">
@@ -175,13 +215,13 @@ export default function ContactPage() {
                     </div>
                     <div>
                       <p className="text-xs font-medium tracking-widest uppercase text-gray-400 mb-1">
-                        Email
+                        {getContent(content, "Contact Info", "Email Label", "text", "Email")}
                       </p>
                       <a
-                        href="mailto:hello@eeora.com"
+                        href={`mailto:${getContent(content, "Contact Info", "Email Address", "text", "hello@eeora.com")}`}
                         className="text-lg font-light text-gray-900 hover:text-gray-600 transition-colors"
                       >
-                        hello@eeora.com
+                        {getContent(content, "Contact Info", "Email Address", "text", "hello@eeora.com")}
                       </a>
                     </div>
                   </div>
@@ -193,13 +233,13 @@ export default function ContactPage() {
                     </div>
                     <div>
                       <p className="text-xs font-medium tracking-widest uppercase text-gray-400 mb-1">
-                        Phone
+                        {getContent(content, "Contact Info", "Phone Label", "text", "Phone")}
                       </p>
                       <a
-                        href="tel:+923105018825"
+                        href={`tel:${getContent(content, "Contact Info", "Phone Number", "text", "+923105018825")}`}
                         className="text-lg font-light text-gray-900 hover:text-gray-600 transition-colors"
                       >
-                        +92 310 5018825
+                        {getContent(content, "Contact Info", "Phone Number", "text", "+92 310 5018825")}
                       </a>
                     </div>
                   </div>
@@ -211,12 +251,12 @@ export default function ContactPage() {
                     </div>
                     <div>
                       <p className="text-xs font-medium tracking-widest uppercase text-gray-400 mb-1">
-                        Hours
+                        {getContent(content, "Contact Info", "Hours Label", "text", "Hours")}
                       </p>
                       <div className="space-y-1 text-gray-600 font-light">
-                        <p>Mon - Fri: 9:00 AM - 6:00 PM</p>
-                        <p>Sat - Sun: 10:00 AM - 4:00 PM</p>
-                        <p className="text-xs text-gray-400 mt-1">(EST)</p>
+                        <p>{getContent(content, "Contact Info", "Hours Mon-Fri", "text", "Mon - Fri: 9:00 AM - 6:00 PM")}</p>
+                        <p>{getContent(content, "Contact Info", "Hours Sat-Sun", "text", "Sat - Sun: 10:00 AM - 4:00 PM")}</p>
+                        <p className="text-xs text-gray-400 mt-1">{getContent(content, "Contact Info", "Hours Timezone", "text", "(EST)")}</p>
                       </div>
                     </div>
                   </div>
@@ -228,20 +268,20 @@ export default function ContactPage() {
                     </div>
                     <div>
                       <p className="text-xs font-medium tracking-widest uppercase text-gray-400 mb-3">
-                        Social Media
+                        {getContent(content, "Contact Info", "Social Label", "text", "Social Media")}
                       </p>
                       <div className="flex gap-6">
                         <a
-                          href="#instagram"
+                          href={getContent(content, "Contact Info", "Instagram Link", "text", "#instagram")}
                           className="text-base font-light hover:underline underline-offset-4 decoration-gray-300 transition-all"
                         >
-                          Instagram
+                          {getContent(content, "Contact Info", "Instagram Text", "text", "Instagram")}
                         </a>
                         <a
-                          href="#twitter"
+                          href={getContent(content, "Contact Info", "Twitter Link", "text", "#twitter")}
                           className="text-base font-light hover:underline underline-offset-4 decoration-gray-300 transition-all"
                         >
-                          Twitter
+                          {getContent(content, "Contact Info", "Twitter Text", "text", "Twitter")}
                         </a>
                       </div>
                     </div>

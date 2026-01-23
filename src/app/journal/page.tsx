@@ -98,7 +98,7 @@ export default function JournalPage() {
         
         <div className="relative max-w-5xl mx-auto px-4 sm:px-6 text-center py-20">
           <div className="mb-8">
-            <span className="text-xs tracking-widest text-gray-500 font-light uppercase">
+            <span className="text-xs tracking-widest text-gray-500 font-agrandir uppercase">
               e&apos;eora
             </span>
           </div>
@@ -246,27 +246,27 @@ export default function JournalPage() {
 function ArticleCard({ article, delay }: { article: Article; delay: number }) {
   return (
     <div 
-      className="group cursor-pointer"
+      className="group cursor-pointer hover:-translate-y-2 transition-transform duration-500"
       style={{ animationDelay: `${delay}ms` }}
     >
-      <div className="relative overflow-hidden rounded-lg mb-6 bg-gray-100">
+      <div className="relative overflow-hidden rounded-xl mb-6 bg-gray-50 shadow-sm group-hover:shadow-xl transition-shadow duration-500">
         <img
           src={article.image}
           alt={article.title}
-          className="w-full aspect-[4/3] object-cover group-hover:scale-110 transition-transform duration-700"
+          className="w-full aspect-[4/3] object-cover group-hover:scale-110 transition-transform duration-1000 ease-out"
         />
-        <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 transition-all duration-500" />
+        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors duration-500" />
         
         {/* Category Badge */}
         <div className="absolute top-4 left-4">
-          <span className="px-3 py-1 bg-white text-xs tracking-wider font-light uppercase rounded-full">
+          <span className="px-3 py-1 bg-white/90 backdrop-blur-sm text-xs tracking-wider font-light uppercase rounded-full border border-gray-100 shadow-sm">
             {article.category}
           </span>
         </div>
       </div>
       
-      <div className="space-y-4">
-        <div className="flex items-center gap-3 text-xs text-gray-500 font-light">
+      <div className="space-y-4 px-2">
+        <div className="flex items-center gap-3 text-xs text-gray-400 font-light tracking-wide uppercase">
           <span>{article.date}</span>
           <span>•</span>
           <span>{article.readTime}</span>
@@ -280,9 +280,9 @@ function ArticleCard({ article, delay }: { article: Article; delay: number }) {
           {article.excerpt}
         </p>
         
-        <button className="inline-flex items-center gap-2 text-xs font-light tracking-widest uppercase text-gray-600 group-hover:text-black transition-colors pt-2">
+        <button className="inline-flex items-center gap-2 text-xs font-medium tracking-widest uppercase text-gray-900 group-hover:text-gray-600 transition-colors pt-2 border-b border-transparent group-hover:border-gray-200 pb-0.5">
           Read More
-          <span className="transform group-hover:translate-x-1 transition-transform">→</span>
+          <span className="transform group-hover:translate-x-1 transition-transform duration-300">→</span>
         </button>
       </div>
     </div>

@@ -1,5 +1,31 @@
 import { getOrdersCollection } from "@/lib/mongodb";
 
+/**
+ * Sends order data to n8n webhook (non-blocking)
+ * This function fires and forgets - it won't block order creation if n8n is down
+ */
+async function sendToN8nWebhook(orderData) {
+  const webhookUrl = process.env.N8N_WEBHOOK_URL;
+  
+  // Skip if webhook URL is not configured
+  if (!webhookUrl) {
+    console.log("N8N_WEBHOOK_URL not configured, skipping webhook");
+    return;
+  }
+
+  // Fire and forget - don't await, don't block
+  fetch(webhookUrl, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(orderData),
+  }).catch((error) => {
+    // Log errors but don't throw - order creation should succeed even if webhook fails
+    console.error("Failed to send order to n8n webhook:", error);
+  });
+}
+
 export async function GET(request) {
   try {
     const { searchParams } = new URL(request.url);
@@ -39,7 +65,7 @@ export async function POST(request) {
     const body = await request.json();
 
     // Validate required fields
-    const { name, email, items, address } = body;
+    const { name, email, items, address, phone } = body;
 
     if (!name || !name.trim()) {
       return Response.json(
@@ -82,6 +108,7 @@ export async function POST(request) {
     const order = {
       customerName: name.trim(),
       email: email.trim(),
+      phone: phone ? phone.trim() : null,
       address: address.trim(),
       items: items.map((item) => ({
         productId: item.id,
@@ -99,11 +126,34 @@ export async function POST(request) {
     const ordersCollection = await getOrdersCollection();
     const result = await ordersCollection.insertOne(order);
 
+    // Prepare webhook payload with clean structure for n8n
+    // This happens after successful DB insert but before returning response
+    const orderId = result.insertedId?.toString?.() || result.insertedId;
+    const webhookPayload = {
+      orderId,
+      customerName: order.customerName,
+      email: order.email,
+      phone: order.phone || null,
+      items: order.items.map((item) => ({
+        productId: item.productId,
+        name: item.name,
+        quantity: item.quantity,
+        price: item.price,
+      })),
+      totalAmount: order.totalAmount,
+      status: order.status,
+      createdAt: order.createdAt.toISOString(),
+    };
+
+    // Send to n8n webhook (non-blocking - fires and forgets)
+    // Order creation will succeed even if webhook fails or n8n is down
+    sendToN8nWebhook(webhookPayload);
+
     return Response.json(
       {
         success: true,
         message: "Order saved successfully",
-        orderId: result.insertedId,
+        orderId: orderId,
       },
       { status: 201 }
     );

@@ -1,7 +1,8 @@
 "use client";
 
-import { fragrances as staticFragrances, type Fragrance } from "@/src/data/fragrances";
+import type { Fragrance } from "@/src/data/fragrances";
 import ScrollReveal from "@/src/components/ScrollReveal";
+import ProductImageCarousel from "@/src/components/ProductImageCarousel";
 import { notFound, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import Link from "next/link";
@@ -33,7 +34,6 @@ export default function ProductPage({ params }: ProductPageProps) {
 
   useEffect(() => {
     let cancelled = false;
-    const staticOne = staticFragrances.find((f) => f.id === params.id);
 
     async function load() {
       try {
@@ -47,17 +47,21 @@ export default function ProductPage({ params }: ProductPageProps) {
             tagline: data.product.tagline ?? "",
             price: data.product.price,
             image: data.product.image ?? "",
+            images: Array.isArray(data.product.images) && data.product.images.length > 0
+              ? data.product.images
+              : [data.product.image ?? ""].filter(Boolean),
             topNotes: data.product.topNotes ?? [],
             heartNotes: data.product.heartNotes ?? [],
             baseNotes: data.product.baseNotes ?? [],
             fullDescription: data.product.fullDescription ?? "",
           });
         } else {
-          setFragrance(staticOne ?? null);
+          // If API returns no product or error, set fragrance to null
+          setFragrance(null);
         }
       } catch {
         if (cancelled) return;
-        setFragrance(staticOne ?? null);
+        setFragrance(null);
       } finally {
         if (cancelled) return;
         setLoading(false);
@@ -140,84 +144,85 @@ export default function ProductPage({ params }: ProductPageProps) {
         {/* IMAGE */}
         <ScrollReveal>
           <div className="sticky top-24">
-            <div className="relative h-[600px] bg-gray-100 overflow-hidden border">
-              {isValidImageUrl(fragrance.image) && !imageError ? (
-                <img
-                  src={fragrance.image}
-                  alt={fragrance.name}
-                  className="w-full h-full object-cover"
-                  onError={() => setImageError(true)}
-                />
-              ) : (
-                <div className="h-full flex items-center justify-center text-7xl text-gray-300 font-serif">
-                  {fragrance.name.charAt(0)}
-                </div>
-              )}
-            </div>
+            <ProductImageCarousel
+              images={fragrance.images || (fragrance.image ? [fragrance.image] : [])}
+              name={fragrance.name}
+            />
           </div>
         </ScrollReveal>
 
         {/* DETAILS */}
         <ScrollReveal delay={100}>
-          <div className="space-y-10">
+          <div className="space-y-10 animate-fade-in-up">
             <div>
-              <p className="text-xs tracking-widest text-gray-500 mb-3">
+              <p className="text-xs tracking-[0.2em] text-gray-500 mb-4 uppercase">
                 EAU DE PARFUM
               </p>
-              <h1 className="text-5xl font-serif font-light mb-4">
+              <h1 className="text-5xl md:text-6xl font-serif font-light mb-4 tracking-tight">
                 {fragrance.name}
               </h1>
-              <p className="text-lg text-gray-600 font-light italic">
+              <p className="text-xl text-gray-600 font-light italic">
                 {fragrance.tagline}
               </p>
             </div>
 
-            <div className="border-y py-6">
-              <p className="text-3xl font-light">${fragrance.price}</p>
+            <div className="border-y border-gray-100 py-8">
+              <p className="text-3xl font-light tracking-wide">Rs {fragrance.price}</p>
             </div>
 
             <div>
-              <h2 className="text-sm tracking-widest uppercase mb-3">
+              <h2 className="text-sm tracking-[0.2em] uppercase mb-4 font-medium text-gray-900">
                 Description
               </h2>
-              <p className="text-gray-700 font-light">
+              <p className="text-gray-600 font-light leading-relaxed text-lg">
                 {fragrance.fullDescription}
               </p>
             </div>
 
             {/* QUANTITY */}
-            <div className="flex items-center gap-4">
-              <span className="text-sm">Quantity</span>
-              <div className="flex border">
-                <button onClick={handleDecrement} className="px-4">−</button>
+            <div className="flex items-center gap-6">
+              <span className="text-sm uppercase tracking-widest text-gray-500">Quantity</span>
+              <div className="flex items-center border border-gray-200 rounded-full px-2 py-1 hover:border-black transition-colors duration-300">
+                <button 
+                  onClick={handleDecrement} 
+                  className="w-10 h-10 flex items-center justify-center text-gray-500 hover:text-black transition-colors"
+                >
+                  −
+                </button>
                 <input
                   value={quantity}
                   readOnly
-                  className="w-12 text-center"
+                  className="w-12 text-center bg-transparent font-light"
                 />
-                <button onClick={handleIncrement} className="px-4">+</button>
+                <button 
+                  onClick={handleIncrement} 
+                  className="w-10 h-10 flex items-center justify-center text-gray-500 hover:text-black transition-colors"
+                >
+                  +
+                </button>
               </div>
             </div>
 
             {/* ACTIONS */}
-            <div className="flex gap-4">
+            <div className="flex gap-4 flex-col sm:flex-row">
               <button
                 onClick={handleAddToCart}
-                className="flex-1 border-2 border-black py-4 uppercase text-sm"
+                className="flex-1 border border-black py-4 px-8 uppercase text-sm tracking-widest hover:bg-black hover:text-white transition-all duration-500 ease-out"
               >
                 Add to Cart
               </button>
               <button
                 onClick={handleBuyNow}
-                className="flex-1 bg-black text-white py-4 uppercase text-sm"
+                className="flex-1 bg-black text-white py-4 px-8 uppercase text-sm tracking-widest border border-black hover:bg-white hover:text-black transition-all duration-500 ease-out"
               >
                 Buy Now
               </button>
             </div>
 
             {showMessage && (
-              <div className="text-sm text-green-700">
-                ✓ Added to cart
+              <div className="flex items-center gap-2 text-sm text-green-800 bg-green-50 p-4 rounded-lg border border-green-100 animate-fade-in-up">
+                <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+                Added to cart successfully
               </div>
             )}
           </div>

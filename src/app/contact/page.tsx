@@ -9,7 +9,7 @@ export default function ContactPage() {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const nameRef = useRef<HTMLInputElement>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const newErrors: Record<string, string> = {};
 
@@ -29,19 +29,25 @@ export default function ContactPage() {
 
     setIsSubmitting(true);
 
-    // Simulate form submission
-    setTimeout(() => {
-      localStorage.setItem(
-        "lastContact",
-        JSON.stringify({
-          name,
-          email,
-          message,
-          timestamp: new Date().toISOString(),
-        })
-      );
+    try {
+      const res = await fetch("/api/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ name, email, message }),
+      });
+
+      if (!res.ok) {
+        throw new Error("Failed to send message");
+      }
+
       window.location.href = "/contact/confirmation";
-    }, 1500);
+    } catch (error) {
+      console.error("Error sending message:", error);
+      setErrors({ form: "Failed to send message. Please try again." });
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -168,7 +174,7 @@ export default function ContactPage() {
                       href="mailto:hello@eora.com"
                       className="text-lg font-light hover:text-gray-600 transition-colors"
                     >
-                      hello@eora.com
+                      eeora@gmail.com
                     </a>
                   </div>
 
@@ -181,7 +187,7 @@ export default function ContactPage() {
                       href="tel:+1234567890"
                       className="text-lg font-light hover:text-gray-600 transition-colors"
                     >
-                      +1 (234) 567-890
+                      +92 3105018825
                     </a>
                   </div>
 

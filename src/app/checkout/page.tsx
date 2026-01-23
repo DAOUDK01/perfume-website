@@ -12,8 +12,25 @@ export default function CheckoutPage() {
   const [errors, setErrors] = useState<Record<string, string>>({});
 
   useEffect(() => {
-    const cart = JSON.parse(localStorage.getItem("cart") || "[]");
-    setCartItems(cart);
+    try {
+      const cart = JSON.parse(localStorage.getItem("cart") || "[]");
+      
+      // Handle both array format (new) and object format (old)
+      if (Array.isArray(cart)) {
+        setCartItems(cart);
+      } else if (typeof cart === "object" && cart !== null) {
+        // Old format: { [id]: quantity } - convert to empty array
+        // User needs to re-add items (one-time migration)
+        console.log("Cart format migrated - please re-add items to cart");
+        setCartItems([]);
+        localStorage.setItem("cart", "[]");
+      } else {
+        setCartItems([]);
+      }
+    } catch (error) {
+      console.error("Error loading cart:", error);
+      setCartItems([]);
+    }
     setLoading(false);
 
     // Auto-focus email after load
@@ -70,12 +87,20 @@ export default function CheckoutPage() {
       const fullName = `${firstName}${lastName ? " " + lastName : ""}`;
       const fullAddress = `${street}, ${city}, ${state} ${zipCode}`;
 
-      // Prepare order data
+      // Prepare order data - ensure cartItems is an array
+      const validCartItems = Array.isArray(cartItems) ? cartItems : [];
+      if (validCartItems.length === 0) {
+        setErrors({ submit: "Your cart is empty" });
+        setIsSubmitting(false);
+        return;
+      }
+
       const orderData = {
         name: fullName,
         email,
         address: fullAddress,
-        items: cartItems.map((item) => ({
+        phone: formData.get("phone") as string,
+        items: validCartItems.map((item) => ({
           id: item.id,
           name: item.name,
           quantity: item.quantity,
@@ -103,7 +128,7 @@ export default function CheckoutPage() {
         "lastOrder",
         JSON.stringify({
           email,
-          items: cartItems,
+          items: validCartItems,
           timestamp: new Date().toISOString(),
         })
       );
@@ -120,8 +145,10 @@ export default function CheckoutPage() {
     }
   };
 
-  const subtotal = cartItems.reduce(
-    (sum, item) => sum + item.price * item.quantity,
+  // Ensure cartItems is an array before calculating totals
+  const safeCartItems = Array.isArray(cartItems) ? cartItems : [];
+  const subtotal = safeCartItems.reduce(
+    (sum, item) => sum + (item?.price || 0) * (item?.quantity || 0),
     0
   );
   const shipping = 15;
@@ -354,7 +381,7 @@ export default function CheckoutPage() {
               )}
               <Button
                 variant="primary"
-                className="w-full py-4"
+                className="w-full py-4 uppercase tracking-widest text-sm hover:scale-[1.01] transition-transform duration-300"
                 disabled={isSubmitting}
               >
                 {isSubmitting ? "Processing..." : "Complete Purchase"}
@@ -371,10 +398,10 @@ export default function CheckoutPage() {
 
               {/* Cart Items */}
               <div className="space-y-4 mb-8 pb-8 border-b border-gray-200">
-                {cartItems.length === 0 ? (
+                {safeCartItems.length === 0 ? (
                   <p className="text-sm text-gray-600">Your cart is empty</p>
                 ) : (
-                  cartItems.map((item) => (
+                  safeCartItems.map((item) => (
                     <div
                       key={item.id}
                       className="flex justify-between items-start pb-4 border-b border-gray-100 last:border-0"
@@ -382,7 +409,7 @@ export default function CheckoutPage() {
                       <div className="flex-1">
                         <p className="font-light">{item.name}</p>
                         <p className="text-sm text-gray-600 font-light mb-2">
-                          ${item.price} each
+                          Rs{item.price} each
                         </p>
                         <div className="flex items-center gap-2 bg-white border border-gray-300 w-fit rounded">
                           <button
@@ -417,7 +444,7 @@ export default function CheckoutPage() {
                       </div>
                       <div className="text-right">
                         <p className="font-light text-sm mb-2">
-                          ${(item.price * item.quantity).toFixed(2)}
+                          Rs{(item.price * item.quantity).toFixed(2)}
                         </p>
                         <button
                           onClick={() => removeItem(item.id)}
@@ -435,20 +462,20 @@ export default function CheckoutPage() {
               <div className="space-y-3 mb-8">
                 <div className="flex justify-between text-sm font-light">
                   <span>Subtotal</span>
-                  <span>${subtotal.toFixed(2)}</span>
+                  <span>₹{subtotal.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between text-sm font-light">
                   <span>Shipping</span>
-                  <span>${shipping.toFixed(2)}</span>
+                  <span>Rs{shipping.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between text-sm font-light">
                   <span>Tax</span>
-                  <span>${tax.toFixed(2)}</span>
+                  <span>₹{tax.toFixed(2)}</span>
                 </div>
                 <div className="h-px bg-gray-200" />
                 <div className="flex justify-between text-lg font-light">
                   <span>Total</span>
-                  <span>${total.toFixed(2)}</span>
+                  <span>Rs{total.toFixed(2)}</span>
                 </div>
               </div>
 
@@ -464,7 +491,7 @@ export default function CheckoutPage() {
                 </div>
                 <div className="flex items-start gap-2">
                   <span className="mt-0.5">✓</span>
-                  <span>Free shipping over $100</span>
+                  <span>Free shipping over Rs100</span>
                 </div>
               </div>
             </div>

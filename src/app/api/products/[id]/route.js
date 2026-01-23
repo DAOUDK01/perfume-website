@@ -47,6 +47,7 @@ export async function PATCH(request, { params }) {
       "stock",
       "category",
       "image",
+      "images",
       "topNotes",
       "heartNotes",
       "baseNotes",
@@ -78,7 +79,7 @@ export async function PATCH(request, { params }) {
         update.stock = parsed;
         continue;
       }
-      if (["topNotes", "heartNotes", "baseNotes"].includes(key)) {
+      if (["topNotes", "heartNotes", "baseNotes", "images"].includes(key)) {
         update[key] = Array.isArray(val) ? val.filter(Boolean) : [];
         continue;
       }

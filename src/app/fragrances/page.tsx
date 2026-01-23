@@ -1,8 +1,24 @@
 "use client";
 
-import { fragrances as staticFragrances } from "@/src/data/fragrances";
 import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
+import { Search } from "lucide-react";
+
+function useDebounce(value: string, delay: number) {
+  const [debouncedValue, setDebouncedValue] = useState(value);
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedValue(value);
+    }, delay);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [value, delay]);
+
+  return debouncedValue;
+}
 
 type FragranceItem = {
   id: string;
@@ -12,33 +28,57 @@ type FragranceItem = {
   image?: string;
 };
 
+type CartItem = {
+  id: string;
+  name: string;
+  price: number;
+  quantity: number;
+};
+
 export default function FragrancesPage() {
-  const [cart, setCart] = useState<{ [key: string]: number }>({});
+  const [cart, setCart] = useState<CartItem[]>([]);
   const [list, setList] = useState<FragranceItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
+  const debouncedSearchQuery = useDebounce(searchQuery, 500);
 
   useEffect(() => {
-    const savedCart = JSON.parse(localStorage.getItem("cart") || "{}");
-    setCart(savedCart);
+    try {
+      const savedCart = JSON.parse(localStorage.getItem("cart") || "[]");
+      // Ensure cart is always an array
+      if (Array.isArray(savedCart)) {
+        setCart(savedCart);
+      } else {
+        // Old object format - clear it and start fresh
+        setCart([]);
+        localStorage.setItem("cart", "[]");
+      }
+    } catch (error) {
+      console.error("Error loading cart:", error);
+      setCart([]);
+    }
   }, []);
 
   useEffect(() => {
     let cancelled = false;
     async function load() {
+      setLoading(true);
       try {
-        const res = await fetch("/api/products", { cache: "no-store" });
+        const url = new URL("/api/products", window.location.origin);
+        if (debouncedSearchQuery) {
+          url.searchParams.set("q", debouncedSearchQuery);
+        }
+        const res = await fetch(url.toString(), { cache: "no-store" });
         const data = await res.json().catch(() => ({}));
         if (cancelled) return;
-        const staticIds = new Set(staticFragrances.map((f) => f.id));
         if (res.ok && Array.isArray(data.products)) {
-          const fromApi = (data.products as FragranceItem[]).filter((p) => !staticIds.has(p.id));
-          setList([...staticFragrances, ...fromApi]);
+          setList(data.products as FragranceItem[]);
         } else {
-          setList(staticFragrances);
+          setList([]);
         }
       } catch {
         if (cancelled) return;
-        setList(staticFragrances);
+        setList([]);
       } finally {
         if (cancelled) return;
         setLoading(false);
@@ -46,11 +86,31 @@ export default function FragrancesPage() {
     }
     load();
     return () => { cancelled = true; };
-  }, []);
+  }, [debouncedSearchQuery]);
 
-  const addToCart = useCallback((id: string) => {
+  const addToCart = useCallback((fragrance: FragranceItem) => {
     setCart((prev) => {
-      const updated = { ...prev, [id]: (prev[id] || 0) + 1 };
+      const existingItem = prev.find((item) => item.id === fragrance.id);
+      let updated: CartItem[];
+      
+      if (existingItem) {
+        updated = prev.map((item) =>
+          item.id === fragrance.id
+            ? { ...item, quantity: item.quantity + 1 }
+            : item
+        );
+      } else {
+        updated = [
+          ...prev,
+          {
+            id: fragrance.id,
+            name: fragrance.name,
+            price: fragrance.price,
+            quantity: 1,
+          },
+        ];
+      }
+      
       localStorage.setItem("cart", JSON.stringify(updated));
       return updated;
     });
@@ -74,6 +134,17 @@ export default function FragrancesPage() {
       {/* GRID */}
       <section className="py-16 md:py-24 lg:py-32 px-4 sm:px-6">
         <div className="w-full max-w-7xl mx-auto">
+          <div className="relative mb-10">
+            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search fragrances by name or tagline..."
+              className="w-full pl-12 pr-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-black"
+            />
+          </div>
+
           {loading ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8">
               {[1, 2, 3, 4, 5, 6].map((i) => (
@@ -93,14 +164,17 @@ export default function FragrancesPage() {
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8">
-              {list.map((fragrance) => (
-                <FragranceCard
-                  key={fragrance.id}
-                  fragrance={fragrance}
-                  inCart={cart[fragrance.id] || 0}
-                  onAddToCart={() => addToCart(fragrance.id)}
-                />
-              ))}
+              {list.map((fragrance) => {
+                const cartItem = cart.find((item) => item.id === fragrance.id);
+                return (
+                  <FragranceCard
+                    key={fragrance.id}
+                    fragrance={fragrance}
+                    inCart={cartItem?.quantity || 0}
+                    onAddToCart={() => addToCart(fragrance)}
+                  />
+                );
+              })}
             </div>
           )}
         </div>
@@ -140,8 +214,8 @@ function FragranceCard({
   };
 
   return (
-    <article className="group flex flex-col bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm hover:shadow-xl hover:border-gray-200 transition-all duration-300">
-      <Link href={`/product/${fragrance.id}`} className="flex flex-col flex-1">
+    <article className="group flex flex-col bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm hover:shadow-xl hover:border-gray-200 transition-all duration-500 hover:-translate-y-2">
+      <Link href={`/product/${fragrance.id}`} className="flex flex-col flex-1 relative">
         {/* IMAGE */}
         <div className="relative aspect-[4/5] w-full overflow-hidden bg-gray-50">
           {showImage ? (
@@ -149,33 +223,41 @@ function FragranceCard({
             <img
               src={fragrance.image!}
               alt={fragrance.name}
-              className="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
+              className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-110"
               onError={() => setImgError(true)}
             />
           ) : (
-            <div className="absolute inset-0 flex flex-col items-center justify-center text-gray-200">
+            <div className="absolute inset-0 flex flex-col items-center justify-center text-gray-200 bg-gray-50">
               <span className="text-5xl md:text-6xl font-serif font-light">
                 {fragrance.name.charAt(0)}
               </span>
             </div>
           )}
+          {/* Quick Add Overlay */}
+          <div className="absolute inset-x-0 bottom-0 p-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex justify-center bg-gradient-to-t from-black/20 to-transparent">
+             {/* Optional: Add quick view icon or similar here if desired */}
+          </div>
         </div>
 
         {/* CONTENT */}
         <div className="p-5 md:p-6 flex flex-1 flex-col text-center">
-          <h3 className="text-lg md:text-xl font-serif font-light tracking-wide text-gray-900">
+          <h3 className="text-lg md:text-xl font-serif font-light tracking-wide text-gray-900 group-hover:text-black transition-colors">
             {fragrance.name}
           </h3>
-          <p className="mt-1.5 text-sm text-gray-500 leading-relaxed line-clamp-2 font-light">
+          <p className="mt-2 text-sm text-gray-500 leading-relaxed line-clamp-2 font-light">
             {fragrance.tagline || "Eau de parfum"}
           </p>
-          <div className="mt-4 flex flex-col items-center gap-3">
-            <span className="text-sm font-medium text-gray-900">
-              ${fragrance.price}
+          <div className="mt-6 flex flex-col items-center gap-4">
+            <span className="text-base font-medium text-gray-900">
+              Rs {fragrance.price}
             </span>
             <button
               onClick={handleAdd}
-              className="w-full max-w-[200px] py-2.5 px-4 text-[10px] md:text-xs tracking-[0.2em] uppercase border border-gray-900 text-gray-900 hover:bg-gray-900 hover:text-white transition-colors duration-200"
+              className={`w-full max-w-[220px] py-3 px-6 text-xs tracking-[0.2em] uppercase rounded-full transition-all duration-300 ${
+                inCart > 0 
+                  ? "bg-black text-white shadow-md" 
+                  : "bg-white text-black border border-gray-200 hover:border-black hover:bg-black hover:text-white"
+              }`}
             >
               {inCart > 0 ? `In Bag (${inCart})` : "Add to Bag"}
             </button>
@@ -183,11 +265,10 @@ function FragranceCard({
         </div>
       </Link>
 
-      {added && (
-        <p className="pb-4 text-center text-xs text-gray-500 font-light">
-          Added to bag
-        </p>
-      )}
+      {/* Added Notification */}
+      <div className={`absolute top-4 right-4 bg-black text-white text-[10px] uppercase tracking-widest px-3 py-1 rounded-full shadow-lg transform transition-all duration-300 ${added ? "translate-y-0 opacity-100" : "-translate-y-4 opacity-0 pointer-events-none"}`}>
+        Added
+      </div>
     </article>
   );
 }

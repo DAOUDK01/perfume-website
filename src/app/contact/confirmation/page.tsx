@@ -9,7 +9,7 @@ export default function ContactConfirmationPage() {
       message="Thank you for reaching out. We've received your message and will get back to you within 24 hours."
       details={
         <p className="text-sm font-light">
-          We appreciate your interest in e'eora. Our team is reviewing your
+          We appreciate your interest in <span className="font-agrandir">e'eora</span>. Our team is reviewing your
           message.
         </p>
       }

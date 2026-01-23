@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Plus, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
@@ -23,7 +23,7 @@ export default function AddProduct() {
   const [price, setPrice] = useState<number>(150);
   const [stock, setStock] = useState<number>(10);
   const [category, setCategory] = useState("");
-  const [image, setImage] = useState("");
+  const [images, setImages] = useState<string[]>([""]);
   const [topNotes, setTopNotes] = useState("");
   const [heartNotes, setHeartNotes] = useState("");
   const [baseNotes, setBaseNotes] = useState("");
@@ -44,7 +44,8 @@ export default function AddProduct() {
           price,
           stock,
           category,
-          image,
+          image: images[0] || "",
+          images: images.filter(Boolean),
           topNotes: csvToArray(topNotes),
           heartNotes: csvToArray(heartNotes),
           baseNotes: csvToArray(baseNotes),
@@ -146,13 +147,41 @@ export default function AddProduct() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Image URL</label>
-            <input
-              value={image}
-              onChange={(e) => setImage(e.target.value)}
-              className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-black"
-              placeholder="/assets/bb.jpg or https://..."
-            />
+            <label className="block text-sm font-medium text-gray-700 mb-2">Image URLs</label>
+            <div className="space-y-3">
+              {images.map((img, idx) => (
+                <div key={idx} className="flex gap-2">
+                  <input
+                    value={img}
+                    onChange={(e) => {
+                      const newImages = [...images];
+                      newImages[idx] = e.target.value;
+                      setImages(newImages);
+                    }}
+                    className="flex-1 px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-black"
+                    placeholder={idx === 0 ? "Primary Image URL (required)" : "Additional Image URL"}
+                    required={idx === 0}
+                  />
+                  {images.length > 1 && (
+                    <button
+                      type="button"
+                      onClick={() => setImages(images.filter((_, i) => i !== idx))}
+                      className="p-3 text-red-500 hover:bg-red-50 rounded-xl transition-colors"
+                    >
+                      <X className="w-5 h-5" />
+                    </button>
+                  )}
+                </div>
+              ))}
+              <button
+                type="button"
+                onClick={() => setImages([...images, ""])}
+                className="inline-flex items-center gap-2 text-sm text-gray-600 hover:text-black font-medium px-2 py-1"
+              >
+                <Plus className="w-4 h-4" />
+                Add Another Image
+              </button>
+            </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">

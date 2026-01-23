@@ -2,13 +2,14 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useRouter } from "next/navigation";
-import { BarChart3, Package, Users, ShoppingCart, LogOut, Settings } from "lucide-react";
+import { BarChart3, Package, Users, ShoppingCart, LogOut, Settings, Image as ImageIcon } from "lucide-react";
 
 const navItems = [
   { href: "/admin", label: "Dashboard", icon: BarChart3 },
   { href: "/admin/products", label: "Products", icon: Package },
   { href: "/admin/orders", label: "Orders", icon: ShoppingCart },
   { href: "/admin/users", label: "Users", icon: Users },
+  { href: "/admin/content", label: "Site Content", icon: ImageIcon },
   { href: "/admin/settings", label: "Settings", icon: Settings },
 ];
 
@@ -30,7 +31,7 @@ export default function Sidebar({ sidebarOpen, setSidebarOpen }: { sidebarOpen: 
       <aside className={`fixed lg:static z-50 top-0 left-0 h-full w-64 bg-white border-r border-gray-200 transform ${sidebarOpen ? "translate-x-0" : "-translate-x-full"} lg:translate-x-0 transition-transform duration-300 shadow-lg`}>
         <div className="flex flex-col h-full">
           <div className="p-6 border-b border-gray-200">
-            <h1 className="text-2xl font-serif font-light text-gray-900">e&apos;eora Admin</h1>
+            <h1 className="text-2xl font-light text-gray-900"><span className="font-agrandir font-bold">e&apos;eora</span> Admin</h1>
           </div>
           <nav className="flex-1 p-6 space-y-2">
             {navItems.map((item) => {

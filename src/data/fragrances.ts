@@ -4,6 +4,7 @@ export interface Fragrance {
   tagline: string;
   price: number;
   image: string;  // Now uses full path
+  images?: string[]; // Multiple images support
   topNotes: string[];
   heartNotes: string[];
   baseNotes: string[];

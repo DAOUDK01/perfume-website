@@ -1,4 +1,5 @@
 import { getUsersCollection } from "@/lib/mongodb";
+import bcrypt from "bcryptjs";
 
 export async function GET() {
   try {
@@ -10,10 +11,13 @@ export async function GET() {
 
     return Response.json({
       success: true,
-      users: users.map((u) => ({
-        ...u,
-        _id: u._id?.toString?.() || u._id,
-      })),
+      users: users.map((u) => {
+        const { passwordHash, ...safe } = u; // strip passwordHash
+        return {
+          ...safe,
+          _id: u._id?.toString?.() || u._id,
+        };
+      }),
     });
   } catch (error) {
     console.error("Error fetching users:", error);
@@ -24,13 +28,19 @@ export async function GET() {
 export async function POST(request) {
   try {
     const body = await request.json();
-    const { name, email, role = "admin" } = body || {};
+    const { name, email, role = "admin", password } = body || {};
 
     if (!name || !String(name).trim()) {
       return Response.json({ error: "Name is required" }, { status: 400 });
     }
     if (!email || !String(email).trim()) {
       return Response.json({ error: "Email is required" }, { status: 400 });
+    }
+    if (!password || String(password).length < 8) {
+      return Response.json(
+        { error: "Password must be at least 8 characters" },
+        { status: 400 }
+      );
     }
 
     const usersCollection = await getUsersCollection();
@@ -45,10 +55,13 @@ export async function POST(request) {
       );
     }
 
+    const passwordHash = await bcrypt.hash(String(password), 10);
+
     const doc = {
       name: String(name).trim(),
       email: String(email).trim().toLowerCase(),
       role: String(role || "admin").trim(),
+      passwordHash,
       createdAt: new Date(),
       updatedAt: new Date(),
     };

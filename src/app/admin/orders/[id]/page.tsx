@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
 function formatMoney(value: number, currency: string) {
-  const code = (currency || "USD").toUpperCase();
+  const code = (currency || "INR").toUpperCase();
   try {
     return new Intl.NumberFormat(undefined, {
       style: "currency",
@@ -14,7 +14,7 @@ function formatMoney(value: number, currency: string) {
       maximumFractionDigits: 0,
     }).format(value);
   } catch {
-    return `${code} ${Math.round(value)}`;
+    return `Rs ${Math.round(value)}`;
   }
 }
 
@@ -32,7 +32,7 @@ export default function OrderDetails({ params }: { params: { id: string } }) {
   const [order, setOrder] = useState<any | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [currency, setCurrency] = useState("USD");
+  const [currency, setCurrency] = useState("INR");
 
   const id = params.id;
 

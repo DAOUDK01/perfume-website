@@ -1,34 +1,57 @@
 "use client";
 import { useState } from "react";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Eye, EyeOff } from "lucide-react";
 
 export default function AdminLogin() {
   const [email, setEmail] = useState("admin@eeora.com");
-  const [password, setPassword] = useState("password");
+  const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    setTimeout(() => {
-      document.cookie = "adminToken=fake-jwt-token; path=/; max-age=86400";
+    setError(null);
+
+    try {
+      const res = await fetch("/api/admin/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await res.json().catch(() => ({}));
+
+      if (!res.ok) {
+        throw new Error(data?.error || "Invalid email or password");
+      }
+
+      // Cookie is set by the API, middleware will now allow /admin
       router.push("/admin");
+    } catch (err: any) {
+      setError(err?.message || "Failed to sign in");
       setLoading(false);
-    }, 1500);
+    }
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100 py-12 px-4">
       <div className="max-w-md w-full bg-white rounded-3xl shadow-2xl border border-gray-200 p-10 space-y-8">
         <div className="text-center">
-          <h1 className="text-4xl font-serif font-light text-gray-900 mb-4">e&apos;eora Admin</h1>
+          <h1 className="text-4xl font-light text-gray-900 mb-4">
+            <span className="font-agrandir font-bold">e&apos;eora</span> Admin
+          </h1>
           <p className="text-gray-600 font-light">Sign in to manage your store</p>
         </div>
         <form className="space-y-6" onSubmit={handleSubmit}>
+          {error && (
+            <div className="p-3 rounded-2xl bg-red-50 border border-red-200 text-sm text-red-700">
+              {error}
+            </div>
+          )}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-3">Email</label>
             <input

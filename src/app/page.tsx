@@ -304,7 +304,7 @@ export default function HomePage() {
   );
 }
 
-// Product Carousel Component with Images
+// Product Carousel Component - Fixed for perfect alignment
 function ProductCarousel({ fragrances }: { fragrances: any[] }) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [imageErrors, setImageErrors] = useState<{ [key: string]: boolean }>({});
@@ -364,53 +364,59 @@ function ProductCarousel({ fragrances }: { fragrances: any[] }) {
         <>
           {/* Carousel Container */}
           <div className="overflow-hidden">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
-              {visibleFragrances.map((fragrance) => (
-                <div key={fragrance.id} className="animate-in fade-in duration-500">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 lg:gap-8">
+              {visibleFragrances.map((fragrance, index) => (
+                <div 
+                  key={`${fragrance.id}-${index}`} 
+                  className="flex flex-col h-[600px] lg:h-[650px] animate-in fade-in duration-500"
+                >
                   <Link
                     href={`/product/${fragrance.id}`}
-                    className="group block"
+                    className="group block flex flex-col h-full"
                   >
-                    <div className="space-y-6">
-                      {/* Product Card with Image */}
-                      <div className="bg-white border border-gray-100 rounded-2xl overflow-hidden group-hover:border-gray-200 group-hover:shadow-2xl transition-all duration-500 relative h-80 sm:h-96 group-hover:-translate-y-2">
-                        {isValidImageUrl(fragrance.image) && !imageErrors[fragrance.id] ? (
-                          <>
-                            <img
-                              src={fragrance.image}
-                              alt={fragrance.name}
-                              className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
-                              onError={() => handleImageError(fragrance.id)}
-                            />
-                            {/* Overlay on hover */}
-                            <div className="absolute inset-0 bg-black/5 group-hover:bg-black/10 transition-colors duration-500" />
-                          </>
-                        ) : (
-                          <div className="w-full h-full flex flex-col items-center justify-center bg-gray-50 group-hover:bg-gray-100 transition-colors duration-500">
-                            <div className="text-6xl sm:text-7xl font-serif font-light text-gray-300 mb-4 group-hover:text-gray-400 transition-colors">
-                              {fragrance.name.charAt(0)}
-                            </div>
-                            <div className="w-16 h-px bg-gray-300 mb-4" />
-                            <h3 className="text-xl font-serif font-light text-gray-600 mb-2">
-                              {fragrance.name}
-                            </h3>
-                            <p className="text-xs tracking-widest text-gray-400 font-light">
-                              EAU DE PARFUM
-                            </p>
+                    {/* Product Card with Image */}
+                    <div className="flex-shrink-0 bg-white border border-gray-100 rounded-2xl overflow-hidden group-hover:border-gray-200 group-hover:shadow-2xl transition-all duration-500 relative h-80 sm:h-96 lg:h-[420px] group-hover:-translate-y-2">
+                      {isValidImageUrl(fragrance.image) && !imageErrors[fragrance.id] ? (
+                        <>
+                          <img
+                            src={fragrance.image}
+                            alt={fragrance.name}
+                            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
+                            onError={() => handleImageError(fragrance.id)}
+                          />
+                          {/* Overlay on hover */}
+                          <div className="absolute inset-0 bg-black/5 group-hover:bg-black/10 transition-colors duration-500" />
+                        </>
+                      ) : (
+                        <div className="w-full h-full flex flex-col items-center justify-center bg-gray-50 group-hover:bg-gray-100 transition-colors duration-500 p-8">
+                          <div className="text-5xl lg:text-7xl font-serif font-light text-gray-300 mb-4 group-hover:text-gray-400 transition-colors">
+                            {fragrance.name.charAt(0)}
                           </div>
-                        )}
-                      </div>
+                          <div className="w-16 h-px bg-gray-300 mb-4" />
+                          <h3 className="text-lg lg:text-xl font-serif font-light text-gray-600 mb-2 text-center">
+                            {fragrance.name}
+                          </h3>
+                          <p className="text-xs tracking-widest text-gray-400 font-light">
+                            EAU DE PARFUM
+                          </p>
+                        </div>
+                      )}
+                    </div>
 
-                      {/* Details */}
-                      <div className="space-y-3 px-2 text-center">
-                        <h3 className="text-xl sm:text-2xl font-serif font-light group-hover:text-black transition-colors">
+                    {/* Details - Perfectly aligned */}
+                    <div className="flex-1 flex flex-col justify-between pt-6 pb-4 px-2 text-center">
+                      <div className="space-y-2 flex-grow">
+                        <h3 className="text-xl lg:text-2xl font-serif font-light group-hover:text-black transition-colors leading-tight">
                           {fragrance.name}
                         </h3>
                         <p className="text-sm text-gray-500 font-light leading-relaxed line-clamp-2">
                           {fragrance.tagline}
                         </p>
-                        <div className="flex items-center justify-center gap-2 pt-2">
-                          <span className="text-lg font-medium text-gray-900">Rs {fragrance.price}</span>
+                      </div>
+                      
+                      <div className="space-y-3 pt-2">
+                        <div className="flex items-center justify-center">
+                          <span className="text-lg lg:text-xl font-medium text-gray-900">Rs {fragrance.price}</span>
                         </div>
                         <span className="inline-block text-xs font-normal tracking-widest uppercase border-b border-transparent group-hover:border-black transition-all pb-0.5">
                           View Details
@@ -424,20 +430,20 @@ function ProductCarousel({ fragrances }: { fragrances: any[] }) {
           </div>
 
           {/* Navigation Buttons */}
-          <div className="flex justify-center gap-4 mt-8 sm:mt-12">
+          <div className="flex justify-center gap-4 mt-12 lg:mt-16">
             <button
               onClick={prevSlide}
-              className="w-12 h-12 border border-gray-300 rounded-full flex items-center justify-center hover:bg-gray-100 hover:border-gray-400 transition-all duration-300"
+              className="w-12 h-12 border border-gray-300 rounded-full flex items-center justify-center hover:bg-gray-100 hover:border-gray-400 transition-all duration-300 flex-shrink-0"
               aria-label="Previous"
             >
-              <span className="text-gray-600">←</span>
+              <span className="text-gray-600 text-lg">←</span>
             </button>
             <button
               onClick={nextSlide}
-              className="w-12 h-12 border border-gray-300 rounded-full flex items-center justify-center hover:bg-gray-100 hover:border-gray-400 transition-all duration-300"
+              className="w-12 h-12 border border-gray-300 rounded-full flex items-center justify-center hover:bg-gray-100 hover:border-gray-400 transition-all duration-300 flex-shrink-0"
               aria-label="Next"
             >
-              <span className="text-gray-600">→</span>
+              <span className="text-gray-600 text-lg">→</span>
             </button>
           </div>
         </>

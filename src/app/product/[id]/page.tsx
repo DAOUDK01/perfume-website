@@ -30,7 +30,7 @@ export default function ProductPage({ params }: ProductPageProps) {
 
   const [showMessage, setShowMessage] = useState(false);
   const [quantity, setQuantity] = useState(1);
-  const [imageError, setImageError] = useState(false);
+
 
   useEffect(() => {
     let cancelled = false;
@@ -121,11 +121,7 @@ export default function ProductPage({ params }: ProductPageProps) {
   const handleIncrement = () => setQuantity((q) => q + 1);
   const handleDecrement = () => quantity > 1 && setQuantity((q) => q - 1);
 
-  const isValidImageUrl = (image: string) =>
-    image &&
-    (image.startsWith("http") ||
-      image.startsWith("/") ||
-      image.startsWith("./"));
+  
 
   return (
     <div className="bg-white min-h-screen">

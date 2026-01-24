@@ -2,6 +2,7 @@
 
 import Button from "@/src/components/Button";
 import { useState } from "react";
+import Image from "next/image";
 
 interface Article {
   id: number;
@@ -99,7 +100,7 @@ export default function JournalPage() {
         <div className="relative max-w-5xl mx-auto px-4 sm:px-6 text-center py-20">
           <div className="mb-8">
             <span className="text-xs tracking-widest text-gray-500 font-agrandir uppercase">
-              e&apos;eora
+              e'eora
             </span>
           </div>
           
@@ -172,11 +173,13 @@ export default function JournalPage() {
             </div>
             
             <div className="order-1 lg:order-2">
-              <div className="relative overflow-hidden rounded-lg group">
-                <img
+              <div className="relative overflow-hidden rounded-lg group aspect-[4/3]">
+                <Image
                   src={articles[0].image}
                   alt={articles[0].title}
-                  className="w-full aspect-[4/3] object-cover group-hover:scale-105 transition-transform duration-700"
+                  fill
+                  objectFit="cover"
+                  className="group-hover:scale-105 transition-transform duration-700"
                 />
                 <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-10 transition-all duration-500" />
               </div>
@@ -249,11 +252,13 @@ function ArticleCard({ article, delay }: { article: Article; delay: number }) {
       className="group cursor-pointer hover:-translate-y-2 transition-transform duration-500"
       style={{ animationDelay: `${delay}ms` }}
     >
-      <div className="relative overflow-hidden rounded-xl mb-6 bg-gray-50 shadow-sm group-hover:shadow-xl transition-shadow duration-500">
-        <img
+      <div className="relative overflow-hidden rounded-xl mb-6 bg-gray-50 shadow-sm group-hover:shadow-xl transition-shadow duration-500 aspect-[4/3]">
+        <Image
           src={article.image}
           alt={article.title}
-          className="w-full aspect-[4/3] object-cover group-hover:scale-110 transition-transform duration-1000 ease-out"
+          fill
+          objectFit="cover"
+          className="group-hover:scale-110 transition-transform duration-1000 ease-out"
         />
         <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors duration-500" />
         

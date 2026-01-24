@@ -2,6 +2,7 @@
   "name": "perfume-website",
   "version": "0.1.0",
   "private": true,
+  "type": "module",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -10,6 +11,7 @@
     "lint:fix": "next lint --fix"
   },
   "dependencies": {
+    "@heroicons/react": "^2.2.0",
     "bcryptjs": "^3.0.3",
     "cloudinary": "^2.9.0",
     "lucide-react": "^0.562.0",

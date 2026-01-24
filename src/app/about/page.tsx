@@ -3,7 +3,7 @@
 import Button from "@/src/components/Button";
 import ScrollReveal from "@/src/components/ScrollReveal";
 import Link from "next/link";
-import { Gem, Feather, Heart, Droplets, Leaf, ShieldCheck } from "lucide-react";
+import { Gem, Feather, Heart, Droplets, Leaf } from "lucide-react";
 import { useState, useEffect } from "react";
 import { ContentItem, getContent } from "@/src/types/content";
 import Image from "next/image";
@@ -63,7 +63,7 @@ export default function AboutPage() {
             {getContent(content, "Hero", "Title", "text", "Our Story")}
           </h1>
           <p className="text-xl md:text-2xl text-gray-500 font-light leading-relaxed max-w-2xl mx-auto">
-            {getContent(content, "Hero", "Description", "text", "We believe in quiet luxury, thoughtful design, and timeless fragrance. Learn how e&apos;eora came to be.")}
+            {getContent(content, "Hero", "Description", "text", "We believe in quiet luxury, thoughtful design, and timeless fragrance. Learn how e'eora came to be.")}
           </p>
         </ScrollReveal>
       </section>
@@ -94,13 +94,13 @@ export default function AboutPage() {
                 </h2>
                 <div className="space-y-6 text-lg text-gray-600 font-light leading-relaxed">
                   <p>
-                    {getContent(content, "Our Story", "Paragraph 1", "text", "e&apos;eora began with a simple belief: that true elegance requires restraint. In a world of excess, we chose simplicity. In a culture of noise, we chose quiet.")}
+                    {getContent(content, "Our Story", "Paragraph 1", "text", "e'eora began with a simple belief: that true elegance requires restraint. In a world of excess, we chose simplicity. In a culture of noise, we chose quiet.")}
                   </p>
                   <p>
                     {getContent(content, "Our Story", "Paragraph 2", "text", "Each fragrance is crafted with intention, using only the finest ingredients. We believe that a scent should evolve with you throughout the day, becoming part of your story rather than overshadowing it.")}
                   </p>
                   <p>
-                    {getContent(content, "Our Story", "Paragraph 3", "text", "From concept to bottle, every detail reflects our commitment to quality and authenticity. e&apos;eora is not just a fragrance—it's a philosophy.")}
+                    {getContent(content, "Our Story", "Paragraph 3", "text", "From concept to bottle, every detail reflects our commitment to quality and authenticity. e'eora is not just a fragrance—it's a philosophy.")}
                   </p>
                 </div>
               </div>
@@ -172,7 +172,7 @@ export default function AboutPage() {
                 </h2>
                 <div className="space-y-6 text-lg text-gray-600 font-light leading-relaxed">
                   <p>
-                    {getContent(content, "Commitment", "Paragraph 1", "text", "In a world that celebrates excess, we celebrate restraint. Every e&apos;eora fragrance is a conversation between you and the scent—intimate, personal, never demanding.")}
+                    {getContent(content, "Commitment", "Paragraph 1", "text", "In a world that celebrates excess, we celebrate restraint. Every e'eora fragrance is a conversation between you and the scent—intimate, personal, never demanding.")}
                   </p>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-4">
                     <div className="flex items-start gap-4">

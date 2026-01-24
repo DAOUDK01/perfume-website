@@ -3,11 +3,9 @@ import { Bell, Search } from "lucide-react";
 import Link from "next/link";
 
 export default function Header({
-  sidebarOpen,
   setSidebarOpen,
   newOrdersCount = 0,
 }: {
-  sidebarOpen: boolean;
   setSidebarOpen: (open: boolean) => void;
   newOrdersCount?: number;
 }) {

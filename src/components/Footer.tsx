@@ -7,7 +7,7 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
           {/* Brand */}
           <div className="space-y-6">
-            <h3 className="text-3xl font-agrandir font-bold tracking-tighter" style={{ letterSpacing: "-0.04em" }}>e&apos;eora</h3>
+            <h3 className="text-3xl font-agrandir font-bold tracking-tighter" style={{ letterSpacing: "-0.04em" }}>e'eora</h3>
             <p className="text-sm text-gray-600 font-light leading-relaxed max-w-xs">
               Quiet luxury. Thoughtfully crafted fragrances that speak softly.
             </p>
@@ -86,7 +86,7 @@ export default function Footer() {
 
         {/* Bottom */}
         <div className="flex flex-col md:flex-row justify-between items-center text-xs text-gray-600 font-light">
-          <p>&copy; 2026 <span className="font-agrandir">e&apos;eora</span>. All rights reserved.</p>
+          <p>&copy; 2026 <span className="font-agrandir">e'eora</span>. All rights reserved.</p>
           <div className="flex gap-6 mt-4 md:mt-0">
             <a href="#" className="hover:text-black transition-colors">
               Privacy Policy

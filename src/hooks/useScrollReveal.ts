@@ -36,7 +36,7 @@ export const useScrollReveal = () => {
  * Hook for tracking current section during scroll
  * Returns the index of currently visible section
  */
-export const useScrollProgress = (sectionCount: number) => {
+export const useScrollProgress = () => {
   const [currentSection, setCurrentSection] = useState(0);
 
   useEffect(() => {

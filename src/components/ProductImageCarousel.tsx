@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 interface ProductImageCarouselProps {
@@ -24,10 +25,12 @@ export default function ProductImageCarousel({ images, name }: ProductImageCarou
   return (
     <div className="space-y-4">
       <div className="relative aspect-square bg-[#f5f5f5] rounded-xl overflow-hidden group">
-        <img
+        <Image
           src={images[currentIndex]}
           alt={`${name} - View ${currentIndex + 1}`}
-          className="w-full h-full object-cover object-center transition-transform duration-700 ease-out group-hover:scale-105"
+          fill
+          objectFit="cover"
+          className="transition-transform duration-700 ease-out group-hover:scale-105"
         />
         
         {images.length > 1 && (
@@ -60,10 +63,11 @@ export default function ProductImageCarousel({ images, name }: ProductImageCarou
                 currentIndex === idx ? "border-black shadow-md scale-105" : "border-transparent opacity-70 hover:opacity-100 hover:scale-105"
               }`}
             >
-              <img
+              <Image
                 src={img}
                 alt={`${name} thumbnail ${idx + 1}`}
-                className="w-full h-full object-cover"
+                fill
+                objectFit="cover"
               />
             </button>
           ))}

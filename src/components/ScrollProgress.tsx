@@ -8,7 +8,7 @@ interface ScrollProgressProps {
 }
 
 export default function ScrollProgress({ sections }: ScrollProgressProps) {
-  const currentSection = useScrollProgress(sections.length);
+  const currentSection = useScrollProgress();
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
 
   useEffect(() => {

@@ -4,7 +4,7 @@ import { ContentItem, getContent } from "@/src/types/content";
 import ScrollReveal from "@/src/components/ScrollReveal";
 import Button from "@/src/components/Button";
 import { useState, useRef, useEffect } from "react";
-import { Mail, Phone, Instagram, Twitter, Clock, MapPin } from "lucide-react";
+import { Mail, Phone, Instagram, Clock } from "lucide-react";
 
 export default function ContactPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -221,8 +221,8 @@ export default function ContactPage() {
                         href={`mailto:${getContent(content, "Contact Info", "Email Address", "text", "hello@eeora.com")}`}
                         className="text-lg font-light text-gray-900 hover:text-gray-600 transition-colors"
                       >
-                        {getContent(content, "Contact Info", "Email Address", "text", "hello@eeora.com")}
-                      </a>
+                        {getContent(content, "Contact Info", "Email Address", "text", "eeora@gmail.com")}
+                      </a>  
                     </div>
                   </div>
 

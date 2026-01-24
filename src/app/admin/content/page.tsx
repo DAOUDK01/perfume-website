@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Plus, Trash2, Pencil, Image as ImageIcon, Save, X } from "lucide-react";
+import { Plus, Trash2, Pencil, Save, X } from "lucide-react";
 import Image from "next/image";
 import Button from "@/src/components/Button";
 import { ContentItem } from "@/src/types/content";
@@ -9,7 +9,6 @@ import { ContentItem } from "@/src/types/content";
 export default function AdminContentPage() {
   const [content, setContent] = useState<ContentItem[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [formData, setFormData] = useState<ContentItem>({
     _id: "",
@@ -27,17 +26,15 @@ export default function AdminContentPage() {
 
   async function fetchContent() {
     setLoading(true);
-    setError(null);
     try {
       const res = await fetch("/api/admin/content");
       const data = await res.json();
       if (res.ok) {
         setContent(data.content || []);
       } else {
-        setError(data.error);
+
       }
     } catch (err) {
-      setError("Failed to load content");
     } finally {
       setLoading(false);
     }

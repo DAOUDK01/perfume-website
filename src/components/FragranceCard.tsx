@@ -19,7 +19,7 @@ export default function FragranceCard({
       <div className="mb-4">
         <h3 className="text-lg font-serif font-normal mb-2">{name}</h3>
         <p className="text-sm text-gray-600 mb-3">{tagline}</p>
-        <p className="text-sm font-normal mb-4">${price}</p>
+        <p className="text-sm font-normal mb-4">Rs {price}</p>
       </div>
       <Link href={`/product/${id}`}>
         <Button variant="primary">View</Button>

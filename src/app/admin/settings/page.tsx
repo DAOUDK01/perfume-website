@@ -8,9 +8,9 @@ export default function SettingsPage() {
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
 
-  const [storeName, setStoreName] = useState("e&apos;eora");
+  const [storeName, setStoreName] = useState("e'eora");
   const [supportEmail, setSupportEmail] = useState("support@example.com");
-  const [currency, setCurrency] = useState("USD");
+  const [currency, setCurrency] = useState("Rs");
 
   useEffect(() => {
     async function load() {
@@ -21,9 +21,9 @@ export default function SettingsPage() {
         const data = await res.json().catch(() => ({}));
         if (!res.ok) throw new Error(data?.error || "Failed to load settings");
         const s = data.settings || {};
-        setStoreName(s.storeName || "e&apos;eora");
+        setStoreName(s.storeName || "e'eora");
         setSupportEmail(s.supportEmail || "support@example.com");
-        setCurrency(s.currency || "USD");
+        setCurrency(s.currency || "Rs");
       } catch (e: any) {
         setError(e?.message || "Failed to load settings");
       } finally {

@@ -30,14 +30,16 @@ export async function getClient() {
 }
 
 export async function getDb() {
-  // In Next.js, this ensures a new connection isn't opened on every API route call.
-  if (db && client && client.isConnected()) {
+  try {
+    const clientInstance = await getClient();
+    console.log('Connecting to MongoDB:', uri);
+    db = clientInstance.db();
+    console.log('✅ Connected to MongoDB');
     return db;
+  } catch (error) {
+    console.error('❌ MongoDB connection error:', error);
+    throw error;
   }
-
-  const clientInstance = await getClient();
-  db = clientInstance.db();
-  return db;
 }
 
 export async function getUsersCollection() {

@@ -177,8 +177,8 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <ScrollReveal className="text-center mb-14 md:mb-20">
             <h2 className="text-3xl sm:text-4xl md:text-5xl font-serif font-light tracking-tight text-gray-900 mb-3">
-              {getContent(content, "Why e'eora", "Title", "text", "Why ")}
-              <span className="font-agrandir">e'eora</span>
+              {getContent(content, "Why e&apos;eora", "Title", "text", "Why ")}
+              <span className="font-agrandir">e&apos;eora</span>
             </h2>
             <p className="text-gray-500 font-light text-lg">
               {getContent(content, "Why e'eora", "Subtitle", "text", "Three pillars of our philosophy")}

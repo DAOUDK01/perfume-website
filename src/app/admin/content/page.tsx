@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { Plus, Trash2, Pencil, Image as ImageIcon, Save, X } from "lucide-react";
+import Image from "next/image";
 import Button from "@/src/components/Button";
 import { ContentItem } from "@/src/types/content";
 
@@ -175,8 +176,8 @@ export default function AdminContentPage() {
                 />
               </div>
               {formData.type === "image" && formData.value && (
-                <div className="mt-2 h-32 w-full bg-gray-50 rounded-lg overflow-hidden border border-gray-200 flex items-center justify-center">
-                  <img src={formData.value} alt="Preview" className="h-full object-contain" onError={(e) => (e.currentTarget.style.display = "none")} />
+                  <div className="mt-2 h-32 w-full bg-gray-50 rounded-lg overflow-hidden border border-gray-200 flex items-center justify-center relative">
+                  <Image src={formData.value} alt="Preview" fill objectFit="contain" onError={(e) => (e.currentTarget.style.display = "none")} />
                 </div>
               )}
             </div>
@@ -223,8 +224,8 @@ export default function AdminContentPage() {
                   <tr key={item._id} className="hover:bg-gray-50 transition-colors">
                     <td className="px-6 py-4 whitespace-nowrap">
                       {item.type === "image" ? (
-                        <div className="h-12 w-12 rounded-lg border border-gray-200 overflow-hidden bg-white">
-                          <img src={item.value.replace(/"/g, '&quot;')} alt={item.label.replace(/"/g, '&quot;')} className="h-full w-full object-cover" />
+                        <div className="h-12 w-12 rounded-lg border border-gray-200 overflow-hidden bg-white relative">
+                          <Image src={item.value.replace(/"/g, '&quot;')} alt={item.label.replace(/"/g, '&quot;')} fill objectFit="cover" />
                         </div>
                       ) : (
                         <div className="h-12 w-12 rounded-lg border border-gray-200 bg-gray-100 flex items-center justify-center text-xs text-gray-500">

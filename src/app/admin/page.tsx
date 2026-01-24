@@ -117,7 +117,7 @@ export default function Dashboard() {
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-4">
         <div>
           <h1 className="text-4xl font-serif font-light text-gray-900 mb-2">Dashboard</h1>
-          <p className="text-gray-600 font-light">Welcome back! Here's what's happening with your store.</p>
+          <p className="text-gray-600 font-light">Welcome back! Here&apos;s what&apos;s happening with your store.</p>
         </div>
         <Link href="/admin/orders" className="px-6 py-3 bg-black text-white rounded-xl hover:bg-gray-800 transition-colors">
           View Orders

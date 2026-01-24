@@ -6,6 +6,7 @@ import Link from "next/link";
 import { Gem, Feather, Heart, Droplets, Leaf, ShieldCheck } from "lucide-react";
 import { useState, useEffect } from "react";
 import { ContentItem, getContent } from "@/src/types/content";
+import Image from "next/image";
 
 export default function AboutPage() {
   const [content, setContent] = useState<ContentItem[]>([]);
@@ -74,10 +75,12 @@ export default function AboutPage() {
             <ScrollReveal>
               <div className="relative rounded-2xl overflow-hidden shadow-sm border border-gray-100 bg-gray-50 group aspect-[4/5]">
                 <div className="absolute inset-0 bg-black/5 group-hover:bg-transparent transition-colors duration-500 z-10" />
-                <img
+                <Image
                   src={getContent(content, "Our Story", "Image", "image", "https://res.cloudinary.com/djb0ekljm/image/upload/v1768901373/Photoroom-20240724_161118-01.jpeg_t7ku2f.jpg")}
                   alt={getContent(content, "Our Story", "Image Alt Text", "text", "Perfume bottles on a minimalist setting")}
-                  className="w-full h-full object-cover transition-transform duration-1000 ease-out group-hover:scale-110"
+                  fill
+                  objectFit="cover"
+                  className="transition-transform duration-1000 ease-out group-hover:scale-110"
                 />
               </div>
             </ScrollReveal>
@@ -205,10 +208,12 @@ export default function AboutPage() {
             <ScrollReveal delay={100} className="order-1 md:order-2">
               <div className="relative rounded-2xl overflow-hidden shadow-sm border border-gray-100 bg-gray-50 group aspect-[4/5]">
                  <div className="absolute inset-0 bg-black/5 group-hover:bg-transparent transition-colors duration-500 z-10" />
-                <img
+                <Image
                   src={getContent(content, "Commitment", "Image", "image", "https://res.cloudinary.com/djb0ekljm/image/upload/v1768901362/Photoroom-20240724_161017-01.jpeg_jjw0b4.jpg")}
                   alt={getContent(content, "Commitment", "Image Alt Text", "text", "Close up of a perfume bottle and ingredients")}
-                  className="w-full h-full object-cover transition-transform duration-1000 ease-out group-hover:scale-110"
+                  fill
+                  objectFit="cover"
+                  className="transition-transform duration-1000 ease-out group-hover:scale-110"
                 />
               </div>
             </ScrollReveal>

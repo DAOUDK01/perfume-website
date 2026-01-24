@@ -1,4 +1,4 @@
-import { connectToDatabase } from "@/lib/mongodb";
+import { connectToLocalDb, connectToAtlasDb } from "@/lib/mongodb";
 import { NextResponse } from "next/server";
 
 export async function POST(request) {
@@ -18,44 +18,74 @@ export async function POST(request) {
       return NextResponse.json({ error: "Email is required" }, { status: 400 });
     }
 
-    const { db } = await connectToDatabase();
+    const { db: localDb } = await connectToLocalDb();
+    const { db: atlasDb } = await connectToAtlasDb();
 
     // If message is present, it's a contact form submission
     if (message) {
-      const messagesCollection = db.collection("messages");
-      const result = await messagesCollection.insertOne({
+      const messagesCollectionLocal = localDb.collection("messages");
+      const messagesCollectionAtlas = atlasDb.collection("messages");
+      
+      const doc = {
         name: name ? String(name).trim() : "",
         email: String(email).trim().toLowerCase(),
         message: String(message).trim(),
         createdAt: new Date(),
         status: "unread"
-      });
+      };
+
+      const [localResult, atlasResult] = await Promise.all([
+        messagesCollectionLocal.insertOne(doc),
+        messagesCollectionAtlas.insertOne(doc)
+      ]);
 
       return NextResponse.json(
-        { success: true, message: "Message sent successfully", id: result.insertedId },
+        { 
+          success: true, 
+          message: "Message sent successfully", 
+          localId: localResult.insertedId,
+          atlasId: atlasResult.insertedId
+        },
         { status: 201 }
       );
     }
 
     // Otherwise, it's a newsletter subscription
-    const contactsCollection = db.collection("contacts");
+    const contactsCollectionLocal = localDb.collection("contacts");
+    const contactsCollectionAtlas = atlasDb.collection("contacts");
 
-    // Check if email already exists to prevent duplicates
-    const existingContact = await contactsCollection.findOne({ email: String(email).trim().toLowerCase() });
-    if (existingContact) {
+    const emailLower = String(email).trim().toLowerCase();
+
+    // Check if email already exists to prevent duplicates in both
+    const [localExisting, atlasExisting] = await Promise.all([
+      contactsCollectionLocal.findOne({ email: emailLower }),
+      contactsCollectionAtlas.findOne({ email: emailLower })
+    ]);
+
+    if (localExisting || atlasExisting) {
       return NextResponse.json(
         { success: true, message: "Email already subscribed." },
         { status: 200 }
-      ); // Return 200 if already subscribed, no error
+      ); 
     }
 
-    const result = await contactsCollection.insertOne({
-      email: String(email).trim().toLowerCase(),
+    const contactDoc = {
+      email: emailLower,
       subscribedAt: new Date(),
-    });
+    };
+
+    const [localRes, atlasRes] = await Promise.all([
+      contactsCollectionLocal.insertOne(contactDoc),
+      contactsCollectionAtlas.insertOne(contactDoc)
+    ]);
 
     return NextResponse.json(
-      { success: true, message: "Contact subscribed successfully", contactId: result.insertedId?.toString?.() },
+      { 
+        success: true, 
+        message: "Contact subscribed successfully", 
+        localId: localRes.insertedId?.toString?.(),
+        atlasId: atlasRes.insertedId?.toString?.()
+      },
       { status: 201 }
     );
   } catch (error) {

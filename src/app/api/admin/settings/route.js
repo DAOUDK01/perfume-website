@@ -1,14 +1,19 @@
-import { getSettingsCollection } from "@/lib/mongodb";
+import { connectToLocalDb, connectToAtlasDb } from "@/lib/mongodb";
+import { NextResponse } from "next/server";
 
 const SETTINGS_ID = "global";
 
 export async function GET() {
   try {
-    const settingsCollection = await getSettingsCollection();
-    const doc =
-      (await settingsCollection.findOne({ _id: SETTINGS_ID })) || undefined;
+    const { db: localDb } = await connectToLocalDb();
+    const { db: atlasDb } = await connectToAtlasDb();
 
-    return Response.json({
+    const localDoc = await localDb.collection('settings').findOne({ _id: SETTINGS_ID });
+    const atlasDoc = await atlasDb.collection('settings').findOne({ _id: SETTINGS_ID });
+
+    const doc = localDoc || atlasDoc;
+
+    return NextResponse.json({
       success: true,
       settings: doc || {
         _id: SETTINGS_ID,
@@ -19,7 +24,7 @@ export async function GET() {
     });
   } catch (error) {
     console.error("Error fetching settings:", error);
-    return Response.json({ error: "Failed to fetch settings" }, { status: 500 });
+    return NextResponse.json({ error: "Failed to fetch settings" }, { status: 500 });
   }
 }
 
@@ -28,7 +33,8 @@ export async function PATCH(request) {
     const body = await request.json();
     const { storeName, supportEmail, currency } = body || {};
 
-    const settingsCollection = await getSettingsCollection();
+    const { db: localDb } = await connectToLocalDb();
+    const { db: atlasDb } = await connectToAtlasDb();
 
     const update = {};
     if (typeof storeName === "string") update.storeName = storeName.trim();
@@ -36,25 +42,38 @@ export async function PATCH(request) {
       update.supportEmail = supportEmail.trim();
     if (typeof currency === "string") update.currency = currency.trim();
 
-    const result = await settingsCollection.updateOne(
-      { _id: SETTINGS_ID },
-      {
-        $set: {
-          _id: SETTINGS_ID,
-          ...update,
-          updatedAt: new Date(),
+    const [localResult, atlasResult] = await Promise.all([
+      localDb.collection('settings').updateOne(
+        { _id: SETTINGS_ID },
+        {
+          $set: {
+            _id: SETTINGS_ID,
+            ...update,
+            updatedAt: new Date(),
+          },
         },
-      },
-      { upsert: true }
-    );
+        { upsert: true }
+      ),
+      atlasDb.collection('settings').updateOne(
+        { _id: SETTINGS_ID },
+        {
+          $set: {
+            _id: SETTINGS_ID,
+            ...update,
+            updatedAt: new Date(),
+          },
+        },
+        { upsert: true }
+      )
+    ]);
 
-    return Response.json({
+    return NextResponse.json({
       success: true,
-      upsertedId: result.upsertedId || SETTINGS_ID,
+      upsertedId: localResult.upsertedId || atlasResult.upsertedId || SETTINGS_ID,
     });
   } catch (error) {
     console.error("Error updating settings:", error);
-    return Response.json({ error: "Failed to update settings" }, { status: 500 });
+    return NextResponse.json({ error: "Failed to update settings" }, { status: 500 });
   }
 }
 

@@ -1,4 +1,5 @@
-import { getProductsCollection } from "@/lib/mongodb";
+import { connectToLocalDb, connectToAtlasDb } from "@/lib/mongodb";
+import { NextResponse } from "next/server";
 
 export async function GET(request) {
   try {
@@ -16,22 +17,46 @@ export async function GET(request) {
     }
     if (category) filter.category = category;
 
-    const productsCollection = await getProductsCollection();
-    const products = await productsCollection
+    const { db: localDb } = await connectToLocalDb();
+    const { db: atlasDb } = await connectToAtlasDb();
+
+    console.log("Fetching products with filter:", filter);
+
+    const localProducts = await localDb.collection('products')
       .find(filter)
       .sort({ createdAt: -1 })
       .toArray();
 
-    return Response.json({
+    const atlasProducts = await atlasDb.collection('products')
+      .find(filter)
+      .sort({ createdAt: -1 })
+      .toArray();
+
+    console.log(`Found ${localProducts.length} local products and ${atlasProducts.length} atlas products`);
+
+    // Combine and deduplicate products based on 'id' or '_id'
+    const combinedProducts = [...localProducts, ...atlasProducts];
+    const uniqueProducts = Array.from(
+      new Map(
+        combinedProducts.map((p) => {
+          const productId = p.id || p._id?.toString() || String(Math.random());
+          return [productId, { ...p, id: productId }];
+        })
+      ).values()
+    );
+
+    console.log(`Total unique products: ${uniqueProducts.length}`);
+
+    return NextResponse.json({
       success: true,
-      products: products.map((p) => ({
+      products: uniqueProducts.map((p) => ({
         ...p,
         _id: p._id?.toString?.() || p._id,
       })),
     });
   } catch (error) {
     console.error("Error fetching products:", error);
-    return Response.json({ error: "Failed to fetch products" }, { status: 500 });
+    return NextResponse.json({ error: "Failed to fetch products" }, { status: 500 });
   }
 }
 
@@ -54,26 +79,29 @@ export async function POST(request) {
     } = body || {};
 
     if (!id || typeof id !== "string" || !id.trim()) {
-      return Response.json({ error: "Product id is required" }, { status: 400 });
+      return NextResponse.json({ error: "Product id is required" }, { status: 400 });
     }
     if (!name || typeof name !== "string" || !name.trim()) {
-      return Response.json({ error: "Product name is required" }, { status: 400 });
+      return NextResponse.json({ error: "Product name is required" }, { status: 400 });
     }
     const parsedPrice = Number(price);
     if (!Number.isFinite(parsedPrice) || parsedPrice <= 0) {
-      return Response.json({ error: "Valid price is required" }, { status: 400 });
+      return NextResponse.json({ error: "Valid price is required" }, { status: 400 });
     }
     const parsedStock = Number(stock);
     if (!Number.isFinite(parsedStock) || parsedStock < 0) {
-      return Response.json({ error: "Valid stock is required" }, { status: 400 });
+      return NextResponse.json({ error: "Valid stock is required" }, { status: 400 });
     }
 
-    const productsCollection = await getProductsCollection();
+    const { db: localDb } = await connectToLocalDb();
+    const { db: atlasDb } = await connectToAtlasDb();
 
-    const exists = await productsCollection.findOne({ id: id.trim() });
-    if (exists) {
-      return Response.json(
-        { error: "A product with this id already exists" },
+    const localExists = await localDb.collection('products').findOne({ id: id.trim() });
+    const atlasExists = await atlasDb.collection('products').findOne({ id: id.trim() });
+
+    if (localExists || atlasExists) {
+      return NextResponse.json(
+        { error: "A product with this id already exists in one or both databases" },
         { status: 409 }
       );
     }
@@ -96,22 +124,27 @@ export async function POST(request) {
       updatedAt: new Date(),
     };
 
-    const result = await productsCollection.insertOne(product);
+    const localResult = await localDb.collection('products').insertOne(product);
+    const atlasResult = await atlasDb.collection('products').insertOne(product);
 
-    return Response.json(
-      { success: true, productId: result.insertedId?.toString?.() },
+    return NextResponse.json(
+      { 
+        success: true, 
+        localProductId: localResult.insertedId?.toString?.(),
+        atlasProductId: atlasResult.insertedId?.toString?.(),
+      },
       { status: 201 }
     );
   } catch (error) {
     // Handle duplicate key if user added a unique index later
     if (error?.code === 11000) {
-      return Response.json(
+      return NextResponse.json(
         { error: "A product with this id already exists" },
         { status: 409 }
       );
     }
     console.error("Error creating product:", error);
-    return Response.json({ error: "Failed to create product" }, { status: 500 });
+    return NextResponse.json({ error: "Failed to create product" }, { status: 500 });
   }
 }
 

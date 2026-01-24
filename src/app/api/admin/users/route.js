@@ -1,17 +1,27 @@
-import { getUsersCollection } from "@/lib/mongodb";
+import { connectToLocalDb, connectToAtlasDb } from "@/lib/mongodb";
 import bcrypt from "bcryptjs";
 
 export async function GET() {
   try {
-    const usersCollection = await getUsersCollection();
-    const users = await usersCollection
+    const { db: localDb } = await connectToLocalDb();
+    const { db: atlasDb } = await connectToAtlasDb();
+
+    const localUsers = await localDb.collection('users')
       .find({})
       .sort({ createdAt: -1 })
       .toArray();
 
+    const atlasUsers = await atlasDb.collection('users')
+      .find({})
+      .sort({ createdAt: -1 })
+      .toArray();
+
+    const combinedUsers = [...localUsers, ...atlasUsers];
+    const uniqueUsers = Array.from(new Map(combinedUsers.map(user => [user.email, user])).values());
+
     return Response.json({
       success: true,
-      users: users.map((u) => {
+      users: uniqueUsers.map((u) => {
         const { passwordHash, ...safe } = u; // strip passwordHash
         return {
           ...safe,
@@ -43,14 +53,19 @@ export async function POST(request) {
       );
     }
 
-    const usersCollection = await getUsersCollection();
+    const { db: localDb } = await connectToLocalDb();
+    const { db: atlasDb } = await connectToAtlasDb();
 
-    const existing = await usersCollection.findOne({
+    const localExisting = await localDb.collection('users').findOne({
       email: String(email).trim().toLowerCase(),
     });
-    if (existing) {
+    const atlasExisting = await atlasDb.collection('users').findOne({
+      email: String(email).trim().toLowerCase(),
+    });
+
+    if (localExisting || atlasExisting) {
       return Response.json(
-        { error: "A user with this email already exists" },
+        { error: "A user with this email already exists in one or both databases" },
         { status: 409 }
       );
     }
@@ -66,10 +81,15 @@ export async function POST(request) {
       updatedAt: new Date(),
     };
 
-    const result = await usersCollection.insertOne(doc);
+    const localResult = await localDb.collection('users').insertOne(doc);
+    const atlasResult = await atlasDb.collection('users').insertOne(doc);
 
     return Response.json(
-      { success: true, userId: result.insertedId?.toString?.() },
+      { 
+        success: true, 
+        localUserId: localResult.insertedId?.toString?.(),
+        atlasUserId: atlasResult.insertedId?.toString?.(),
+      },
       { status: 201 }
     );
   } catch (error) {

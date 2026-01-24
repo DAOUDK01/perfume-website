@@ -1,4 +1,5 @@
-import { getProductsCollection } from "@/lib/mongodb";
+import { connectToLocalDb, connectToAtlasDb } from "@/lib/mongodb";
+import { NextResponse } from "next/server";
 
 function parseIdParam(params) {
   const id = params?.id;
@@ -10,23 +11,28 @@ export async function GET(_request, { params }) {
   try {
     const id = parseIdParam(params);
     if (!id) {
-      return Response.json({ error: "Invalid product id" }, { status: 400 });
+      return NextResponse.json({ error: "Invalid product id" }, { status: 400 });
     }
 
-    const productsCollection = await getProductsCollection();
-    const product = await productsCollection.findOne({ id });
+    const { db: localDb } = await connectToLocalDb();
+    const { db: atlasDb } = await connectToAtlasDb();
+
+    const localProduct = await localDb.collection('products').findOne({ id });
+    const atlasProduct = await atlasDb.collection('products').findOne({ id });
+
+    const product = localProduct || atlasProduct;
 
     if (!product) {
-      return Response.json({ error: "Product not found" }, { status: 404 });
+      return NextResponse.json({ error: "Product not found" }, { status: 404 });
     }
 
-    return Response.json({
+    return NextResponse.json({
       success: true,
       product: { ...product, _id: product._id?.toString?.() || product._id },
     });
   } catch (error) {
     console.error("Error fetching product:", error);
-    return Response.json({ error: "Failed to fetch product" }, { status: 500 });
+    return NextResponse.json({ error: "Failed to fetch product" }, { status: 500 });
   }
 }
 
@@ -34,7 +40,7 @@ export async function PATCH(request, { params }) {
   try {
     const id = parseIdParam(params);
     if (!id) {
-      return Response.json({ error: "Invalid product id" }, { status: 400 });
+      return NextResponse.json({ error: "Invalid product id" }, { status: 400 });
     }
 
     const body = await request.json();
@@ -60,7 +66,7 @@ export async function PATCH(request, { params }) {
       if (key === "price") {
         const parsed = Number(val);
         if (!Number.isFinite(parsed) || parsed <= 0) {
-          return Response.json(
+          return NextResponse.json(
             { error: "Valid price is required" },
             { status: 400 }
           );
@@ -71,7 +77,7 @@ export async function PATCH(request, { params }) {
       if (key === "stock") {
         const parsed = Number(val);
         if (!Number.isFinite(parsed) || parsed < 0) {
-          return Response.json(
+          return NextResponse.json(
             { error: "Valid stock is required" },
             { status: 400 }
           );
@@ -88,20 +94,27 @@ export async function PATCH(request, { params }) {
 
     update.updatedAt = new Date();
 
-    const productsCollection = await getProductsCollection();
-    const result = await productsCollection.updateOne(
-      { id },
-      { $set: update }
-    );
+    const { db: localDb } = await connectToLocalDb();
+    const { db: atlasDb } = await connectToAtlasDb();
 
-    if (result.matchedCount === 0) {
-      return Response.json({ error: "Product not found" }, { status: 404 });
+    const [localResult, atlasResult] = await Promise.all([
+      localDb.collection('products').updateOne({ id }, { $set: update }),
+      atlasDb.collection('products').updateOne({ id }, { $set: update })
+    ]);
+
+    if (localResult.matchedCount === 0 && atlasResult.matchedCount === 0) {
+      return NextResponse.json({ error: "Product not found" }, { status: 404 });
     }
 
-    return Response.json({ success: true });
+    return NextResponse.json({
+      success: true,
+      message: "Product updated successfully in both databases",
+      local: localResult.modifiedCount,
+      atlas: atlasResult.modifiedCount
+    });
   } catch (error) {
     console.error("Error updating product:", error);
-    return Response.json({ error: "Failed to update product" }, { status: 500 });
+    return NextResponse.json({ error: "Failed to update product" }, { status: 500 });
   }
 }
 
@@ -109,20 +122,30 @@ export async function DELETE(_request, { params }) {
   try {
     const id = parseIdParam(params);
     if (!id) {
-      return Response.json({ error: "Invalid product id" }, { status: 400 });
+      return NextResponse.json({ error: "Invalid product id" }, { status: 400 });
     }
 
-    const productsCollection = await getProductsCollection();
-    const result = await productsCollection.deleteOne({ id });
+    const { db: localDb } = await connectToLocalDb();
+    const { db: atlasDb } = await connectToAtlasDb();
 
-    if (result.deletedCount === 0) {
-      return Response.json({ error: "Product not found" }, { status: 404 });
+    const [localResult, atlasResult] = await Promise.all([
+      localDb.collection('products').deleteOne({ id }),
+      atlasDb.collection('products').deleteOne({ id })
+    ]);
+
+    if (localResult.deletedCount === 0 && atlasResult.deletedCount === 0) {
+      return NextResponse.json({ error: "Product not found" }, { status: 404 });
     }
 
-    return Response.json({ success: true });
+    return NextResponse.json({
+      success: true,
+      message: "Product deleted successfully from both databases",
+      local: localResult.deletedCount,
+      atlas: atlasResult.deletedCount
+    });
   } catch (error) {
     console.error("Error deleting product:", error);
-    return Response.json({ error: "Failed to delete product" }, { status: 500 });
+    return NextResponse.json({ error: "Failed to delete product" }, { status: 500 });
   }
 }
 

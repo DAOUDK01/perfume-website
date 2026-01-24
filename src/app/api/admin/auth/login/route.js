@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
-import { getUsersCollection } from "@/lib/mongodb";
+import { connectToLocalDb, connectToAtlasDb } from "@/lib/mongodb";
 
 export async function POST(request) {
   try {
@@ -14,10 +14,17 @@ export async function POST(request) {
       );
     }
 
-    const usersCollection = await getUsersCollection();
-    const user = await usersCollection.findOne({
-      email: String(email).trim().toLowerCase(),
-    });
+    const { db: localDb } = await connectToLocalDb();
+    const { db: atlasDb } = await connectToAtlasDb();
+
+    const normalizedEmail = String(email).trim().toLowerCase();
+
+    const [localUser, atlasUser] = await Promise.all([
+      localDb.collection('users').findOne({ email: normalizedEmail }),
+      atlasDb.collection('users').findOne({ email: normalizedEmail })
+    ]);
+
+    const user = localUser || atlasUser;
 
     if (!user || !user.passwordHash) {
       return NextResponse.json(
@@ -36,7 +43,7 @@ export async function POST(request) {
 
     // Create a simple session token (for real prod, sign or use JWT)
     const tokenPayload = {
-      userId: user._id?.toString?.(),
+      userId: user._id?.toString?.() || user._id,
       role: user.role || "admin",
       email: user.email,
     };

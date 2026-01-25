@@ -38,7 +38,8 @@ export async function GET(_request, { params }) {
 
 export async function PATCH(request, { params }) {
   try {
-    const oid = toObjectId(params?.id);
+    const { id } = await params;
+    const oid = toObjectId(id);
     if (!oid) return NextResponse.json({ error: "Invalid user id" }, { status: 400 });
 
     const body = await request.json();
@@ -83,7 +84,8 @@ export async function PATCH(request, { params }) {
 
 export async function DELETE(_request, { params }) {
   try {
-    const oid = toObjectId(params?.id);
+    const { id } = await params;
+    const oid = toObjectId(id);
     if (!oid) return NextResponse.json({ error: "Invalid user id" }, { status: 400 });
 
     const { db: localDb } = await connectToLocalDb();

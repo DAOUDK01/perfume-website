@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { ArrowLeft, Plus, X } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, use } from "react";
 
 function arrayToCsv(arr: any) {
   return Array.isArray(arr) ? arr.filter(Boolean).join(", ") : "";
@@ -16,7 +16,7 @@ function csvToArray(input: string) {
     .filter(Boolean);
 }
 
-export default function EditProduct({ params }: { params: { id: string } }) {
+export default function EditProduct({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -33,7 +33,7 @@ export default function EditProduct({ params }: { params: { id: string } }) {
   const [baseNotes, setBaseNotes] = useState("");
   const [fullDescription, setFullDescription] = useState("");
 
-  const id = params.id;
+  const { id } = use(params);
 
   useEffect(() => {
     async function load() {

@@ -4,7 +4,7 @@ import { NextResponse } from "next/server";
 
 export async function DELETE(request, { params }) {
   try {
-    const { id } = params;
+    const { id } = await params;
     const objectId = new ObjectId(id);
 
     const { db: localDb } = await connectToLocalDb();
@@ -26,7 +26,7 @@ export async function DELETE(request, { params }) {
 
 export async function PATCH(request, { params }) {
   try {
-    const { id } = params;
+    const { id } = await params;
     const body = await request.json();
     const { label, page, section, value } = body;
     const objectId = new ObjectId(id);

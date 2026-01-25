@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { ArrowLeft, Trash2 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, use } from "react";
 import { useRouter } from "next/navigation";
 
 function formatMoney(value: number, currency: string) {
@@ -27,14 +27,14 @@ function formatDate(value: any) {
   }
 }
 
-export default function OrderDetails({ params }: { params: { id: string } }) {
+export default function OrderDetails({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter();
   const [order, setOrder] = useState<any | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [currency, setCurrency] = useState("INR");
 
-  const id = params.id;
+  const { id } = use(params);
 
   useEffect(() => {
     async function load() {

@@ -4,11 +4,11 @@ import type { Fragrance } from "@/src/data/fragrances";
 import ScrollReveal from "@/src/components/ScrollReveal";
 import ProductImageCarousel from "@/src/components/ProductImageCarousel";
 import { notFound, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useState, use } from "react";
 import Link from "next/link";
 
 interface ProductPageProps {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }
 
 /* ✅ SAFE CART HELPER */
@@ -24,6 +24,7 @@ const getCart = (): any[] => {
 };
 
 export default function ProductPage({ params }: ProductPageProps) {
+  const { id } = use(params);
   const router = useRouter();
   const [fragrance, setFragrance] = useState<Fragrance | null>(null);
   const [loading, setLoading] = useState(true);
@@ -33,11 +34,12 @@ export default function ProductPage({ params }: ProductPageProps) {
 
 
   useEffect(() => {
+    if (!id) return;
     let cancelled = false;
 
     async function load() {
       try {
-        const res = await fetch(`/api/products/${encodeURIComponent(params.id)}`, { cache: "no-store" });
+        const res = await fetch(`/api/products/${encodeURIComponent(id)}`, { cache: "no-store" });
         const data = await res.json().catch(() => ({}));
         if (cancelled) return;
         if (res.ok && data.product) {
@@ -69,7 +71,7 @@ export default function ProductPage({ params }: ProductPageProps) {
     }
     load();
     return () => { cancelled = true; };
-  }, [params.id]);
+  }, [id]);
 
   if (loading) {
     return (

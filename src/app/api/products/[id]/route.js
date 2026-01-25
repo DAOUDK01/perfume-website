@@ -1,15 +1,9 @@
 import { connectToLocalDb, connectToAtlasDb } from "@/lib/mongodb";
 import { NextResponse } from "next/server";
 
-function parseIdParam(params) {
-  const id = params?.id;
-  if (!id || typeof id !== "string") return null;
-  return id;
-}
-
 export async function GET(_request, { params }) {
   try {
-    const id = parseIdParam(params);
+    const { id } = await params;
     if (!id) {
       return NextResponse.json({ error: "Invalid product id" }, { status: 400 });
     }
@@ -38,7 +32,7 @@ export async function GET(_request, { params }) {
 
 export async function PATCH(request, { params }) {
   try {
-    const id = parseIdParam(params);
+    const { id } = await params;
     if (!id) {
       return NextResponse.json({ error: "Invalid product id" }, { status: 400 });
     }
@@ -120,7 +114,7 @@ export async function PATCH(request, { params }) {
 
 export async function DELETE(_request, { params }) {
   try {
-    const id = parseIdParam(params);
+    const { id } = await params;
     if (!id) {
       return NextResponse.json({ error: "Invalid product id" }, { status: 400 });
     }

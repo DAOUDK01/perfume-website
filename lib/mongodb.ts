@@ -73,7 +73,17 @@ export async function connectToAtlasDb(): Promise<{ client: MongoClient | null; 
     };
   }
   const client = await promise;
-  const dbName = new URL(uriAtlas!).pathname.substring(1) || 'test';
+  
+  let dbName = 'test';
+  try {
+    // Handle mongodb+srv:// or mongodb:// URIs
+    const url = new URL(uriAtlas!.replace('mongodb+srv://', 'http://'));
+    dbName = url.pathname.substring(1).split('?')[0] || 'test';
+  } catch (e) {
+    console.error('Error parsing Atlas URI:', e);
+  }
+  
+  console.log(`[MongoDB] Connecting to Atlas DB: ${dbName}`);
   return { client, db: client.db(dbName) };
 }
 

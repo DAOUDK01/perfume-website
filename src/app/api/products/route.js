@@ -7,6 +7,7 @@ export async function GET(request) {
     const q = (searchParams.get("q") || "").trim();
     const category = (searchParams.get("category") || "").trim();
 
+    // TEMPORARY: Ignore filters if we are debugging empty results
     const filter = {};
     if (q) {
       filter.$or = [
@@ -20,38 +21,49 @@ export async function GET(request) {
     const { db: localDb } = await connectToLocalDb();
     const { db: atlasDb } = await connectToAtlasDb();
 
-    console.log("Fetching products with filter:", filter);
+    console.log("Fetching products. Filter active:", Object.keys(filter).length > 0);
 
-    const [localProducts, atlasProducts] = await Promise.all([
+    // Try fetching from both 'products' and 'product' collections to be sure
+    const [localProducts, atlasProducts, atlasProductSingular] = await Promise.all([
       localDb.collection('products').find(filter).sort({ createdAt: -1 }).toArray(),
-      atlasDb.collection('products').find(filter).sort({ createdAt: -1 }).toArray()
+      atlasDb.collection('products').find(filter).sort({ createdAt: -1 }).toArray(),
+      atlasDb.collection('product').find(filter).sort({ createdAt: -1 }).toArray()
     ]);
 
-    console.log(`Found ${localProducts.length} local products and ${atlasProducts.length} atlas products`);
+    console.log(`[Products API] Counts - Local: ${localProducts.length}, Atlas (products): ${atlasProducts.length}, Atlas (product): ${atlasProductSingular.length}`);
 
-    // Combine and deduplicate products based on 'id' or '_id'
-    const combinedProducts = [...localProducts, ...atlasProducts];
+    // Combine all found products
+    const combinedProducts = [...localProducts, ...atlasProducts, ...atlasProductSingular];
+    
+    // Deduplicate and normalize
     const uniqueProducts = Array.from(
       new Map(
         combinedProducts.map((p) => {
-          const productId = p.id || p._id?.toString() || String(Math.random());
-          return [productId, { ...p, id: productId }];
+          const productId = p.id || p._id?.toString() || `temp-${Math.random()}`;
+          return [productId, { ...p, id: productId, _id: p._id?.toString?.() || p._id }];
         })
       ).values()
     );
 
-    console.log(`Total unique products: ${uniqueProducts.length}`);
+    console.log(`[Products API] Total unique products to return: ${uniqueProducts.length}`);
 
     return NextResponse.json({
       success: true,
-      products: uniqueProducts.map((p) => ({
-        ...p,
-        _id: p._id?.toString?.() || p._id,
-      })),
+      count: uniqueProducts.length,
+      products: uniqueProducts,
+      debug: {
+        local: localProducts.length,
+        atlas_products: atlasProducts.length,
+        atlas_product: atlasProductSingular.length
+      }
     });
   } catch (error) {
-    console.error("Error fetching products:", error);
-    return NextResponse.json({ error: "Failed to fetch products" }, { status: 500 });
+    console.error("[Products API] Error:", error);
+    return NextResponse.json({ 
+      success: false, 
+      error: "Failed to fetch products",
+      details: error.message 
+    }, { status: 500 });
   }
 }
 
@@ -91,14 +103,15 @@ export async function POST(request) {
     const { db: localDb } = await connectToLocalDb();
     const { db: atlasDb } = await connectToAtlasDb();
 
-    const [localExists, atlasExists] = await Promise.all([
+    const [localExists, atlasExists, atlasExistsSingular] = await Promise.all([
       localDb.collection('products').findOne({ id: id.trim() }),
-      atlasDb.collection('products').findOne({ id: id.trim() })
+      atlasDb.collection('products').findOne({ id: id.trim() }),
+      atlasDb.collection('product').findOne({ id: id.trim() })
     ]);
 
-    if (localExists || atlasExists) {
+    if (localExists || atlasExists || atlasExistsSingular) {
       return NextResponse.json(
-        { error: "A product with this id already exists in one or both databases" },
+        { success: false, error: "A product with this id already exists" },
         { status: 409 }
       );
     }
@@ -129,8 +142,9 @@ export async function POST(request) {
     return NextResponse.json(
       { 
         success: true, 
-        localProductId: localResult.insertedId?.toString?.(),
-        atlasProductId: atlasResult.insertedId?.toString?.(),
+        message: "Product created successfully",
+        localId: localResult.insertedId?.toString?.(),
+        atlasId: atlasResult.insertedId?.toString?.(),
       },
       { status: 201 }
     );

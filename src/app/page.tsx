@@ -21,7 +21,6 @@ export default function HomePage() {
   const [content, setContent] = useState<ContentItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
     async function fetchContent() {
@@ -46,17 +45,6 @@ export default function HomePage() {
       }
     }
     fetchContent();
-  }, []);
-
-  // Mobile detection
-  useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
-    
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
   const sections = ["What is e'eora?", "Why us", "Collection", "Stay Updated"];
@@ -422,6 +410,7 @@ function ProductCarousel({ fragrances }: { fragrances: any[] }) {
       container.addEventListener('scroll', handleScroll, { passive: true });
       return () => container.removeEventListener('scroll', handleScroll);
     }
+    return undefined;
   }, [fragrances.length]);
 
   const nextSlide = () => {

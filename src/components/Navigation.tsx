@@ -116,6 +116,18 @@ export default function Navigation() {
               </Link>
             ))}
           </div>
+
+          {/* Logo at bottom of drawer */}
+          <div className="p-10 flex justify-center items-center border-t border-gray-100/50">
+            <Link 
+              href="/" 
+              className="text-xl font-agrandir font-bold tracking-tighter hover:opacity-80 transition-opacity duration-300" 
+              style={{ letterSpacing: "-0.04em" }}
+              onClick={toggleMobileMenu}
+            >
+              e'eora
+            </Link>
+          </div>
         </div>
       )}
     </>

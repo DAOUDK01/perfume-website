@@ -10,14 +10,20 @@ export async function DELETE(request, { params }) {
     const { db: localDb } = await connectToLocalDb();
     const { db: atlasDb } = await connectToAtlasDb();
 
-    const localResult = await localDb.collection('content').deleteOne({ _id: objectId });
-    const atlasResult = await atlasDb.collection('content').deleteOne({ _id: objectId });
+    const [localResult, atlasResult] = await Promise.all([
+      localDb.collection('content').deleteOne({ _id: objectId }),
+      atlasDb.collection('content').deleteOne({ _id: objectId })
+    ]);
 
-    if (localResult.deletedCount === 0 && atlasResult.deletedCount === 0) {
+    if (localResult?.deletedCount === 0 && atlasResult?.deletedCount === 0) {
       return NextResponse.json({ error: "Content not found in either database" }, { status: 404 });
     }
 
-    return NextResponse.json({ success: true, localDeletedCount: localResult.deletedCount, atlasDeletedCount: atlasResult.deletedCount });
+    return NextResponse.json({ 
+      success: true, 
+      localDeletedCount: localResult?.deletedCount || 0, 
+      atlasDeletedCount: atlasResult?.deletedCount || 0 
+    });
   } catch (error) {
     console.error("Failed to delete content:", error);
     return NextResponse.json({ error: "Failed to delete content" }, { status: 500 });
@@ -36,20 +42,20 @@ export async function PATCH(request, { params }) {
 
     const updateData = { label, page, section, value, updatedAt: new Date() };
 
-    const localResult = await localDb.collection('content').updateOne(
-      { _id: objectId },
-      { $set: updateData }
-    );
-    const atlasResult = await atlasDb.collection('content').updateOne(
-      { _id: objectId },
-      { $set: updateData }
-    );
+    const [localResult, atlasResult] = await Promise.all([
+      localDb.collection('content').updateOne({ _id: objectId }, { $set: updateData }),
+      atlasDb.collection('content').updateOne({ _id: objectId }, { $set: updateData })
+    ]);
 
-    if (localResult.matchedCount === 0 && atlasResult.matchedCount === 0) {
+    if (localResult?.matchedCount === 0 && atlasResult?.matchedCount === 0) {
       return NextResponse.json({ error: "Content not found in either database" }, { status: 404 });
     }
 
-    return NextResponse.json({ success: true, localMatchedCount: localResult.matchedCount, atlasMatchedCount: atlasResult.matchedCount });
+    return NextResponse.json({ 
+      success: true, 
+      localMatchedCount: localResult?.matchedCount || 0, 
+      atlasMatchedCount: atlasResult?.matchedCount || 0 
+    });
   } catch (error) {
     console.error("Failed to update content:", error);
     return NextResponse.json({ error: "Failed to update content" }, { status: 500 });

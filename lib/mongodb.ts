@@ -1,17 +1,18 @@
 import { MongoClient, Db } from 'mongodb';
 
 const uriLocal = process.env.MONGODB_URI_LOCAL;
-const uriAtlas = process.env.MONGODB_URI_ATLAS;
+const uriAtlas = process.env.MONGODB_URI || process.env.MONGODB_URI_ATLAS || process.env.MONGO_URI;
 
 let clientLocal: MongoClient;
-let clientPromiseLocal: Promise<MongoClient>;
+let clientPromiseLocal: Promise<MongoClient> | null = null;
 
 let clientAtlas: MongoClient;
-let clientPromiseAtlas: Promise<MongoClient>;
+let clientPromiseAtlas: Promise<MongoClient> | null = null;
 
-function getClientPromiseLocal(): Promise<MongoClient> {
+function getClientPromiseLocal(): Promise<MongoClient> | null {
   if (!uriLocal) {
-    throw new Error('Please add your local Mongo URI to .env.local');
+    console.warn('MONGODB_URI_LOCAL is not defined. Local DB connection will be skipped.');
+    return null;
   }
 
   if (process.env.NODE_ENV === 'development') {
@@ -29,9 +30,10 @@ function getClientPromiseLocal(): Promise<MongoClient> {
   }
 }
 
-function getClientPromiseAtlas(): Promise<MongoClient> {
+function getClientPromiseAtlas(): Promise<MongoClient> | null {
   if (!uriAtlas) {
-    throw new Error('Please add your Atlas Mongo URI to .env.local');
+    console.warn('MONGODB_URI, MONGODB_URI_ATLAS, or MONGO_URI is not defined. Atlas DB connection will be skipped.');
+    return null;
   }
 
   if (process.env.NODE_ENV === 'development') {
@@ -49,16 +51,59 @@ function getClientPromiseAtlas(): Promise<MongoClient> {
   }
 }
 
-export async function connectToLocalDb(): Promise<{ client: MongoClient; db: Db }> {
-  const client = await getClientPromiseLocal();
-  const dbName = new URL(uriLocal!).pathname.substring(1); // Extract db name from URI
+export async function connectToLocalDb(): Promise<{ client: MongoClient | null; db: Db | any }> {
+  const promise = getClientPromiseLocal();
+  if (!promise) {
+    return { 
+      client: null, 
+      db: createDummyDb('Local')
+    };
+  }
+  const client = await promise;
+  const dbName = new URL(uriLocal!).pathname.substring(1) || 'test'; 
   return { client, db: client.db(dbName) };
 }
 
-export async function connectToAtlasDb(): Promise<{ client: MongoClient; db: Db }> {
-  const client = await getClientPromiseAtlas();
-  const dbName = new URL(uriAtlas!).pathname.substring(1); // Extract db name from URI
+export async function connectToAtlasDb(): Promise<{ client: MongoClient | null; db: Db | any }> {
+  const promise = getClientPromiseAtlas();
+  if (!promise) {
+    return { 
+      client: null, 
+      db: createDummyDb('Atlas')
+    };
+  }
+  const client = await promise;
+  const dbName = new URL(uriAtlas!).pathname.substring(1) || 'test';
   return { client, db: client.db(dbName) };
+}
+
+/**
+ * Creates a dummy DB object that doesn't crash but returns empty results
+ */
+function createDummyDb(name: string) {
+  const dummyCollection = {
+    find: () => ({
+      sort: () => ({
+        toArray: async () => [],
+        limit: () => ({ toArray: async () => [] }),
+      }),
+      toArray: async () => [],
+    }),
+    findOne: async () => null,
+    insertOne: async () => ({ insertedId: null }),
+    updateOne: async () => ({ matchedCount: 0, modifiedCount: 0 }),
+    deleteOne: async () => ({ deletedCount: 0 }),
+    countDocuments: async () => 0,
+    aggregate: () => ({
+      toArray: async () => [],
+    }),
+  };
+
+  return {
+    collection: () => dummyCollection,
+    _isDummy: true,
+    _name: name
+  };
 }
 
 // Export a module-scoped MongoClient object. By doing this in a

@@ -45,15 +45,10 @@ export async function GET(request) {
     const { db: localDb } = await connectToLocalDb();
     const { db: atlasDb } = await connectToAtlasDb();
 
-    const localOrders = await localDb.collection('orders')
-      .find(filter)
-      .sort({ createdAt: -1 })
-      .toArray();
-
-    const atlasOrders = await atlasDb.collection('orders')
-      .find(filter)
-      .sort({ createdAt: -1 })
-      .toArray();
+    const [localOrders, atlasOrders] = await Promise.all([
+      localDb.collection('orders').find(filter).sort({ createdAt: -1 }).toArray(),
+      atlasDb.collection('orders').find(filter).sort({ createdAt: -1 }).toArray()
+    ]);
 
     const combinedOrders = [...localOrders, ...atlasOrders];
 
@@ -132,17 +127,18 @@ export async function POST(request) {
       atlasDb.collection('orders').insertOne(orderData)
     ]);
 
-    // Send order data to n8n webhook (non-blocking)
+    // Send to n8n (async)
     sendToN8nWebhook({
       ...orderData,
-      orderId: localResult.insertedId || atlasResult.insertedId,
+      localId: localResult?.insertedId,
+      atlasId: atlasResult?.insertedId,
     });
 
     return NextResponse.json(
       { 
         success: true, 
-        localOrderId: localResult.insertedId, 
-        atlasOrderId: atlasResult.insertedId 
+        localId: localResult?.insertedId, 
+        atlasId: atlasResult?.insertedId 
       },
       { status: 201 }
     );

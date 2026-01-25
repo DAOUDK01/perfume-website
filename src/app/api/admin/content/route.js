@@ -6,8 +6,19 @@ export async function GET() {
     const { db: localDb } = await connectToLocalDb();
     const { db: atlasDb } = await connectToAtlasDb();
 
-    const localContent = await localDb.collection('content').find({}).toArray();
-    const atlasContent = await atlasDb.collection('content').find({}).toArray();
+    if (!localDb && !atlasDb) {
+      throw new Error("No database connection available");
+    }
+
+    let localContent = [];
+    if (localDb) {
+      localContent = await localDb.collection('content').find({}).toArray();
+    }
+
+    let atlasContent = [];
+    if (atlasDb) {
+      atlasContent = await atlasDb.collection('content').find({}).toArray();
+    }
 
     // Combine and deduplicate content based on page, section, and label
     const combinedContent = [...localContent, ...atlasContent];
@@ -42,6 +53,10 @@ export async function POST(request) {
     const { db: localDb } = await connectToLocalDb();
     const { db: atlasDb } = await connectToAtlasDb();
 
+    if (!localDb && !atlasDb) {
+      throw new Error("No database connection available");
+    }
+
     const contentData = {
       label,
       page: page || "General",
@@ -51,13 +66,20 @@ export async function POST(request) {
       createdAt: new Date(),
     };
 
-    const localResult = await localDb.collection('content').insertOne(contentData);
-    const atlasResult = await atlasDb.collection('content').insertOne(contentData);
+    let localResult = null;
+    if (localDb) {
+      localResult = await localDb.collection('content').insertOne(contentData);
+    }
+
+    let atlasResult = null;
+    if (atlasDb) {
+      atlasResult = await atlasDb.collection('content').insertOne(contentData);
+    }
 
     return NextResponse.json({ 
       success: true, 
-      localId: localResult.insertedId, 
-      atlasId: atlasResult.insertedId 
+      localId: localResult?.insertedId, 
+      atlasId: atlasResult?.insertedId 
     }, { status: 201 });
   } catch (error) {
     console.error("Failed to create content:", error);

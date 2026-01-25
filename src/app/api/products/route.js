@@ -22,15 +22,10 @@ export async function GET(request) {
 
     console.log("Fetching products with filter:", filter);
 
-    const localProducts = await localDb.collection('products')
-      .find(filter)
-      .sort({ createdAt: -1 })
-      .toArray();
-
-    const atlasProducts = await atlasDb.collection('products')
-      .find(filter)
-      .sort({ createdAt: -1 })
-      .toArray();
+    const [localProducts, atlasProducts] = await Promise.all([
+      localDb.collection('products').find(filter).sort({ createdAt: -1 }).toArray(),
+      atlasDb.collection('products').find(filter).sort({ createdAt: -1 }).toArray()
+    ]);
 
     console.log(`Found ${localProducts.length} local products and ${atlasProducts.length} atlas products`);
 
@@ -96,8 +91,10 @@ export async function POST(request) {
     const { db: localDb } = await connectToLocalDb();
     const { db: atlasDb } = await connectToAtlasDb();
 
-    const localExists = await localDb.collection('products').findOne({ id: id.trim() });
-    const atlasExists = await atlasDb.collection('products').findOne({ id: id.trim() });
+    const [localExists, atlasExists] = await Promise.all([
+      localDb.collection('products').findOne({ id: id.trim() }),
+      atlasDb.collection('products').findOne({ id: id.trim() })
+    ]);
 
     if (localExists || atlasExists) {
       return NextResponse.json(
@@ -124,8 +121,10 @@ export async function POST(request) {
       updatedAt: new Date(),
     };
 
-    const localResult = await localDb.collection('products').insertOne(product);
-    const atlasResult = await atlasDb.collection('products').insertOne(product);
+    const [localResult, atlasResult] = await Promise.all([
+      localDb.collection('products').insertOne(product),
+      atlasDb.collection('products').insertOne(product)
+    ]);
 
     return NextResponse.json(
       { 

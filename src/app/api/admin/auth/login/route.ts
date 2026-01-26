@@ -1,11 +1,16 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { connectToLocalDb, connectToAtlasDb } from "@/lib/mongodb";
 import { createJWTToken } from "@/lib/jwt";
 
-export async function POST(request) {
+interface LoginRequest {
+  email: string;
+  password: string;
+}
+
+export async function POST(request: NextRequest) {
   try {
-    const body = await request.json();
+    const body: LoginRequest = await request.json();
     const { email, password } = body || {};
 
     if (!email || !String(email).trim() || !password) {

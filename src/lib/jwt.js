@@ -2,6 +2,11 @@ import { SignJWT, jwtVerify } from 'jose';
 
 // JWT secret - in production, this should be a strong secret from environment variables
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-replace-in-production';
+
+if (!JWT_SECRET || JWT_SECRET === 'your-secret-key-replace-in-production') {
+  console.warn('⚠️  JWT_SECRET not set or using default value. Please set JWT_SECRET environment variable.');
+}
+
 const secret = new TextEncoder().encode(JWT_SECRET);
 
 /**

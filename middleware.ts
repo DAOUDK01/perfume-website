@@ -22,9 +22,9 @@ async function verifyJWTToken(token: string): Promise<boolean> {
     }
     
     return true;
-  } catch (error) {
+  } catch (error: any) {
     // Token is invalid, expired, or malformed
-    console.error('JWT verification failed:', error.message);
+    console.error('JWT verification failed:', error?.message || error);
     return false;
   }
 }

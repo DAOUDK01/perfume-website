@@ -1,6 +1,6 @@
 "use client";
 
-import { useScrollProgress } from "@/src/hooks/useScrollReveal";
+import { useScrollProgress } from "@/hooks/useScrollReveal";
 import { useEffect, useState } from "react";
 
 interface ScrollProgressProps {

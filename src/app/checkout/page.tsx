@@ -1,7 +1,7 @@
 "use client";
 
-import Button from "@/src/components/Button";
-import ScrollReveal from "@/src/components/ScrollReveal";
+import Button from "@/components/Button";
+import ScrollReveal from "@/components/ScrollReveal";
 import { useEffect, useRef, useState } from "react";
 import { Minus, Plus, Trash2 } from "lucide-react";
 

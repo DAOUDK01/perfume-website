@@ -1,8 +1,8 @@
 "use client";
 
-import { ContentItem, getContent } from "@/src/types/content";
-import ScrollReveal from "@/src/components/ScrollReveal";
-import Button from "@/src/components/Button";
+import { ContentItem, getContent } from "@/types/content";
+import ScrollReveal from "@/components/ScrollReveal";
+import Button from "@/components/Button";
 import { useState, useRef, useEffect } from "react";
 import { Mail, Phone, Instagram, Clock } from "lucide-react";
 

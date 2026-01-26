@@ -76,7 +76,7 @@ export const fragrances: Fragrance[] = [
 To use data in components:
 
 ```typescript
-import { fragrances } from '@/src/data/fragrances';
+import { fragrances } from '@/data/fragrances';
 
 export default function Page() {
   return (
@@ -215,7 +215,7 @@ Consistent spacing using Tailwind scale:
 Usage:
 
 ```jsx
-import Button from '@/src/components/Button';
+import Button from '@/components/Button';
 
 <Button variant="primary">ACTION</Button>
 <Button variant="secondary">ACTION</Button>
@@ -232,7 +232,7 @@ Properties:
 Usage:
 
 ```jsx
-import FragranceCard from '@/src/components/FragranceCard';
+import FragranceCard from '@/components/FragranceCard';
 
 <FragranceCard
   id="product-id"

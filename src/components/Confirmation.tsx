@@ -1,5 +1,5 @@
 import Link from "next/link";
-import Button from "@/src/components/Button";
+import Button from "@/components/Button";
 
 interface ConfirmationProps {
   title: string;

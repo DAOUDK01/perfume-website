@@ -2,9 +2,9 @@
 
 import { ReactNode } from "react";
 import { usePathname } from "next/navigation";
-import Navigation from "@/src/components/Navigation";
-import Footer from "@/src/components/Footer";
-import ScrollToTop from "@/src/components/ScrollToTop";
+import Navigation from "@/components/Navigation";
+import Footer from "@/components/Footer";
+import ScrollToTop from "@/components/ScrollToTop";
 
 export default function AppShell({ children }: { children: ReactNode }) {
   const pathname = usePathname();

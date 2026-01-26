@@ -1,8 +1,8 @@
 "use client";
 
-import type { Fragrance } from "@/src/data/fragrances";
-import ScrollReveal from "@/src/components/ScrollReveal";
-import ProductImageCarousel from "@/src/components/ProductImageCarousel";
+import type { Fragrance } from "@/data/fragrances";
+import ScrollReveal from "@/components/ScrollReveal";
+import ProductImageCarousel from "@/components/ProductImageCarousel";
 import { notFound, useRouter } from "next/navigation";
 import { useEffect, useState, use } from "react";
 import Link from "next/link";

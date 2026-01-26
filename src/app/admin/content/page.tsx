@@ -3,8 +3,8 @@
 import { useState, useEffect } from "react";
 import { Plus, Trash2, Pencil, Save, X } from "lucide-react";
 import Image from "next/image";
-import Button from "@/src/components/Button";
-import { ContentItem } from "@/src/types/content";
+import Button from "@/components/Button";
+import { ContentItem } from "@/types/content";
 
 export default function AdminContentPage() {
   const [content, setContent] = useState<ContentItem[]>([]);

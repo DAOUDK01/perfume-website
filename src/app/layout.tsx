@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Playfair_Display } from "next/font/google";
 import "./globals.css";
 import AppShell from "./AppShell";
-import { ClientProviders } from "@/src/components/ClientProviders";
+import { ClientProviders } from "@/components/ClientProviders";
 
 const playfair = Playfair_Display({
   subsets: ["latin"],

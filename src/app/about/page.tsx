@@ -1,11 +1,11 @@
 "use client";
 
-import Button from "@/src/components/Button";
-import ScrollReveal from "@/src/components/ScrollReveal";
+import Button from "@/components/Button";
+import ScrollReveal from "@/components/ScrollReveal";
 import Link from "next/link";
 import { Gem, Feather, Heart, Droplets, Leaf } from "lucide-react";
 import { useState, useEffect } from "react";
-import { ContentItem, getContent } from "@/src/types/content";
+import { ContentItem, getContent } from "@/types/content";
 import Image from "next/image";
 
 export default function AboutPage() {

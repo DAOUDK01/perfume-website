@@ -1,13 +1,13 @@
 "use client";
 
-import Button from "@/src/components/Button";
-import ScrollProgress from "@/src/components/ScrollProgress";
-import ScrollReveal from "@/src/components/ScrollReveal";
+import Button from "@/components/Button";
+import ScrollProgress from "@/components/ScrollProgress";
+import ScrollReveal from "@/components/ScrollReveal";
 import Link from "next/link";
 import Image from "next/image";
 import { useEffect, useState, useRef } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { ContentItem, getContent } from "@/src/types/content";
+import { ContentItem, getContent } from "@/types/content";
 
 type FragranceItem = {
   id: string;

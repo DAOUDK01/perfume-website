@@ -1,6 +1,6 @@
 "use client";
 
-import { useScrollReveal } from "@/src/hooks/useScrollReveal";
+import { useScrollReveal } from "@/hooks/useScrollReveal";
 import { useEffect, useState } from "react";
 
 interface ScrollRevealProps {

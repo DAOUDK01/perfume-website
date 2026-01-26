@@ -1,6 +1,6 @@
 "use client";
 
-import Confirmation from "@/src/components/Confirmation";
+import Confirmation from "@/components/Confirmation";
 
 export default function ContactConfirmationPage() {
   return (

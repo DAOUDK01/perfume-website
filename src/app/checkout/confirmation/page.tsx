@@ -1,6 +1,6 @@
 "use client";
 
-import Confirmation from "@/src/components/Confirmation";
+import Confirmation from "@/components/Confirmation";
 import { useEffect, useState } from "react";
 
 export default function CheckoutConfirmationPage() {

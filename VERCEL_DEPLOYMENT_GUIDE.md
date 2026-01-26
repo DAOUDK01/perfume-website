@@ -37,12 +37,12 @@ Add these to your Vercel project dashboard:
 # Required: JWT Secret (Generate with: openssl rand -base64 64)
 JWT_SECRET=your-super-secret-jwt-key-replace-this-in-production
 
-# MongoDB Connection (replace with your actual MongoDB Atlas connection string)
-MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/database?appName=appname
+# MongoDB Connection
+MONGODB_URI=mongodb+srv://daoud2723_db_user:3tOeSPDH1O6tpZFA@eeora.tnpsejq.mongodb.net/eeora?appName=eeora
 
 # Optional: Local MongoDB for development
-MONGODB_URI_LOCAL=mongodb://localhost:27017/your-database-name
-MONGODB_URI_ATLAS=mongodb+srv://username:password@cluster.mongodb.net/database?appName=appname
+MONGODB_URI_LOCAL=mongodb://localhost:27017/eeora
+MONGODB_URI_ATLAS=mongodb+srv://daoud2723_db_user:3tOeSPDH1O6tpZFA@eeora.tnpsejq.mongodb.net/eeora?appName=eeora
 ```
 
 ### 🔑 Generate Strong JWT Secret

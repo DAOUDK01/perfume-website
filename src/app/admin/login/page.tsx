@@ -1,6 +1,6 @@
 "use client";
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Eye, EyeOff } from "lucide-react";
 
 export default function AdminLogin() {
@@ -10,6 +10,10 @@ export default function AdminLogin() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
+  const searchParams = useSearchParams();
+
+  // Get redirect URL from query params
+  const redirectTo = searchParams.get('redirect') || '/admin';
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -29,8 +33,8 @@ export default function AdminLogin() {
         throw new Error(data?.error || "Invalid email or password");
       }
 
-      // Cookie is set by the API, middleware will now allow /admin
-      router.push("/admin");
+      // Cookie is set by the API, redirect to intended page
+      router.push(redirectTo);
     } catch (err: any) {
       setError(err?.message || "Failed to sign in");
       setLoading(false);

@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { Plus, Search, Trash2, Pencil } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 
@@ -161,10 +162,15 @@ export default function ProductsPage() {
                   <tr key={product.id} className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
-                        <div className="w-12 h-12 bg-gray-200 rounded-lg flex items-center justify-center mr-4 overflow-hidden">
+                        <div className="w-12 h-12 bg-gray-200 rounded-lg flex items-center justify-center mr-4 overflow-hidden relative">
                           {product.image ? (
-                            // eslint-disable-next-line @next/next/no-img-element
-                            <img src={product.image} alt="" className="w-full h-full object-cover" />
+                            <Image
+                              src={product.image}
+                              alt=""
+                              fill
+                              className="object-cover"
+                              sizes="48px"
+                            />
                           ) : (
                             <span className="text-sm font-medium text-gray-600">
                               {(product.name || "?").charAt(0)}

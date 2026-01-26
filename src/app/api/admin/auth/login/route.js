@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { connectToLocalDb, connectToAtlasDb } from "@/lib/mongodb";
+import { createJWTToken } from "@/lib/jwt";
 
 export async function POST(request) {
   try {
@@ -41,21 +42,42 @@ export async function POST(request) {
       );
     }
 
-    // Create a simple session token (for real prod, sign or use JWT)
+    // Create a secure JWT token
     const tokenPayload = {
       userId: user._id?.toString?.() || user._id,
       role: user.role || "admin",
       email: user.email,
     };
-    const token = Buffer.from(JSON.stringify(tokenPayload)).toString("base64");
+    
+    // Create JWT token (expires in 7 days by default)
+    const authToken = await createJWTToken(tokenPayload);
 
-    const res = NextResponse.json({ success: true });
+    const res = NextResponse.json({ 
+      success: true,
+      user: {
+        id: tokenPayload.userId,
+        email: tokenPayload.email,
+        role: tokenPayload.role
+      }
+    });
 
-    res.cookies.set("adminToken", token, {
+    // Set the JWT token as an httpOnly cookie
+    res.cookies.set("authToken", authToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
+      sameSite: 'strict',
       path: "/",
-      // no maxAge => session cookie (login required again after browser close)
+      maxAge: 60 * 60 * 24 * 7, // 7 days in seconds
+    });
+
+    // Also set legacy adminToken for backward compatibility (optional)
+    const legacyToken = Buffer.from(JSON.stringify(tokenPayload)).toString("base64");
+    res.cookies.set("adminToken", legacyToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: 'strict',
+      path: "/",
+      maxAge: 60 * 60 * 24 * 7, // 7 days in seconds
     });
 
     return res;

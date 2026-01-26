@@ -6,6 +6,7 @@ const config: Config = {
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
   ],
+  darkMode: "class",
   theme: {
     extend: {
       fontFamily: {
@@ -25,6 +26,8 @@ const config: Config = {
           500: "#666666",
           600: "#444444",
           700: "#222222",
+          800: "#1a1a1a",
+          900: "#111111",
         },
       },
       letterSpacing: {

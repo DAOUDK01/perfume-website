@@ -10,13 +10,13 @@ export default function Button({
   ...props
 }: ButtonProps) {
   const baseStyles =
-    "px-6 py-2 text-sm border transition-colors duration-200";
+    "px-6 py-2 text-sm border transition-all duration-300 hover:shadow-md";
 
   const variants = {
     primary:
-      "border-black text-black bg-white hover:bg-black hover:text-white",
+      "border-black dark:border-white text-black dark:text-white bg-transparent hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black",
     secondary:
-      "border-black text-black bg-white hover:bg-black hover:text-white",
+      "border-black dark:border-white text-black dark:text-white bg-transparent hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black",
   };
 
   return (

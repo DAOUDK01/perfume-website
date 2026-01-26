@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Playfair_Display } from "next/font/google";
 import "./globals.css";
 import AppShell from "./AppShell";
+import { ClientProviders } from "@/src/components/ClientProviders";
 
 const playfair = Playfair_Display({
   subsets: ["latin"],
@@ -27,8 +28,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={playfair.className}>
-      <body className="bg-white">
-        <AppShell>{children}</AppShell>
+      <body className="bg-white dark:bg-gray-900 transition-colors duration-300">
+        <ClientProviders>
+          <AppShell>{children}</AppShell>
+        </ClientProviders>
       </body>
     </html>
   );

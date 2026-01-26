@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Bars3Icon, XMarkIcon } from "@heroicons/react/24/outline";
+import DarkModeToggle from "./DarkModeToggle";
 
 export default function Navigation() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -34,12 +35,12 @@ export default function Navigation() {
 
   return (
     <>
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-100 transition-all duration-300 animate-slide-down">
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border-b border-gray-100 dark:border-gray-800 transition-all duration-300 animate-slide-down">
         <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
           {/* Logo — Agrandir Bold, no space */}
           <Link 
             href="/" 
-            className="text-2xl font-agrandir font-bold tracking-tighter hover:opacity-80 transition-opacity duration-300" 
+            className="text-2xl font-agrandir font-bold tracking-tighter hover:opacity-80 transition-opacity duration-300 text-black dark:text-white" 
             style={{ letterSpacing: "-0.04em" }}
           >
             e'eora
@@ -56,23 +57,26 @@ export default function Navigation() {
               <Link
                 key={link.name}
                 href={link.href}
-                className="relative py-1 text-gray-600 hover:text-black transition-colors duration-300 group"
+                className="relative py-1 text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white transition-colors duration-300 group"
               >
                 {link.name}
-                <span className="absolute bottom-0 left-0 w-0 h-px bg-black transition-all duration-300 group-hover:w-full" />
+                <span className="absolute bottom-0 left-0 w-0 h-px bg-black dark:bg-white transition-all duration-300 group-hover:w-full" />
               </Link>
             ))}
           </div>
           
-          {/* Mobile Menu Icon */}
-          <div className="md:hidden flex items-center">
-            <button onClick={toggleMobileMenu} className="text-gray-600 hover:text-black focus:outline-none">
-              {isMobileMenuOpen ? (
-                <XMarkIcon className="block h-6 w-6" aria-hidden="true" />
-              ) : (
-                <Bars3Icon className="block h-6 w-6" aria-hidden="true" />
-              )}
-            </button>
+          {/* Dark Mode Toggle & Mobile Menu Icon */}
+          <div className="flex items-center gap-3">
+            <DarkModeToggle />
+            <div className="md:hidden">
+              <button onClick={toggleMobileMenu} className="text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white focus:outline-none">
+                {isMobileMenuOpen ? (
+                  <XMarkIcon className="block h-6 w-6" aria-hidden="true" />
+                ) : (
+                  <Bars3Icon className="block h-6 w-6" aria-hidden="true" />
+                )}
+              </button>
+            </div>
           </div>
         </div>
       </nav>
@@ -90,16 +94,20 @@ export default function Navigation() {
       {/* Mobile Menu */}
       {isMobileMenuOpen && (
         <div
-          className={`fixed inset-y-0 right-0 w-full max-w-xs bg-white/90 backdrop-blur-md z-[1000] flex flex-col shadow-lg transform transition-transform duration-300 ease-out ${
+          className={`fixed inset-y-0 right-0 w-full max-w-xs bg-white/90 dark:bg-gray-900/90 backdrop-blur-md z-[1000] flex flex-col shadow-lg transform transition-transform duration-300 ease-out ${
             isAnimating ? "translate-x-0" : "translate-x-full"
           } overflow-y-auto`} // Added overflow-y-auto for internal scrolling
         >
-          <div className="flex justify-end p-4">
-            <button onClick={toggleMobileMenu} className="text-gray-600 hover:text-black focus:outline-none">
+          <div className="flex justify-between items-center p-4">
+            <DarkModeToggle />
+            <button
+              onClick={toggleMobileMenu}
+              className="text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white focus:outline-none"
+            >
               <XMarkIcon className="block h-6 w-6" aria-hidden="true" />
             </button>
           </div>
-          <div className="flex flex-col items-center justify-center flex-grow space-y-8">
+          <div className="flex flex-col items-center justify-center flex-grow space-y-8 pb-8">
             {[
               { name: "Home", href: "/" },
               { name: "Fragrances", href: "/fragrances" },
@@ -109,12 +117,23 @@ export default function Navigation() {
               <Link
                 key={link.name}
                 href={link.href}
-                className="text-2xl font-agrandir font-bold text-gray-800 hover:text-black transition-colors duration-300"
+                className="text-2xl font-agrandir font-bold text-gray-800 dark:text-gray-200 hover:text-black dark:hover:text-white transition-colors duration-300"
                 onClick={toggleMobileMenu} // Close menu on link click
               >
                 {link.name}
               </Link>
             ))}
+          </div>
+          {/* Bottom branding */}
+          <div className="p-4 text-center border-t border-gray-200 dark:border-gray-700">
+            <Link 
+              href="/" 
+              className="text-2xl font-agrandir font-bold tracking-tighter hover:opacity-80 transition-opacity duration-300 text-black dark:text-white" 
+              style={{ letterSpacing: "-0.04em" }}
+              onClick={toggleMobileMenu}
+            >
+              e'eora
+            </Link>
           </div>
         </div>
       )}

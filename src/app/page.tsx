@@ -109,15 +109,15 @@ export default function HomePage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-[#fafafa]">
-        <p className="text-gray-600">Loading home page content...</p>
+      <div className="flex items-center justify-center min-h-screen bg-[#fafafa] dark:bg-gray-900">
+        <p className="text-gray-600 dark:text-gray-300">Loading home page content...</p>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-[#fafafa]">
+      <div className="flex items-center justify-center min-h-screen bg-[#fafafa] dark:bg-gray-900">
         <p className="text-red-600">Error: {error}</p>
       </div>
     );
@@ -125,33 +125,31 @@ export default function HomePage() {
 
   return (
     <>
-
-
-      <div className="bg-[#fafafa]">
+  <div className="bg-[#fafafa] dark:bg-gray-900">
         <ScrollProgress sections={sections} />
 
 
 
         {/* Hero — Fixed e'eora rendering with proper mobile sizing */}
         <section
-          className="min-h-screen flex flex-col items-center justify-center px-4 sm:px-6 relative overflow-hidden bg-white pt-20 md:pt-0"
+          className="min-h-screen flex flex-col items-center justify-center px-4 sm:px-6 relative overflow-hidden bg-white dark:bg-gray-900 pt-20 md:pt-0"
           data-scroll-section="0"
         >
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-gray-50 via-white to-white opacity-60 pointer-events-none" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-gray-50 via-white to-white dark:from-gray-800 dark:via-gray-900 dark:to-gray-900 opacity-60 pointer-events-none" />
           
           <ScrollReveal className="max-w-4xl mx-auto text-center w-full relative z-10">
             <h1
-              className="font-agrandir font-bold tracking-tighter text-[clamp(2.5rem,10vw,6rem)] sm:text-[clamp(3.5rem,12vw,8rem)] md:text-[clamp(4rem,15vw,10rem)] leading-[0.85] text-gray-900 mb-6 animate-fade-in-up md:leading-[0.9]"
+              className="font-agrandir font-bold tracking-tighter text-[clamp(2.5rem,10vw,6rem)] sm:text-[clamp(3.5rem,12vw,8rem)] md:text-[clamp(4rem,15vw,10rem)] leading-[0.85] text-gray-900 dark:text-gray-100 mb-6 animate-fade-in-up md:leading-[0.9]"
               style={{ letterSpacing: "-0.05em" }}
               title="e'eora"
             >
               e'eora
             </h1>
             <div className="space-y-4 animate-fade-in-up delay-100">
-              <p className="text-lg sm:text-xl md:text-2xl lg:text-3xl text-gray-600 font-light tracking-wide">
+              <p className="text-lg sm:text-xl md:text-2xl lg:text-3xl text-gray-600 dark:text-gray-300 font-light tracking-wide">
                 {getContent(content, "Hero", "Subtitle", "text", "A quiet expression of scent")}
               </p>
-              <p className="text-sm sm:text-base md:text-lg text-gray-400 font-light max-w-lg mx-auto leading-relaxed px-4">
+              <p className="text-sm sm:text-base md:text-lg text-gray-400 dark:text-gray-500 font-light max-w-lg mx-auto leading-relaxed px-4">
                 {getContent(content, "Hero", "Description", "text", "Thoughtfully crafted fragrances that speak softly, designed to linger in memory rather than dominate the room.")}
               </p>
             </div>
@@ -171,18 +169,18 @@ export default function HomePage() {
 
           {/* Scroll Indicator */}
           <div className="absolute bottom-8 sm:bottom-12 left-1/2 -translate-x-1/2 animate-bounce opacity-50">
-            <div className="w-px h-12 sm:h-16 bg-gradient-to-b from-gray-300 to-transparent" />
+            <div className="w-px h-12 sm:h-16 bg-gradient-to-b from-gray-300 dark:from-gray-600 to-transparent" />
           </div>
         </section>
 
         {/* Philosophy */}
-        <section className="py-20 sm:py-24 md:py-32 lg:py-40 bg-[#fafafa] border-t border-gray-100">
+        <section className="py-20 sm:py-24 md:py-32 lg:py-40 bg-[#fafafa] dark:bg-gray-800 border-t border-gray-100 dark:border-gray-700">
           <div className="max-w-2xl mx-auto px-4 sm:px-6 text-center">
             <ScrollReveal>
-              <p className="text-lg sm:text-xl md:text-2xl lg:text-3xl text-gray-700 font-light leading-relaxed">
+              <p className="text-lg sm:text-xl md:text-2xl lg:text-3xl text-gray-700 dark:text-gray-300 font-light leading-relaxed">
                 {getContent(content, "Philosophy", "Quote", "text", "We believe fragrance should be intentional, not loud. Each scent is designed to complement, not overwhelm.")}
               </p>
-              <span className="inline-block mt-6 sm:mt-8 text-[10px] tracking-[0.35em] text-gray-400 uppercase">
+              <span className="inline-block mt-6 sm:mt-8 text-[10px] tracking-[0.35em] text-gray-400 dark:text-gray-500 uppercase">
                 {getContent(content, "Philosophy", "Label", "text", "Philosophy")}
               </span>
             </ScrollReveal>
@@ -191,16 +189,16 @@ export default function HomePage() {
 
         {/* Why e'eora — three pillars */}
         <section
-          className="py-20 sm:py-24 md:py-32 lg:py-40 bg-white"
+          className="py-20 sm:py-24 md:py-32 lg:py-40 bg-white dark:bg-gray-900"
           data-scroll-section="1"
         >
           <div className="max-w-7xl mx-auto px-4 sm:px-6">
             <ScrollReveal className="text-center mb-10 sm:mb-14 md:mb-20">
-              <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-serif font-light tracking-tight text-gray-900 mb-3 leading-tight">
+              <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-serif font-light tracking-tight text-gray-900 dark:text-gray-100 mb-3 leading-tight">
                 Why{' '}
                 <span className="font-agrandir">e'eora</span>
               </h2>
-              <p className="text-gray-500 font-light text-base sm:text-lg">
+              <p className="text-gray-500 dark:text-gray-400 font-light text-base sm:text-lg">
                 {getContent(content, "Why e'eora", "Subtitle", "text", "Three pillars of our philosophy")}
               </p>
             </ScrollReveal>
@@ -225,11 +223,11 @@ export default function HomePage() {
                 <ScrollReveal
                   key={item.number}
                   delay={i * 150}
-                  className="bg-white rounded-2xl p-6 sm:p-8 md:p-12 border border-gray-100 hover:border-gray-200 shadow-sm hover:shadow-xl transition-all duration-500 hover:-translate-y-2 group"
+                  className="bg-white dark:bg-gray-800 rounded-2xl p-6 sm:p-8 md:p-12 border border-gray-100 dark:border-gray-700 hover:border-gray-200 dark:hover:border-gray-600 shadow-sm hover:shadow-xl dark:hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 group"
                 >
-                  <span className="text-xs font-medium text-gray-400 tracking-[0.3em] group-hover:text-black transition-colors block mb-2">{item.number}</span>
-                  <h3 className="text-xl sm:text-2xl md:text-3xl font-serif font-light mt-4 sm:mt-6 mb-4 text-gray-900 leading-tight">{item.title}</h3>
-                  <p className="text-gray-600 font-light text-sm sm:text-base leading-relaxed">{item.desc}</p>
+                  <span className="text-xs font-medium text-gray-400 dark:text-gray-500 tracking-[0.3em] group-hover:text-black dark:group-hover:text-white transition-colors block mb-2">{item.number}</span>
+                  <h3 className="text-xl sm:text-2xl md:text-3xl font-serif font-light mt-4 sm:mt-6 mb-4 text-gray-900 dark:text-gray-100 leading-tight">{item.title}</h3>
+                  <p className="text-gray-600 dark:text-gray-300 font-light text-sm sm:text-base leading-relaxed">{item.desc}</p>
                 </ScrollReveal>
               ))}
             </div>
@@ -238,15 +236,15 @@ export default function HomePage() {
 
         {/* Featured Collection */}
         <section
-          className="py-20 sm:py-24 md:py-32 lg:py-40 bg-[#fafafa] border-t border-gray-100"
+          className="py-20 sm:py-24 md:py-32 lg:py-40 bg-[#fafafa] dark:bg-gray-800 border-t border-gray-100 dark:border-gray-700"
           data-scroll-section="2"
         >
           <div className="max-w-7xl mx-auto px-4 sm:px-6">
             <ScrollReveal className="text-center mb-10 sm:mb-14 md:mb-20">
-              <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-serif font-light tracking-tight text-gray-900 mb-3 leading-tight">
+              <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-serif font-light tracking-tight text-gray-900 dark:text-gray-100 mb-3 leading-tight">
                 {getContent(content, "Featured Collection", "Title", "text", "Featured Collection")}
               </h2>
-              <p className="text-gray-500 font-light text-base sm:text-lg">
+              <p className="text-gray-500 dark:text-gray-400 font-light text-base sm:text-lg">
                 {getContent(content, "Featured Collection", "Subtitle", "text", "Select from our curated fragrances")}
               </p>
             </ScrollReveal>
@@ -260,11 +258,11 @@ export default function HomePage() {
         </section>
 
         {/* Craftsmanship */}
-        <section className="py-20 sm:py-24 md:py-32 lg:py-40 bg-white border-t border-gray-100">
+        <section className="py-20 sm:py-24 md:py-32 lg:py-40 bg-white dark:bg-gray-900 border-t border-gray-100 dark:border-gray-700">
           <div className="max-w-7xl mx-auto px-4 sm:px-6">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-20 items-center">
               <ScrollReveal>
-                <div className="rounded-2xl border border-gray-100 p-8 sm:p-12 md:p-16 flex flex-col items-center justify-center min-h-[300px] sm:min-h-[380px] md:min-h-[460px] relative overflow-hidden">
+                <div className="rounded-2xl border border-gray-100 dark:border-gray-700 p-8 sm:p-12 md:p-16 flex flex-col items-center justify-center min-h-[300px] sm:min-h-[380px] md:min-h-[460px] relative overflow-hidden">
                   <Image
                     src={getContent(content, "Craftsmanship", "Image", "image", "https://res.cloudinary.com/djb0ekljm/image/upload/v1769277918/OIP_nkiuae.webp")}
                     alt={getContent(content, "Craftsmanship", "Image Alt Text", "text", "Craftsmanship Image")}
@@ -277,16 +275,16 @@ export default function HomePage() {
               </ScrollReveal>
               <ScrollReveal delay={150}>
                 <div>
-                  <h3 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-serif font-light text-gray-900 mb-4 sm:mb-6 leading-tight">
+                  <h3 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-serif font-light text-gray-900 dark:text-gray-100 mb-4 sm:mb-6 leading-tight">
                     {getContent(content, "Craftsmanship", "Title", "text", "Crafted with intention")}
                   </h3>
-                  <p className="text-gray-600 font-light leading-relaxed mb-4 sm:mb-6 text-sm sm:text-base">
+                  <p className="text-gray-600 dark:text-gray-300 font-light leading-relaxed mb-4 sm:mb-6 text-sm sm:text-base">
                     {getContent(content, "Craftsmanship", "Description 1", "text", "Every bottle is a result of careful consideration. We work with master perfumers to create scents that are both timeless and contemporary.")}
                   </p>
-                  <p className="text-gray-500 font-light text-sm leading-relaxed mb-6 sm:mb-8">
+                  <p className="text-gray-500 dark:text-gray-400 font-light text-sm leading-relaxed mb-6 sm:mb-8">
                     {getContent(content, "Craftsmanship", "Description 2", "text", "Our commitment to quality means using only the finest ingredients, blended in precise concentrations for optimal performance and longevity.")}
                   </p>
-                  <Link href="/about" className="inline-flex items-center gap-2 text-sm font-light border-b border-black pb-1 hover:text-gray-600 hover:border-gray-600 transition-colors">
+                  <Link href="/about" className="inline-flex items-center gap-2 text-sm font-light border-b border-black dark:border-white pb-1 hover:text-gray-600 dark:hover:text-gray-300 hover:border-gray-600 dark:hover:border-gray-400 transition-colors text-gray-900 dark:text-gray-100">
                     {getContent(content, "Craftsmanship", "Button Text", "text", "Learn about our process")} <span>→</span>
                   </Link>
                 </div>
@@ -297,17 +295,17 @@ export default function HomePage() {
 
         {/* Stay Updated */}
         <section
-          className="py-20 sm:py-24 md:py-32 lg:py-40 bg-[#fafafa] border-t border-gray-100"
+          className="py-20 sm:py-24 md:py-32 lg:py-40 bg-[#fafafa] dark:bg-gray-800 border-t border-gray-100 dark:border-gray-700"
           data-scroll-section="3"
         >
           <ScrollReveal className="max-w-xl mx-auto px-4 sm:px-6 text-center">
-            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-serif font-light text-gray-900 mb-4 sm:mb-6 leading-tight">
+            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-serif font-light text-gray-900 dark:text-gray-100 mb-4 sm:mb-6 leading-tight">
               {getContent(content, "Stay Updated", "Title", "text", "Stay Updated")}
             </h2>
-            <p className="text-gray-600 font-light text-base sm:text-lg mb-2">
+            <p className="text-gray-600 dark:text-gray-300 font-light text-base sm:text-lg mb-2">
               {getContent(content, "Stay Updated", "Subtitle", "text", "New releases and exclusive offers")}
             </p>
-            <p className="text-sm text-gray-400 mb-8 sm:mb-10 font-light">
+            <p className="text-sm text-gray-400 dark:text-gray-500 mb-8 sm:mb-10 font-light">
               {getContent(content, "Stay Updated", "Description", "text", "Order updates and collection announcements only.")}
             </p>
            
@@ -318,7 +316,7 @@ export default function HomePage() {
                   placeholder="Email address"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full px-5 sm:px-6 py-4 border border-gray-200 rounded-full text-base font-light focus:outline-none focus:border-black focus:ring-1 focus:ring-black bg-white transition-all duration-300 placeholder:text-gray-300 shadow-sm group-hover:shadow-md"
+                  className="w-full px-5 sm:px-6 py-4 border border-gray-200 dark:border-gray-700 rounded-full text-base font-light focus:outline-none focus:border-black dark:focus:border-white focus:ring-1 focus:ring-black dark:focus:ring-white bg-white dark:bg-gray-900 transition-all duration-300 placeholder:text-gray-300 dark:placeholder:text-gray-500 shadow-sm group-hover:shadow-md"
                   required
                 />
               </div>
@@ -333,11 +331,11 @@ export default function HomePage() {
             </form>
            
             {message && (
-              <div className={`mt-6 p-4 rounded-xl border max-w-md mx-auto ${message.includes("successfully") ? "bg-green-50 border-green-100 text-green-800" : "bg-red-50 border-red-100 text-red-800"} text-sm font-light animate-fade-in`}>
+              <div className={`mt-6 p-4 rounded-xl border max-w-md mx-auto ${message.includes("successfully") ? "bg-green-50 dark:bg-green-900/40 border-green-100 dark:border-green-700 text-green-800 dark:text-green-200" : "bg-red-50 dark:bg-red-900/40 border-red-100 dark:border-red-700 text-red-800 dark:text-red-200"} text-sm font-light animate-fade-in`}>
                 {message}
               </div>
             )}
-            <p className="mt-10 sm:mt-12 text-[10px] text-gray-400 tracking-widest uppercase opacity-60">Trusted by 10,000+ customers</p>
+            <p className="mt-10 sm:mt-12 text-[10px] text-gray-400 dark:text-gray-500 tracking-widest uppercase opacity-60">Trusted by 10,000+ customers</p>
           </ScrollReveal>
           <div className="h-12 sm:h-16 md:h-24" />
         </section>
@@ -433,7 +431,7 @@ function ProductCarousel({ fragrances }: { fragrances: any[] }) {
     <div className="relative">
       {fragrances.length === 0 ? (
         <div className="text-center py-12">
-          <p className="text-gray-500 font-light text-base">No featured products available.</p>
+          <p className="text-gray-500 dark:text-gray-400 font-light text-base">No featured products available.</p>
         </div>
       ) : (
         <>
@@ -453,7 +451,7 @@ function ProductCarousel({ fragrances }: { fragrances: any[] }) {
                     className="group block flex flex-col h-full"
                   >
                     {/* Product Card with Image */}
-                    <div className="flex-shrink-0 bg-white border border-gray-100 rounded-2xl overflow-hidden group-hover:border-gray-200 group-hover:shadow-2xl transition-all duration-500 relative aspect-[4/5] flex-grow group-hover:-translate-y-2">
+                    <div className="flex-shrink-0 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl overflow-hidden group-hover:border-gray-200 dark:group-hover:border-gray-600 group-hover:shadow-2xl dark:group-hover:shadow-2xl transition-all duration-500 relative aspect-[4/5] flex-grow group-hover:-translate-y-2">
                       {isValidImageUrl(fragrance.image) && !imageErrors[fragrance.id] ? (
                         <>
                           <Image
@@ -468,15 +466,15 @@ function ProductCarousel({ fragrances }: { fragrances: any[] }) {
                           <div className="absolute inset-0 bg-black/5 group-hover:bg-black/10 transition-colors duration-500" />
                         </>
                       ) : (
-                        <div className="w-full h-full flex flex-col items-center justify-center bg-gray-50 group-hover:bg-gray-100 transition-colors duration-500 p-6 sm:p-8">
-                        <div className="text-4xl sm:text-5xl lg:text-7xl font-serif font-light text-gray-300 mb-3 sm:mb-4 group-hover:text-gray-400 transition-colors">
+                        <div className="w-full h-full flex flex-col items-center justify-center bg-gray-50 dark:bg-gray-700 group-hover:bg-gray-100 dark:group-hover:bg-gray-600 transition-colors duration-500 p-6 sm:p-8">
+                        <div className="text-4xl sm:text-5xl lg:text-7xl font-serif font-light text-gray-300 dark:text-gray-500 mb-3 sm:mb-4 group-hover:text-gray-400 dark:group-hover:text-gray-400 transition-colors">
                           {fragrance.name.charAt(0).toUpperCase()}
                         </div>
-                        <div className="w-12 sm:w-16 h-px bg-gray-300 mb-3 sm:mb-4" />
-                        <h3 className="text-base sm:text-lg lg:text-xl font-serif font-light text-gray-600 mb-1 sm:mb-2 text-center leading-tight">
+                        <div className="w-12 sm:w-16 h-px bg-gray-300 dark:bg-gray-600 mb-3 sm:mb-4" />
+                        <h3 className="text-base sm:text-lg lg:text-xl font-serif font-light text-gray-600 dark:text-gray-300 mb-1 sm:mb-2 text-center leading-tight">
                           {fragrance.name}
                         </h3>
-                        <p className="text-xs tracking-widest text-gray-400 font-light">
+                        <p className="text-xs tracking-widest text-gray-400 dark:text-gray-500 font-light">
                           EAU DE PARFUM
                         </p>
                       </div>
@@ -485,13 +483,13 @@ function ProductCarousel({ fragrances }: { fragrances: any[] }) {
 
                   {/* Details */}
                   <div className="flex-grow flex flex-col items-center text-center mt-4 sm:mt-6">
-                    <h3 className="text-base sm:text-lg font-serif font-light text-gray-900 leading-tight">
+                    <h3 className="text-base sm:text-lg font-serif font-light text-gray-900 dark:text-gray-100 leading-tight">
                       {fragrance.name}
                     </h3>
-                    <p className="text-xs sm:text-sm text-gray-500 font-light mt-1">
+                    <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 font-light mt-1">
                       {fragrance.tagline}
                     </p>
-                    <p className="text-sm sm:text-base font-medium text-gray-700 mt-2">
+                    <p className="text-sm sm:text-base font-medium text-gray-700 dark:text-gray-300 mt-2">
                       Rs {fragrance.price.toFixed(2)}
                     </p>
                   </div>
@@ -509,8 +507,8 @@ function ProductCarousel({ fragrances }: { fragrances: any[] }) {
               onClick={() => scrollTo(index)}
               className={`w-2 h-2 rounded-full transition-all duration-300 ${
                 currentIndex === index 
-                  ? "bg-black w-6" 
-                  : "bg-gray-300 hover:bg-gray-400"
+                  ? "bg-black dark:bg-white w-6" 
+                  : "bg-gray-300 dark:bg-gray-600 hover:bg-gray-400 dark:hover:bg-gray-500"
               }`}
               aria-label={`Go to slide ${index + 1}`}
             />
@@ -522,16 +520,16 @@ function ProductCarousel({ fragrances }: { fragrances: any[] }) {
           <button
             onClick={prevSlide}
             disabled={currentIndex === 0}
-            className="absolute left-0 top-1/2 -translate-y-1/2 bg-white/80 backdrop-blur-sm p-3 rounded-full shadow-md hover:bg-white hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed z-10"
+            className="absolute left-0 top-1/2 -translate-y-1/2 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm p-3 rounded-full shadow-md hover:bg-white dark:hover:bg-gray-800 hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed z-10"
           >
-            <ChevronLeft className="w-6 h-6 text-gray-700" />
+            <ChevronLeft className="w-6 h-6 text-gray-700 dark:text-gray-300" />
           </button>
           <button
             onClick={nextSlide}
             disabled={currentIndex === fragrances.length - 1}
-            className="absolute right-0 top-1/2 -translate-y-1/2 bg-white/80 backdrop-blur-sm p-3 rounded-full shadow-md hover:bg-white hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed z-10"
+            className="absolute right-0 top-1/2 -translate-y-1/2 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm p-3 rounded-full shadow-md hover:bg-white dark:hover:bg-gray-800 hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed z-10"
           >
-            <ChevronRight className="w-6 h-6 text-gray-700" />
+            <ChevronRight className="w-6 h-6 text-gray-700 dark:text-gray-300" />
           </button>
         </div>
       </>

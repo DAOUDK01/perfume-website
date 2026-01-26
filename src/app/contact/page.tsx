@@ -77,33 +77,33 @@ export default function ContactPage() {
 
   if (loading) {
     return (
-      <div className="flex justify-center items-center h-screen">
-        <p className="text-gray-500">Loading content...</p>
+      <div className="flex justify-center items-center h-screen bg-[#fafafa] dark:bg-gray-900">
+        <p className="text-gray-500 dark:text-gray-300">Loading content...</p>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="flex justify-center items-center h-screen">
+      <div className="flex justify-center items-center h-screen bg-[#fafafa] dark:bg-gray-900">
         <p className="text-red-500">Error: {error}</p>
       </div>
     );
   }
 
   return (
-    <div className="bg-[#fafafa] pt-32 pb-20">
+    <div className="bg-[#fafafa] dark:bg-gray-900 pt-32 pb-20">
       {/* Page Header */}
-      <section className="relative py-20 mb-20 bg-white border-b border-gray-100 overflow-hidden">
-         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-gray-50 via-white to-white opacity-60" />
+      <section className="relative py-20 mb-20 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 overflow-hidden">
+         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-gray-50 via-white to-white dark:from-gray-800 dark:via-gray-900 dark:to-gray-900 opacity-60" />
         <ScrollReveal className="relative z-10 max-w-7xl mx-auto px-6 text-center">
           <span className="text-xs tracking-[0.3em] uppercase text-gray-400 font-medium mb-4 block">
             {getContent(content, "Header", "Subtitle", "text", "Contact Us")}
           </span>
-          <h1 className="text-5xl md:text-7xl font-light tracking-tight mb-6 font-serif text-gray-900">
+          <h1 className="text-5xl md:text-7xl font-light tracking-tight mb-6 font-serif text-gray-900 dark:text-gray-100">
             {getContent(content, "Header", "Title", "text", "Get In Touch")}
           </h1>
-          <p className="text-gray-500 font-light text-lg md:text-xl max-w-2xl mx-auto leading-relaxed">
+          <p className="text-gray-500 dark:text-gray-300 font-light text-lg md:text-xl max-w-2xl mx-auto leading-relaxed">
             {getContent(content, "Header", "Description", "text", "We'd love to hear from you. Questions about our fragrances? Feedback on your experience? We are here to help.")}
           </p>
         </ScrollReveal>
@@ -114,7 +114,7 @@ export default function ContactPage() {
         <div className="max-w-7xl mx-auto px-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24">
             {/* Contact Form */}
-            <ScrollReveal className="bg-white p-8 md:p-12 rounded-2xl shadow-sm border border-gray-100">
+            <ScrollReveal className="bg-white dark:bg-gray-900 p-8 md:p-12 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700">
               <div>
                 <h2 className="text-3xl font-light tracking-tight mb-2 font-serif">
                   {getContent(content, "Contact Form", "Title", "text", "Send a message")}
@@ -124,14 +124,14 @@ export default function ContactPage() {
                 <form onSubmit={handleSubmit} className="space-y-8">
                   {/* Name */}
                   <div className="group">
-                    <label className="block text-xs font-medium tracking-widest uppercase text-gray-500 mb-2 group-focus-within:text-black transition-colors">
+                    <label className="block text-xs font-medium tracking-widest uppercase text-gray-500 dark:text-gray-400 mb-2 group-focus-within:text-black dark:group-focus-within:text-white transition-colors">
                       Full Name
                     </label>
                     <input
                       ref={nameRef}
                       type="text"
                       name="name"
-                      className={`w-full px-4 py-3 bg-gray-50 border-b-2 border-transparent focus:border-black transition-all duration-300 focus:bg-white outline-none ${
+                      className={`w-full px-4 py-3 bg-gray-50 dark:bg-gray-800 border-b-2 border-transparent focus:border-black dark:focus:border-white transition-all duration-300 focus:bg-white dark:focus:bg-gray-900 outline-none ${
                         errors.name
                           ? "bg-red-50 border-red-300"
                           : "hover:bg-gray-100"
@@ -147,13 +147,13 @@ export default function ContactPage() {
 
                   {/* Email */}
                   <div className="group">
-                    <label className="block text-xs font-medium tracking-widest uppercase text-gray-500 mb-2 group-focus-within:text-black transition-colors">
+                    <label className="block text-xs font-medium tracking-widest uppercase text-gray-500 dark:text-gray-400 mb-2 group-focus-within:text-black dark:group-focus-within:text-white transition-colors">
                       Email Address
                     </label>
                     <input
                       type="email"
                       name="email"
-                      className={`w-full px-4 py-3 bg-gray-50 border-b-2 border-transparent focus:border-black transition-all duration-300 focus:bg-white outline-none ${
+                      className={`w-full px-4 py-3 bg-gray-50 dark:bg-gray-800 border-b-2 border-transparent focus:border-black dark:focus:border-white transition-all duration-300 focus:bg-white dark:focus:bg-gray-900 outline-none ${
                         errors.email
                           ? "bg-red-50 border-red-300"
                           : "hover:bg-gray-100"
@@ -169,13 +169,13 @@ export default function ContactPage() {
 
                   {/* Message */}
                   <div className="group">
-                    <label className="block text-xs font-medium tracking-widest uppercase text-gray-500 mb-2 group-focus-within:text-black transition-colors">
+                    <label className="block text-xs font-medium tracking-widest uppercase text-gray-500 dark:text-gray-400 mb-2 group-focus-within:text-black dark:group-focus-within:text-white transition-colors">
                       Message
                     </label>
                     <textarea
                       name="message"
                       rows={6}
-                      className={`w-full px-4 py-3 bg-gray-50 border-b-2 border-transparent focus:border-black transition-all duration-300 focus:bg-white outline-none resize-none ${
+                      className={`w-full px-4 py-3 bg-gray-50 dark:bg-gray-800 border-b-2 border-transparent focus:border-black dark:focus:border-white transition-all duration-300 focus:bg-white dark:focus:bg-gray-900 outline-none resize-none ${
                         errors.message
                           ? "bg-red-50 border-red-300"
                           : "hover:bg-gray-100"
@@ -209,8 +209,8 @@ export default function ContactPage() {
 
                 <div className="grid gap-8">
                   {/* Email */}
-                  <div className="flex items-start gap-5 p-6 rounded-xl hover:bg-white hover:shadow-lg hover:-translate-y-1 transition-all duration-300 border border-transparent hover:border-gray-100 group">
-                    <div className="p-3 bg-gray-100 rounded-full group-hover:bg-black group-hover:text-white transition-colors duration-300">
+                  <div className="flex items-start gap-5 p-6 rounded-xl hover:bg-white dark:hover:bg-gray-900 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 border border-transparent hover:border-gray-100 dark:hover:border-gray-700 group">
+                    <div className="p-3 bg-gray-100 dark:bg-gray-800 rounded-full group-hover:bg-black group-hover:text-white dark:group-hover:bg-white dark:group-hover:text-black transition-colors duration-300">
                       <Mail className="w-5 h-5" />
                     </div>
                     <div>
@@ -219,7 +219,7 @@ export default function ContactPage() {
                       </p>
                       <a
                         href={`mailto:${getContent(content, "Contact Info", "Email Address", "text", "hello@eeora.com")}`}
-                        className="text-lg font-light text-gray-900 hover:text-gray-600 transition-colors"
+                        className="text-lg font-light text-gray-900 dark:text-gray-100 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
                       >
                         {getContent(content, "Contact Info", "Email Address", "text", "eeora@gmail.com")}
                       </a>  
@@ -227,8 +227,8 @@ export default function ContactPage() {
                   </div>
 
                   {/* Phone */}
-                  <div className="flex items-start gap-5 p-6 rounded-xl hover:bg-white hover:shadow-lg hover:-translate-y-1 transition-all duration-300 border border-transparent hover:border-gray-100 group">
-                    <div className="p-3 bg-gray-100 rounded-full group-hover:bg-black group-hover:text-white transition-colors duration-300">
+                  <div className="flex items-start gap-5 p-6 rounded-xl hover:bg-white dark:hover:bg-gray-900 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 border border-transparent hover:border-gray-100 dark:hover:border-gray-700 group">
+                    <div className="p-3 bg-gray-100 dark:bg-gray-800 rounded-full group-hover:bg-black group-hover:text-white dark:group-hover:bg-white dark:group-hover:text-black transition-colors duration-300">
                       <Phone className="w-5 h-5" />
                     </div>
                     <div>
@@ -237,7 +237,7 @@ export default function ContactPage() {
                       </p>
                       <a
                         href={`tel:${getContent(content, "Contact Info", "Phone Number", "text", "+923105018825")}`}
-                        className="text-lg font-light text-gray-900 hover:text-gray-600 transition-colors"
+                        className="text-lg font-light text-gray-900 dark:text-gray-100 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
                       >
                         {getContent(content, "Contact Info", "Phone Number", "text", "+92 310 5018825")}
                       </a>
@@ -245,15 +245,15 @@ export default function ContactPage() {
                   </div>
 
                   {/* Hours */}
-                  <div className="flex items-start gap-5 p-6 rounded-xl hover:bg-white hover:shadow-lg hover:-translate-y-1 transition-all duration-300 border border-transparent hover:border-gray-100 group">
-                    <div className="p-3 bg-gray-100 rounded-full group-hover:bg-black group-hover:text-white transition-colors duration-300">
+                  <div className="flex items-start gap-5 p-6 rounded-xl hover:bg-white dark:hover:bg-gray-900 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 border border-transparent hover:border-gray-100 dark:hover:border-gray-700 group">
+                    <div className="p-3 bg-gray-100 dark:bg-gray-800 rounded-full group-hover:bg-black group-hover:text-white dark:group-hover:bg-white dark:group-hover:text-black transition-colors duration-300">
                       <Clock className="w-5 h-5" />
                     </div>
                     <div>
                       <p className="text-xs font-medium tracking-widest uppercase text-gray-400 mb-1">
                         {getContent(content, "Contact Info", "Hours Label", "text", "Hours")}
                       </p>
-                      <div className="space-y-1 text-gray-600 font-light">
+                      <div className="space-y-1 text-gray-600 dark:text-gray-300 font-light">
                         <p>{getContent(content, "Contact Info", "Hours Mon-Fri", "text", "Mon - Fri: 9:00 AM - 6:00 PM")}</p>
                         <p>{getContent(content, "Contact Info", "Hours Sat-Sun", "text", "Sat - Sun: 10:00 AM - 4:00 PM")}</p>
                         <p className="text-xs text-gray-400 mt-1">{getContent(content, "Contact Info", "Hours Timezone", "text", "(EST)")}</p>
@@ -262,24 +262,24 @@ export default function ContactPage() {
                   </div>
 
                   {/* Social */}
-                  <div className="flex items-start gap-5 p-6 rounded-xl hover:bg-white hover:shadow-lg hover:-translate-y-1 transition-all duration-300 border border-transparent hover:border-gray-100 group">
-                     <div className="p-3 bg-gray-100 rounded-full group-hover:bg-black group-hover:text-white transition-colors duration-300">
+                  <div className="flex items-start gap-5 p-6 rounded-xl hover:bg-white dark:hover:bg-gray-900 hover:shadow-lg hover:-translate-y-1 transition-all duration-300 border border-transparent hover:border-gray-100 dark:hover:border-gray-700 group">
+                     <div className="p-3 bg-gray-100 dark:bg-gray-800 rounded-full group-hover:bg-black group-hover:text-white dark:group-hover:bg-white dark:group-hover:text-black transition-colors duration-300">
                       <Instagram className="w-5 h-5" />
                     </div>
                     <div>
-                      <p className="text-xs font-medium tracking-widest uppercase text-gray-400 mb-3">
+                      <p className="text-xs font-medium tracking-widest uppercase text-gray-400 dark:text-gray-500 mb-3">
                         {getContent(content, "Contact Info", "Social Label", "text", "Social Media")}
                       </p>
                       <div className="flex gap-6">
                         <a
                           href={getContent(content, "Contact Info", "Instagram Link", "text", "#instagram")}
-                          className="text-base font-light hover:underline underline-offset-4 decoration-gray-300 transition-all"
+                          className="text-base font-light text-gray-900 dark:text-gray-100 hover:underline underline-offset-4 decoration-gray-300 dark:decoration-gray-600 transition-all"
                         >
                           {getContent(content, "Contact Info", "Instagram Text", "text", "Instagram")}
                         </a>
                         <a
                           href={getContent(content, "Contact Info", "Twitter Link", "text", "#twitter")}
-                          className="text-base font-light hover:underline underline-offset-4 decoration-gray-300 transition-all"
+                          className="text-base font-light text-gray-900 dark:text-gray-100 hover:underline underline-offset-4 decoration-gray-300 dark:decoration-gray-600 transition-all"
                         >
                           {getContent(content, "Contact Info", "Twitter Text", "text", "Twitter")}
                         </a>

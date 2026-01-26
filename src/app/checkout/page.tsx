@@ -113,19 +113,19 @@ export default function CheckoutPage() {
 
   if (loading)
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        Loading checkout…
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
+        <p className="text-gray-600 dark:text-gray-300">Loading checkout…</p>
       </div>
     );
 
   return (
-    <div className="min-h-screen bg-gray-50 pt-24 pb-32">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 pt-24 pb-32">
       <div className="max-w-6xl mx-auto px-4">
         <ScrollReveal>
-          <h1 className="text-4xl md:text-5xl font-serif text-center mb-4">
+          <h1 className="text-4xl md:text-5xl font-serif text-center mb-4 text-gray-900 dark:text-gray-100">
             Checkout
           </h1>
-          <p className="text-center text-gray-600 mb-12">
+          <p className="text-center text-gray-600 dark:text-gray-300 mb-12">
             Secure checkout • SSL protected
           </p>
         </ScrollReveal>
@@ -134,10 +134,10 @@ export default function CheckoutPage() {
           {/* FORM */}
           <form
             onSubmit={handleSubmit}
-            className="lg:col-span-2 bg-white rounded-2xl p-6 md:p-8 shadow"
+            className="lg:col-span-2 bg-white dark:bg-gray-900 rounded-2xl p-6 md:p-8 shadow border border-gray-100 dark:border-gray-800"
           >
             {/* CONTACT */}
-            <h2 className="text-2xl font-serif mb-6">Contact Info</h2>
+            <h2 className="text-2xl font-serif mb-6 text-gray-900 dark:text-gray-100">Contact Info</h2>
 
             <div className="grid md:grid-cols-2 gap-4">
               <input name="firstName" placeholder="First name *" className="input" />
@@ -155,7 +155,7 @@ export default function CheckoutPage() {
             <input name="phone" placeholder="Phone number" className="input mt-4" />
 
             {/* ADDRESS */}
-            <h2 className="text-2xl font-serif mt-10 mb-6">Shipping Address</h2>
+            <h2 className="text-2xl font-serif mt-10 mb-6 text-gray-900 dark:text-gray-100">Shipping Address</h2>
 
             <input name="street" placeholder="Street address *" className="input" />
 
@@ -165,7 +165,7 @@ export default function CheckoutPage() {
             </div>
 
             {/* PAYMENT */}
-            <h2 className="text-2xl font-serif mt-10 mb-6">Payment Method</h2>
+            <h2 className="text-2xl font-serif mt-10 mb-6 text-gray-900 dark:text-gray-100">Payment Method</h2>
 
             <div className="grid md:grid-cols-2 gap-4">
               {[
@@ -178,8 +178,8 @@ export default function CheckoutPage() {
                   key={value}
                   className={`border rounded-xl p-4 cursor-pointer transition ${
                     selectedPaymentMethod === value
-                      ? "border-black bg-gray-50"
-                      : "border-gray-200"
+                      ? "border-black dark:border-white bg-gray-50 dark:bg-gray-800"
+                      : "border-gray-200 dark:border-gray-700"
                   }`}
                 >
                   <input
@@ -195,13 +195,13 @@ export default function CheckoutPage() {
 
             {/* PAYMENT DETAILS */}
             {selectedPaymentMethod !== "cashOnDelivery" && (
-              <div className="mt-6 p-5 rounded-xl bg-gray-50 border">
+              <div className="mt-6 p-5 rounded-xl bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
                 {selectedPaymentMethod === "easyPaisa" && (
                   <>
                     <h4 className="font-semibold mb-2">EasyPaisa Details</h4>
                     <p>Account Name: <b>Daoud Khalid</b></p>
                     <p>EasyPaisa Number: <b>+92 315 018825</b></p>
-                    <p className="text-sm text-gray-600 mt-2">
+                    <p className="text-sm text-gray-600 dark:text-gray-300 mt-2">
                       Send payment and mention your order email in notes.
                     </p>
                   </>
@@ -212,7 +212,7 @@ export default function CheckoutPage() {
                     <h4 className="font-semibold mb-2">JazzCash Details</h4>
                     <p>Account Name: <b>Daoud Khalid</b></p>
                     <p>JazzCash Number: <b>+92 315 018825</b></p>
-                    <p className="text-sm text-gray-600 mt-2">
+                    <p className="text-sm text-gray-600 dark:text-gray-300 mt-2">
                       Send payment and mention your order email.
                     </p>
                   </>
@@ -224,7 +224,7 @@ export default function CheckoutPage() {
                     <p>Bank Name: <b>Bank Al Habib</b></p>
                     <p>Account Title: <b>Daoud Khalid</b></p>
                     <p>IBAN: <b>PK69BAHL5541008100272501</b></p>
-                    <p className="text-sm text-gray-600 mt-2">
+                    <p className="text-sm text-gray-600 dark:text-gray-300 mt-2">
                       Please transfer the exact amount and include your email as reference.
                     </p>
                   </>
@@ -248,8 +248,8 @@ export default function CheckoutPage() {
           </form>
 
           {/* SUMMARY */}
-          <aside className="bg-white rounded-2xl p-6 shadow sticky top-28 h-fit">
-            <h3 className="text-2xl font-serif mb-6">Order Summary</h3>
+          <aside className="bg-white dark:bg-gray-900 rounded-2xl p-6 shadow sticky top-28 h-fit border border-gray-100 dark:border-gray-800">
+            <h3 className="text-2xl font-serif mb-6 text-gray-900 dark:text-gray-100">Order Summary</h3>
 
             <div className="space-y-4">
               {cartItems.map((item) => (

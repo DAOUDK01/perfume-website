@@ -144,27 +144,6 @@ export default function HomePage() {
   const featuredStoryImage =
     "https://res.cloudinary.com/djb0ekljm/image/upload/v1773663999/eeora_profile_pic_olqq41.jpg";
 
-  const whyEeoraHighlights = [
-    {
-      number: "01",
-      title: "Careful",
-      description:
-        "Every ingredient and detail is selected with restraint, so nothing feels excessive.",
-    },
-    {
-      number: "02",
-      title: "Minimal",
-      description:
-        "The design stays clean and clear, letting form, scent, and texture speak softly.",
-    },
-    {
-      number: "03",
-      title: "Long Lasting",
-      description:
-        "The fragrance stays refined from opening to dry down, present without becoming heavy.",
-    },
-  ];
-
   return (
     <>
       <div className="bg-[#fafafa] ">
@@ -348,58 +327,10 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* Why e'eora — water drop pillars */}
-        <section
-          className="py-20 sm:py-24 md:py-32 lg:py-40 bg-white  overflow-hidden"
-          data-scroll-section="1"
-        >
-          <div className="max-w-7xl mx-auto px-4 sm:px-6">
-            <ScrollReveal className="text-center mb-10 sm:mb-14 md:mb-20">
-              <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-serif font-light tracking-tight text-gray-900  mb-3 leading-tight">
-                Why <span className="font-agrandir">e'eora</span>
-              </h2>
-              <p className="text-gray-500  font-light text-base sm:text-lg">
-                {getContent(
-                  content,
-                  "Why e'eora",
-                  "Subtitle",
-                  "text",
-                  "Three pillars of our philosophy",
-                )}
-              </p>
-            </ScrollReveal>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 md:gap-10 items-stretch">
-              {whyEeoraHighlights.map((item, i) => (
-                <ScrollReveal
-                  key={item.number}
-                  delay={i * 150}
-                  className="group relative overflow-hidden min-h-[320px] px-7 py-8 sm:px-8 sm:py-10 border border-gray-200/80 bg-white/50 backdrop-blur-xl shadow-[0_18px_50px_rgba(15,23,42,0.04)] transition-all duration-500 hover:-translate-y-2 hover:shadow-[0_24px_60px_rgba(15,23,42,0.06)] rounded-[1.75rem]"
-                >
-                  <div className="absolute inset-0 bg-[linear-gradient(145deg,rgba(255,255,255,0.72),rgba(243,244,246,0.28))]" />
-                  <div className="absolute inset-x-8 top-0 h-px bg-gradient-to-r from-transparent via-white to-transparent opacity-90" />
-                  <div className="absolute right-6 top-6 h-12 w-12 rounded-xl border border-white/70 bg-white/25" />
-                  <div className="absolute left-8 bottom-8 h-8 w-8 rounded-xl border border-white/50 bg-white/20" />
-
-                  <span className="text-xs font-bold text-gray-500  tracking-[0.3em] block mb-3 relative z-10">
-                    {item.number}
-                  </span>
-                  <h3 className="text-2xl sm:text-3xl font-serif font-light mt-6 sm:mt-8 mb-4 text-gray-900  leading-tight relative z-10">
-                    {item.title}
-                  </h3>
-                  <p className="text-gray-600  font-light text-sm sm:text-base leading-relaxed relative z-10 max-w-[18rem]">
-                    {item.description}
-                  </p>
-                  <div className="absolute inset-x-8 bottom-0 h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent opacity-80" />
-                </ScrollReveal>
-              ))}
-            </div>
-          </div>
-        </section>
-
         {/* Featured Collection */}
         <section
           className="py-20 sm:py-24 md:py-32 lg:py-40 bg-gray-50  border-t border-gray-200 "
-          data-scroll-section="2"
+          data-scroll-section="1"
         >
           <div className="max-w-7xl mx-auto px-4 sm:px-6">
             <ScrollReveal className="text-center mb-10 sm:mb-14 md:mb-20">

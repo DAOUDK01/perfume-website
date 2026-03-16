@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { usePathname } from "next/navigation";
@@ -9,6 +10,7 @@ import {
   PlusIcon,
   ShoppingBagIcon,
   XMarkIcon,
+  MagnifyingGlassIcon,
 } from "@heroicons/react/24/outline";
 
 type CartItem = {
@@ -16,6 +18,14 @@ type CartItem = {
   name: string;
   price: number;
   quantity: number;
+};
+
+type SearchProduct = {
+  id: string;
+  name: string;
+  tagline: string;
+  image?: string;
+  price: number;
 };
 
 function parseCart(value: string | null): CartItem[] {
@@ -39,6 +49,15 @@ function parseCart(value: string | null): CartItem[] {
   }
 }
 
+function isValidImageUrl(value?: string): boolean {
+  return Boolean(
+    value &&
+    (value.startsWith("http") ||
+      value.startsWith("/") ||
+      value.startsWith("./")),
+  );
+}
+
 export default function Navigation() {
   const pathname = usePathname();
 
@@ -48,6 +67,10 @@ export default function Navigation() {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isCartAnimating, setIsCartAnimating] = useState(false);
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchResults, setSearchResults] = useState<SearchProduct[]>([]);
+  const [isSearching, setIsSearching] = useState(false);
 
   const loadCart = () => {
     setCartItems(parseCart(localStorage.getItem("cart")));
@@ -96,6 +119,24 @@ export default function Navigation() {
     } else {
       openCartDrawer();
     }
+  };
+
+  const closeSearchModal = () => {
+    setIsSearchOpen(false);
+    setSearchQuery("");
+    setSearchResults([]);
+  };
+
+  const openSearchModal = () => {
+    if (isCartOpen) {
+      closeCartDrawer();
+    }
+
+    if (isMobileMenuOpen) {
+      closeMobileMenu();
+    }
+
+    setIsSearchOpen(true);
   };
 
   const updateCart = (items: CartItem[]) => {
@@ -166,8 +207,67 @@ export default function Navigation() {
   }, [isCartOpen]);
 
   useEffect(() => {
+    if (!isSearchOpen) {
+      setIsSearching(false);
+      setSearchResults([]);
+      return;
+    }
+
+    const query = searchQuery.trim();
+    if (!query) {
+      setIsSearching(false);
+      setSearchResults([]);
+      return;
+    }
+
+    let cancelled = false;
+    setIsSearching(true);
+
+    const timer = setTimeout(async () => {
+      try {
+        const res = await fetch(
+          `/api/products?q=${encodeURIComponent(query)}`,
+          { cache: "no-store" },
+        );
+        const data = await res.json().catch(() => ({}));
+
+        if (cancelled) return;
+
+        const products = Array.isArray(data.products)
+          ? (data.products as Array<Record<string, unknown>>)
+          : [];
+
+        const mapped = products
+          .map((item) => ({
+            id: String(item.id ?? ""),
+            name: String(item.name ?? ""),
+            tagline: String(item.tagline ?? ""),
+            image: typeof item.image === "string" ? item.image : undefined,
+            price: Number(item.price) || 0,
+          }))
+          .filter((item) => item.id && item.name)
+          .slice(0, 6);
+
+        setSearchResults(mapped);
+      } catch {
+        if (cancelled) return;
+        setSearchResults([]);
+      } finally {
+        if (!cancelled) {
+          setIsSearching(false);
+        }
+      }
+    }, 220);
+
+    return () => {
+      cancelled = true;
+      clearTimeout(timer);
+    };
+  }, [isSearchOpen, searchQuery]);
+
+  useEffect(() => {
     // Lock body scroll when either drawer is open/animating.
-    if (isMobileAnimating || isCartAnimating) {
+    if (isMobileAnimating || isCartAnimating || isSearchOpen) {
       document.body.style.overflow = "hidden";
       return;
     }
@@ -177,7 +277,7 @@ export default function Navigation() {
     return () => {
       document.body.style.overflow = "unset";
     };
-  }, [isMobileAnimating, isCartAnimating]);
+  }, [isMobileAnimating, isCartAnimating, isSearchOpen]);
 
   useEffect(() => {
     return () => {
@@ -217,8 +317,16 @@ export default function Navigation() {
             ))}
           </div>
 
-          {/* Mobile Menu Icon */}
-          <div className="flex items-center gap-3">
+          {/* Mobile Menu Icon & Search */}
+          <div className="flex items-center gap-2">
+            <button
+              onClick={openSearchModal}
+              className="p-1 text-gray-600  hover:text-black  transition-colors duration-200"
+              aria-label="Search fragrances"
+            >
+              <MagnifyingGlassIcon className="h-6 w-6" aria-hidden="true" />
+            </button>
+
             <button
               onClick={toggleCartDrawer}
               className="relative p-1 text-gray-600  hover:text-black  transition-colors duration-200"
@@ -448,6 +556,128 @@ export default function Navigation() {
             </div>
           </div>
         </aside>
+      )}
+
+      {/* Search Modal Overlay */}
+      {isSearchOpen && (
+        <div
+          className="fixed inset-0 z-[1000] bg-black/30 transition-opacity duration-300"
+          onClick={closeSearchModal}
+        />
+      )}
+
+      {/* Search Modal */}
+      {isSearchOpen && (
+        <div className="fixed inset-0 z-[1001] flex items-center justify-center px-4 py-8">
+          <div className="bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl w-full max-w-lg border border-gray-200 overflow-hidden">
+            <div className="px-6 py-5 border-b border-gray-200 flex items-center justify-between gap-4">
+              <h3 className="text-lg font-serif font-light text-gray-900">
+                Search Fragrances
+              </h3>
+              <button
+                onClick={closeSearchModal}
+                className="p-1 text-gray-500 hover:text-black transition-colors"
+                aria-label="Close search"
+              >
+                <XMarkIcon className="h-5 w-5" aria-hidden="true" />
+              </button>
+            </div>
+            <div className="p-6 space-y-4">
+              <div className="relative group">
+                <MagnifyingGlassIcon
+                  className="h-5 w-5 text-gray-400 absolute left-4 top-1/2 -translate-y-1/2"
+                  aria-hidden="true"
+                />
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Escape") {
+                      closeSearchModal();
+                    }
+                  }}
+                  placeholder="Search by name or tagline..."
+                  autoFocus
+                  className="w-full pl-12 pr-4 py-4 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-black focus:border-black bg-white text-gray-900 placeholder:text-gray-400 transition-all duration-300"
+                />
+              </div>
+
+              <div className="max-h-[300px] overflow-y-auto rounded-xl border border-gray-200 bg-white">
+                {searchQuery.trim() === "" ? (
+                  <p className="px-4 py-5 text-sm text-gray-500 font-light">
+                    Start typing to see fragrance suggestions.
+                  </p>
+                ) : isSearching ? (
+                  <p className="px-4 py-5 text-sm text-gray-500 font-light">
+                    Searching...
+                  </p>
+                ) : searchResults.length === 0 ? (
+                  <p className="px-4 py-5 text-sm text-gray-500 font-light">
+                    No matching fragrance found.
+                  </p>
+                ) : (
+                  <ul className="divide-y divide-gray-100">
+                    {searchResults.map((product) => (
+                      <li key={product.id}>
+                        <Link
+                          href={`/product/${product.id}`}
+                          onClick={closeSearchModal}
+                          className="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition-colors"
+                        >
+                          <div className="relative h-12 w-12 rounded-lg border border-gray-200 bg-gray-50 overflow-hidden shrink-0">
+                            {isValidImageUrl(product.image) ? (
+                              <Image
+                                src={product.image!}
+                                alt={product.name}
+                                fill
+                                className="object-cover"
+                                sizes="48px"
+                              />
+                            ) : (
+                              <div className="h-full w-full flex items-center justify-center text-gray-500 text-sm font-serif">
+                                {product.name.charAt(0).toUpperCase()}
+                              </div>
+                            )}
+                          </div>
+
+                          <div className="min-w-0 flex-1">
+                            <p className="text-sm font-medium text-gray-900 truncate">
+                              {product.name}
+                            </p>
+                            <p className="text-xs text-gray-500 truncate">
+                              {product.tagline || "Eau de parfum"}
+                            </p>
+                          </div>
+
+                          <p className="text-xs font-semibold text-gray-800 shrink-0">
+                            Rs {product.price.toFixed(2)}
+                          </p>
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <button
+                  onClick={closeSearchModal}
+                  className="py-3 rounded-full border border-gray-300 text-gray-700 font-medium text-sm hover:border-gray-900 hover:text-black transition-colors duration-300"
+                >
+                  Close
+                </button>
+                <Link
+                  href={`/fragrances${searchQuery.trim() ? `?q=${encodeURIComponent(searchQuery)}` : ""}`}
+                  onClick={closeSearchModal}
+                  className="py-3 rounded-full bg-gray-900 text-white font-medium text-sm hover:bg-black transition-colors duration-300 text-center"
+                >
+                  View All
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
       )}
     </>
   );

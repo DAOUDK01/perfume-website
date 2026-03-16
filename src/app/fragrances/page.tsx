@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { Search } from "lucide-react";
 
 function useDebounce(value: string, delay: number) {
   const [debouncedValue, setDebouncedValue] = useState(value);
@@ -27,7 +27,41 @@ type FragranceItem = {
   tagline: string;
   price: number;
   image?: string;
+  category?: string;
 };
+
+type CategoryFilter = "all" | "men" | "woman" | "uni";
+
+const categoryOptions: Array<{ value: CategoryFilter; label: string }> = [
+  { value: "all", label: "All" },
+  { value: "men", label: "Men" },
+  { value: "woman", label: "Woman" },
+  { value: "uni", label: "Unisex" },
+];
+
+function normalizeCategory(value?: string): CategoryFilter | null {
+  const category = (value || "").toLowerCase().trim();
+
+  if (!category) return null;
+  if (category.includes("uni")) return "uni";
+  if (
+    category.includes("women") ||
+    category.includes("woman") ||
+    category.includes("female") ||
+    category.includes("lady")
+  ) {
+    return "woman";
+  }
+  if (
+    category.includes("men") ||
+    category.includes("male") ||
+    category.includes("man")
+  ) {
+    return "men";
+  }
+
+  return null;
+}
 
 type CartItem = {
   id: string;
@@ -37,11 +71,44 @@ type CartItem = {
 };
 
 export default function FragrancesPage() {
+  return (
+    <Suspense fallback={<FragrancesLoading />}>
+      <FragrancesContent />
+    </Suspense>
+  );
+}
+
+function FragrancesLoading() {
+  return (
+    <main className="min-h-screen w-full bg-[#fafafa] overflow-visible">
+      <section className="relative pt-28 pb-16 md:pt-36 md:pb-24 text-center px-6 border-b border-gray-100  overflow-hidden">
+        <div className="relative z-10">
+          <span className="inline-block text-[10px] md:text-xs tracking-[0.35em] uppercase text-gray-400  font-medium animate-pulse">
+            Collection
+          </span>
+          <h1 className="mt-4 md:mt-6 text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-serif font-light tracking-tight text-gray-900  animate-pulse">
+            Fragrances
+          </h1>
+        </div>
+      </section>
+    </main>
+  );
+}
+
+function FragrancesContent() {
+  const searchParams = useSearchParams();
   const [cart, setCart] = useState<CartItem[]>([]);
   const [list, setList] = useState<FragranceItem[]>([]);
   const [loading, setLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState("");
+  const searchQuery = searchParams.get("q") || "";
+  const [selectedCategory, setSelectedCategory] =
+    useState<CategoryFilter>("all");
   const debouncedSearchQuery = useDebounce(searchQuery, 500);
+
+  const filteredList = list.filter((item) => {
+    if (selectedCategory === "all") return true;
+    return normalizeCategory(item.category) === selectedCategory;
+  });
 
   useEffect(() => {
     try {
@@ -147,44 +214,35 @@ export default function FragrancesPage() {
       </section>
 
       {/* GRID */}
-      <section className="py-16 md:py-24 lg:py-32 px-4 sm:px-6">
+      <section className="py-12 md:py-20 lg:py-28 px-4 sm:px-6">
         <div className="w-full max-w-7xl mx-auto">
           <div
-            className="relative mb-12 animate-fade-in-up opacity-0"
+            className="relative mb-8 animate-fade-in-up opacity-0"
             style={{ animationDelay: "0.8s", animationFillMode: "forwards" }}
           >
-            <div className="relative group max-w-md mx-auto">
-              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400  w-5 h-5 transition-all duration-300 group-focus-within:text-black  group-focus-within:scale-110" />
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search fragrances by name or tagline..."
-                className="w-full pl-12 pr-4 py-4 border border-gray-200  rounded-2xl focus:outline-none focus:ring-2 focus:ring-black/20  focus:border-black  bg-white/80  backdrop-blur-sm text-gray-900  placeholder:text-gray-400  transition-all duration-300 shadow-sm hover:shadow-md focus:shadow-lg"
-              />
-              {searchQuery && (
-                <button
-                  onClick={() => setSearchQuery("")}
-                  className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600  transition-colors duration-200"
-                >
-                  <svg
-                    className="w-4 h-4"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
+            <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3">
+              {categoryOptions.map((option) => {
+                const isActive = selectedCategory === option.value;
+
+                return (
+                  <button
+                    key={option.value}
+                    onClick={() => setSelectedCategory(option.value)}
+                    className={`rounded-full border px-4 py-2 text-xs sm:text-sm tracking-wide transition-all duration-300 ${
+                      isActive
+                        ? "border-gray-900 bg-gray-900 text-white"
+                        : "border-gray-200 bg-white text-gray-700 hover:border-gray-400"
+                    }`}
                   >
-                    <path
-                      fillRule="evenodd"
-                      d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                </button>
-              )}
+                    {option.label}
+                  </button>
+                );
+              })}
             </div>
           </div>
 
           {loading ? (
-            <div className="grid grid-cols-1 items-stretch sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8">
+            <div className="grid grid-cols-1 items-stretch sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
               {[1, 2, 3, 4, 5, 6].map((i) => (
                 <div
                   key={i}
@@ -199,15 +257,17 @@ export default function FragrancesPage() {
                 </div>
               ))}
             </div>
-          ) : list.length === 0 ? (
+          ) : filteredList.length === 0 ? (
             <div className="text-center py-24">
               <p className="text-gray-500  font-light">
-                No fragrances yet. Add some from the admin.
+                {list.length === 0
+                  ? "No fragrances yet. Add some from the admin."
+                  : "No fragrances found for this category."}
               </p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 items-stretch sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8">
-              {list.map((fragrance) => {
+            <div className="grid grid-cols-1 items-stretch sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
+              {filteredList.map((fragrance) => {
                 const cartItem = cart.find((item) => item.id === fragrance.id);
                 return (
                   <FragranceCard
@@ -285,21 +345,21 @@ function FragranceCard({ fragrance, inCart, onAddToCart }: FragranceCardProps) {
         {/* CONTENT */}
         <div className="p-5 md:p-6 flex flex-1 flex-col text-center relative">
           <div className="relative z-10 flex h-full flex-col">
-            <h3 className="text-lg md:text-xl font-serif font-light tracking-wide text-gray-900  transition-colors duration-300">
+            <h3 className="text-xl md:text-2xl font-serif font-semibold tracking-wide text-gray-900  transition-colors duration-300">
               {fragrance.name}
             </h3>
             <p className="mt-3 text-sm text-gray-500  leading-relaxed line-clamp-2 font-light">
               {fragrance.tagline || "Eau de parfum"}
             </p>
-            <div className="mt-auto pt-6 flex flex-col items-center gap-5">
+            <div className="mt-auto pt-4 flex flex-col items-center gap-3">
               <div className="relative">
-                <span className="text-lg font-semibold text-gray-900 ">
+                <span className="text-base font-semibold text-gray-900 ">
                   Rs {fragrance.price}
                 </span>
               </div>
               <button
                 onClick={handleAdd}
-                className={`w-full max-w-[220px] py-3 px-6 text-xs tracking-[0.2em] uppercase rounded-full transition-all duration-300 ${
+                className={`w-full max-w-[180px] py-2 px-5 text-xs tracking-[0.2em] uppercase rounded-full transition-all duration-300 ${
                   inCart > 0
                     ? "bg-black  text-white  shadow-lg"
                     : "bg-white/90  backdrop-blur-sm text-black  border border-gray-200  hover:border-black  hover:bg-black  hover:text-white  shadow-sm"

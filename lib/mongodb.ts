@@ -187,7 +187,8 @@ export async function safeDbOperation<T>(
       `${operationName} timed out`,
     );
   } catch (error) {
-    console.warn(`[MongoDB] ${operationName} failed:`, error.message);
+    const message = error instanceof Error ? error.message : String(error);
+    console.warn(`[MongoDB] ${operationName} failed:`, message);
     return fallback;
   }
 }

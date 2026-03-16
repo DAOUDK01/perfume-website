@@ -6,13 +6,17 @@ const config: Config = {
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
   ],
-  darkMode: "class",
   theme: {
     extend: {
       fontFamily: {
-        serif: ['"Playfair Display"', 'serif'],
-        sans: ['-apple-system', 'BlinkMacSystemFont', '"Segoe UI"', 'sans-serif'],
-        agrandir: ['Agrandir', 'system-ui', 'sans-serif'],
+        serif: ['"Playfair Display"', "serif"],
+        sans: [
+          "-apple-system",
+          "BlinkMacSystemFont",
+          '"Segoe UI"',
+          "sans-serif",
+        ],
+        agrandir: ["Agrandir", "system-ui", "sans-serif"],
       },
       colors: {
         black: "#000000",

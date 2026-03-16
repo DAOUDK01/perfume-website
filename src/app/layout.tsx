@@ -28,7 +28,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={playfair.className}>
-      <body className="bg-white dark:bg-gray-900 transition-colors duration-300">
+      <body className="bg-white">
         <ClientProviders>
           <AppShell>{children}</AppShell>
         </ClientProviders>

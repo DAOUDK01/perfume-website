@@ -9,14 +9,31 @@ export default function Button({
   className = "",
   ...props
 }: ButtonProps) {
+  // Check if custom styling is provided
+  const hasCustomStyling =
+    className.includes("bg-") || className.includes("text-");
+
+  if (hasCustomStyling) {
+    // When custom styling is provided, just apply the base styles and custom className
+    return (
+      <button
+        className={`px-6 py-2 text-sm border transition-all duration-300 hover:shadow-md ${className}`}
+        {...props}
+      >
+        {children}
+      </button>
+    );
+  }
+
+  // Default button styling when no custom styling is provided
   const baseStyles =
     "px-6 py-2 text-sm border transition-all duration-300 hover:shadow-md";
 
   const variants = {
     primary:
-      "border-black dark:border-white text-black dark:text-white bg-transparent hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black",
+      "border-black  text-black  bg-transparent hover:bg-black hover:text-white  ",
     secondary:
-      "border-black dark:border-white text-black dark:text-white bg-transparent hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black",
+      "border-black  text-black  bg-transparent hover:bg-black hover:text-white  ",
   };
 
   return (

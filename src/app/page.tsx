@@ -1,12 +1,10 @@
 "use client";
 
 import Button from "@/components/Button";
-import ScrollProgress from "@/components/ScrollProgress";
 import ScrollReveal from "@/components/ScrollReveal";
 import Link from "next/link";
 import Image from "next/image";
-import { useEffect, useState, useRef } from "react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useEffect, useState } from "react";
 import { ContentItem, getContent } from "@/types/content";
 
 type FragranceItem = {
@@ -30,7 +28,11 @@ export default function HomePage() {
         console.log("API Response Data:", data);
         if (res.ok) {
           if (Array.isArray(data.content)) {
-            setContent(data.content.filter((item: ContentItem) => item.page === "Home") || []);
+            setContent(
+              data.content.filter(
+                (item: ContentItem) => item.page === "Home",
+              ) || [],
+            );
           } else {
             console.error("data.content is not an array:", data.content);
             setError("Invalid content format from API");
@@ -47,7 +49,6 @@ export default function HomePage() {
     fetchContent();
   }, []);
 
-  const sections = ["What is e'eora?", "Why us", "Collection", "Stay Updated"];
   const [featuredList, setFeaturedList] = useState<FragranceItem[]>([]);
 
   // For "Stay Updated" section
@@ -102,132 +103,293 @@ export default function HomePage() {
       }
     }
     load();
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, []);
-
-
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-[#fafafa] dark:bg-gray-900">
-        <p className="text-gray-600 dark:text-gray-300">Loading home page content...</p>
+      <div className="flex items-center justify-center min-h-screen bg-[#fafafa] ">
+        <p className="text-gray-600 ">Loading home page content...</p>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-[#fafafa] dark:bg-gray-900">
+      <div className="flex items-center justify-center min-h-screen bg-[#fafafa] ">
         <p className="text-red-600">Error: {error}</p>
       </div>
     );
   }
 
+  const philosophySource = getContent(
+    content,
+    "Philosophy",
+    "Quote",
+    "text",
+    "We believe fragrance should be intentional, not loud. Each scent is designed to complement, not overwhelm.",
+  );
+
+  const firstPhilosophySentence = philosophySource
+    .split(".")
+    .map((sentence) => sentence.trim())
+    .find(Boolean);
+
+  const philosophyQuote = firstPhilosophySentence
+    ? `${firstPhilosophySentence}.`
+    : "Fragrance should feel quiet and intentional.";
+
+  const featuredStoryImage =
+    "https://res.cloudinary.com/djb0ekljm/image/upload/v1773663999/eeora_profile_pic_olqq41.jpg";
+
+  const whyEeoraHighlights = [
+    {
+      number: "01",
+      title: "Careful",
+      description:
+        "Every ingredient and detail is selected with restraint, so nothing feels excessive.",
+    },
+    {
+      number: "02",
+      title: "Minimal",
+      description:
+        "The design stays clean and clear, letting form, scent, and texture speak softly.",
+    },
+    {
+      number: "03",
+      title: "Long Lasting",
+      description:
+        "The fragrance stays refined from opening to dry down, present without becoming heavy.",
+    },
+  ];
+
   return (
     <>
-  <div className="bg-[#fafafa] dark:bg-gray-900">
-        <ScrollProgress sections={sections} />
-
-
-
-        {/* Hero — Fixed e'eora rendering with proper mobile sizing */}
+      <div className="bg-[#fafafa] ">
+        {/* Hero — Clean minimal design */}
         <section
-          className="min-h-screen flex flex-col items-center justify-center px-4 sm:px-6 relative overflow-hidden bg-white dark:bg-gray-900 pt-20 md:pt-0"
+          className="min-h-screen flex flex-col items-center justify-center px-4 sm:px-6 relative overflow-hidden bg-white  pt-20 md:pt-0"
           data-scroll-section="0"
         >
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-gray-50 via-white to-white dark:from-gray-800 dark:via-gray-900 dark:to-gray-900 opacity-60 pointer-events-none" />
-          
+          <div className="absolute inset-0 bg-gradient-to-b from-gray-50/10 to-transparent  opacity-30 pointer-events-none" />
+          <div
+            className="absolute top-20 left-10 w-32 h-32 bg-gray-100  rounded-full opacity-10 blur-3xl animate-float"
+            style={{ animationDelay: "0.2s" }}
+          />
+          <div
+            className="absolute bottom-20 right-10 w-40 h-40 bg-gray-200  rounded-full opacity-10 blur-3xl animate-float"
+            style={{ animationDelay: "1.3s" }}
+          />
+
           <ScrollReveal className="max-w-4xl mx-auto text-center w-full relative z-10">
             <h1
-              className="font-agrandir font-bold tracking-tighter text-[clamp(2.5rem,10vw,6rem)] sm:text-[clamp(3.5rem,12vw,8rem)] md:text-[clamp(4rem,15vw,10rem)] leading-[0.85] text-gray-900 dark:text-gray-100 mb-6 animate-fade-in-up md:leading-[0.9]"
+              className="font-agrandir font-bold tracking-tighter text-[clamp(2.5rem,10vw,6rem)] sm:text-[clamp(3.5rem,12vw,8rem)] md:text-[clamp(4rem,15vw,10rem)] leading-[0.85] text-gray-900  mb-6 animate-fade-in-up md:leading-[0.9]"
               style={{ letterSpacing: "-0.05em" }}
               title="e'eora"
             >
               e'eora
             </h1>
             <div className="space-y-4 animate-fade-in-up delay-100">
-              <p className="text-lg sm:text-xl md:text-2xl lg:text-3xl text-gray-600 dark:text-gray-300 font-light tracking-wide">
-                {getContent(content, "Hero", "Subtitle", "text", "A quiet expression of scent")}
+              <p className="text-lg sm:text-xl md:text-2xl lg:text-3xl text-gray-600  font-light tracking-wide">
+                {getContent(
+                  content,
+                  "Hero",
+                  "Subtitle",
+                  "text",
+                  "A quiet expression of scent",
+                )}
               </p>
-              <p className="text-sm sm:text-base md:text-lg text-gray-400 dark:text-gray-500 font-light max-w-lg mx-auto leading-relaxed px-4">
-                {getContent(content, "Hero", "Description", "text", "Thoughtfully crafted fragrances that speak softly, designed to linger in memory rather than dominate the room.")}
+              <p className="text-sm sm:text-base md:text-lg text-gray-400  font-light max-w-lg mx-auto leading-relaxed px-4">
+                {getContent(
+                  content,
+                  "Hero",
+                  "Description",
+                  "text",
+                  "Thoughtfully crafted fragrances that speak softly, designed to linger in memory rather than dominate the room.",
+                )}
               </p>
             </div>
             <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center mt-10 sm:mt-12 animate-fade-in-up delay-200">
               <Link href="/fragrances">
-                <Button variant="primary" className="px-8 sm:px-10 py-4 text-base sm:text-lg shadow-lg hover:shadow-xl transition-shadow w-full sm:w-auto">
+                <Button className="px-8 py-4 text-base md:text-lg font-medium bg-gray-900 hover:bg-black text-white    shadow-md hover:shadow-lg rounded-full transition-all duration-300 w-full sm:w-auto">
                   Discover Collection
                 </Button>
               </Link>
               <Link href="/about">
-                <Button variant="secondary" className="px-8 sm:px-10 py-4 text-base sm:text-lg w-full sm:w-auto">
+                <Button
+                  variant="secondary"
+                  className="px-6 sm:px-8 md:px-10 py-3 sm:py-4 text-sm sm:text-base md:text-lg border-2 border-gray-300 hover:border-gray-900 hover:bg-gray-100 text-gray-900     w-full sm:w-auto transition-all duration-300 transform hover:scale-105 rounded-full"
+                >
                   Our Philosophy
                 </Button>
               </Link>
             </div>
           </ScrollReveal>
-
-          {/* Scroll Indicator */}
-          <div className="absolute bottom-8 sm:bottom-12 left-1/2 -translate-x-1/2 animate-bounce opacity-50">
-            <div className="w-px h-12 sm:h-16 bg-gradient-to-b from-gray-300 dark:from-gray-600 to-transparent" />
-          </div>
         </section>
 
         {/* Philosophy */}
-        <section className="py-20 sm:py-24 md:py-32 lg:py-40 bg-[#fafafa] dark:bg-gray-800 border-t border-gray-100 dark:border-gray-700">
-          <div className="max-w-2xl mx-auto px-4 sm:px-6 text-center">
+        <section className="py-20 sm:py-24 md:py-32 lg:py-40 bg-white  border-t border-gray-200  overflow-hidden">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 relative">
+            <div className="absolute -top-8 left-8 h-36 w-36 rounded-full bg-gray-100/80 blur-3xl" />
+            <div className="absolute bottom-0 right-8 h-44 w-44 rounded-full bg-gray-100/70 blur-3xl" />
+
             <ScrollReveal>
-              <p className="text-lg sm:text-xl md:text-2xl lg:text-3xl text-gray-700 dark:text-gray-300 font-light leading-relaxed">
-                {getContent(content, "Philosophy", "Quote", "text", "We believe fragrance should be intentional, not loud. Each scent is designed to complement, not overwhelm.")}
-              </p>
-              <span className="inline-block mt-6 sm:mt-8 text-[10px] tracking-[0.35em] text-gray-400 dark:text-gray-500 uppercase">
-                {getContent(content, "Philosophy", "Label", "text", "Philosophy")}
-              </span>
+              <div className="relative rounded-[1.75rem] border border-gray-200/80 bg-white/55 px-6 py-8 sm:px-10 sm:py-10 backdrop-blur-xl shadow-[0_20px_60px_rgba(15,23,42,0.05)] text-center overflow-hidden">
+                <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(255,255,255,0.75),rgba(243,244,246,0.3))]" />
+                <div className="absolute inset-x-10 top-0 h-px bg-gradient-to-r from-transparent via-white to-transparent opacity-90" />
+                <div className="absolute left-6 top-6 h-14 w-14 rounded-xl border border-white/70 bg-white/30 opacity-70" />
+                <div className="absolute right-8 bottom-6 h-10 w-10 rounded-xl border border-white/60 bg-white/20 opacity-60" />
+
+                <span className="relative z-10 inline-block text-[10px] tracking-[0.35em] text-gray-500  uppercase font-medium mb-5 sm:mb-6">
+                  {getContent(
+                    content,
+                    "Philosophy",
+                    "Label",
+                    "text",
+                    "Philosophy",
+                  )}
+                </span>
+                <blockquote className="relative z-10 text-[clamp(1.35rem,2.8vw,2.4rem)] font-serif font-light tracking-tight text-gray-900  leading-[1.18] max-w-3xl mx-auto text-balance">
+                  “{philosophyQuote}”
+                </blockquote>
+                <p className="relative z-10 mt-4 text-sm sm:text-base text-gray-600  font-light leading-relaxed max-w-xl mx-auto">
+                  A soft presence, a clean signature, and a finish that stays
+                  close to the skin.
+                </p>
+              </div>
             </ScrollReveal>
           </div>
         </section>
 
-        {/* Why e'eora — three pillars */}
+        {/* Featured Story */}
+        <section className="py-20 sm:py-24 md:py-28 lg:py-32 bg-white  border-t border-gray-200  overflow-hidden">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-stretch">
+              <ScrollReveal className="lg:col-span-7">
+                <div className="relative min-h-[340px] sm:min-h-[430px] lg:min-h-[520px] rounded-[2rem] border border-gray-200  overflow-hidden bg-gray-50  group shadow-[0_22px_70px_rgba(15,23,42,0.07)] animate-float">
+                  <Image
+                    src={featuredStoryImage}
+                    alt="The personality behind e'eora"
+                    fill
+                    className="object-cover object-center transition-transform duration-700 group-hover:scale-105"
+                    sizes="(max-width: 1024px) 100vw, 58vw"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-tr from-black/18 via-transparent to-white/25" />
+                  <div className="absolute left-5 top-5 bg-white/80  backdrop-blur-md px-4 py-2 rounded-full border border-white/75">
+                    <span className="text-[10px] tracking-[0.25em] text-gray-700  uppercase font-medium">
+                      Personality Edit
+                    </span>
+                  </div>
+                  <div className="absolute right-5 bottom-5 bg-white/78  backdrop-blur-md px-4 py-2 rounded-full border border-white/70">
+                    <span className="text-[10px] tracking-[0.25em] text-gray-700  uppercase font-medium">
+                      Quiet Luxury
+                    </span>
+                  </div>
+                </div>
+              </ScrollReveal>
+
+              <ScrollReveal delay={120} className="lg:col-span-5">
+                <div className="h-full rounded-[1.75rem] border border-gray-200/80 bg-white/60  backdrop-blur-lg px-6 py-8 sm:px-8 sm:py-10 shadow-[0_18px_55px_rgba(15,23,42,0.05)]">
+                  <span className="inline-block text-[10px] tracking-[0.35em] text-gray-500  uppercase font-medium mb-4">
+                    Featured Story
+                  </span>
+                  <h2 className="text-3xl sm:text-4xl font-serif font-light text-gray-900  leading-tight mb-5">
+                    The personality behind the scent
+                  </h2>
+                  <p className="text-gray-700  font-light leading-relaxed text-sm sm:text-base mb-6">
+                    Crafted for presence without noise, this profile reflects a
+                    fragrance identity that feels polished, calm, and lasting.
+                  </p>
+
+                  <div className="space-y-4 mb-7">
+                    {[
+                      {
+                        label: "Quiet",
+                        value:
+                          "Soft projection designed to stay elegant in close moments.",
+                      },
+                      {
+                        label: "Balanced",
+                        value:
+                          "Notes transition smoothly from opening to dry-down.",
+                      },
+                      {
+                        label: "Memorable",
+                        value:
+                          "A clear identity that lingers gently through the day.",
+                      },
+                    ].map((item) => (
+                      <div
+                        key={item.label}
+                        className="grid grid-cols-[80px_1fr] gap-3 items-start"
+                      >
+                        <span className="text-[11px] tracking-[0.25em] uppercase text-gray-500  font-medium pt-1">
+                          {item.label}
+                        </span>
+                        <p className="text-sm text-gray-600  font-light leading-relaxed">
+                          {item.value}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+
+                  <Link
+                    href="/fragrances"
+                    className="inline-flex items-center gap-2 text-sm font-medium text-gray-900  border-b-2 border-gray-200 hover:border-black   pb-1 transition-all duration-300"
+                  >
+                    Explore the collection
+                    <span aria-hidden="true">→</span>
+                  </Link>
+                </div>
+              </ScrollReveal>
+            </div>
+          </div>
+        </section>
+
+        {/* Why e'eora — water drop pillars */}
         <section
-          className="py-20 sm:py-24 md:py-32 lg:py-40 bg-white dark:bg-gray-900"
+          className="py-20 sm:py-24 md:py-32 lg:py-40 bg-white  overflow-hidden"
           data-scroll-section="1"
         >
           <div className="max-w-7xl mx-auto px-4 sm:px-6">
             <ScrollReveal className="text-center mb-10 sm:mb-14 md:mb-20">
-              <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-serif font-light tracking-tight text-gray-900 dark:text-gray-100 mb-3 leading-tight">
-                Why{' '}
-                <span className="font-agrandir">e'eora</span>
+              <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-serif font-light tracking-tight text-gray-900  mb-3 leading-tight">
+                Why <span className="font-agrandir">e'eora</span>
               </h2>
-              <p className="text-gray-500 dark:text-gray-400 font-light text-base sm:text-lg">
-                {getContent(content, "Why e'eora", "Subtitle", "text", "Three pillars of our philosophy")}
+              <p className="text-gray-500  font-light text-base sm:text-lg">
+                {getContent(
+                  content,
+                  "Why e'eora",
+                  "Subtitle",
+                  "text",
+                  "Three pillars of our philosophy",
+                )}
               </p>
             </ScrollReveal>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 md:gap-10">
-              {[
-                { 
-                  number: getContent(content, "Why e'eora", "Pillar 1 Number", "text", "01"), 
-                  title: getContent(content, "Why e'eora", "Pillar 1 Title", "text", "Carefully Selected"), 
-                  desc: getContent(content, "Why e'eora", "Pillar 1 Description", "text", "Premium ingredients sourced responsibly from trusted suppliers. Each component is vetted for quality and sustainability.") 
-                },
-                { 
-                  number: getContent(content, "Why e'eora", "Pillar 2 Number", "text", "02"), 
-                  title: getContent(content, "Why e'eora", "Pillar 2 Title", "text", "Minimal Design"), 
-                  desc: getContent(content, "Why e'eora", "Pillar 2 Description", "text", "Clean, timeless bottles that reflect understated elegance. Form follows function in every detail.") 
-                },
-                { 
-                  number: getContent(content, "Why e'eora", "Pillar 3 Number", "text", "03"), 
-                  title: getContent(content, "Why e'eora", "Pillar 3 Title", "text", "Long Lasting"), 
-                  desc: getContent(content, "Why e'eora", "Pillar 3 Description", "text", "High concentration eau de parfum for all-day wear. Crafted to evolve beautifully on your skin.") 
-                },
-              ].map((item, i) => (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 md:gap-10 items-stretch">
+              {whyEeoraHighlights.map((item, i) => (
                 <ScrollReveal
                   key={item.number}
                   delay={i * 150}
-                  className="bg-white dark:bg-gray-800 rounded-2xl p-6 sm:p-8 md:p-12 border border-gray-100 dark:border-gray-700 hover:border-gray-200 dark:hover:border-gray-600 shadow-sm hover:shadow-xl dark:hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 group"
+                  className="group relative overflow-hidden min-h-[320px] px-7 py-8 sm:px-8 sm:py-10 border border-gray-200/80 bg-white/50 backdrop-blur-xl shadow-[0_18px_50px_rgba(15,23,42,0.04)] transition-all duration-500 hover:-translate-y-2 hover:shadow-[0_24px_60px_rgba(15,23,42,0.06)] rounded-[1.75rem]"
                 >
-                  <span className="text-xs font-medium text-gray-400 dark:text-gray-500 tracking-[0.3em] group-hover:text-black dark:group-hover:text-white transition-colors block mb-2">{item.number}</span>
-                  <h3 className="text-xl sm:text-2xl md:text-3xl font-serif font-light mt-4 sm:mt-6 mb-4 text-gray-900 dark:text-gray-100 leading-tight">{item.title}</h3>
-                  <p className="text-gray-600 dark:text-gray-300 font-light text-sm sm:text-base leading-relaxed">{item.desc}</p>
+                  <div className="absolute inset-0 bg-[linear-gradient(145deg,rgba(255,255,255,0.72),rgba(243,244,246,0.28))]" />
+                  <div className="absolute inset-x-8 top-0 h-px bg-gradient-to-r from-transparent via-white to-transparent opacity-90" />
+                  <div className="absolute right-6 top-6 h-12 w-12 rounded-xl border border-white/70 bg-white/25" />
+                  <div className="absolute left-8 bottom-8 h-8 w-8 rounded-xl border border-white/50 bg-white/20" />
+
+                  <span className="text-xs font-bold text-gray-500  tracking-[0.3em] block mb-3 relative z-10">
+                    {item.number}
+                  </span>
+                  <h3 className="text-2xl sm:text-3xl font-serif font-light mt-6 sm:mt-8 mb-4 text-gray-900  leading-tight relative z-10">
+                    {item.title}
+                  </h3>
+                  <p className="text-gray-600  font-light text-sm sm:text-base leading-relaxed relative z-10 max-w-[18rem]">
+                    {item.description}
+                  </p>
+                  <div className="absolute inset-x-8 bottom-0 h-px bg-gradient-to-r from-transparent via-gray-200 to-transparent opacity-80" />
                 </ScrollReveal>
               ))}
             </div>
@@ -236,56 +398,113 @@ export default function HomePage() {
 
         {/* Featured Collection */}
         <section
-          className="py-20 sm:py-24 md:py-32 lg:py-40 bg-[#fafafa] dark:bg-gray-800 border-t border-gray-100 dark:border-gray-700"
+          className="py-20 sm:py-24 md:py-32 lg:py-40 bg-gray-50  border-t border-gray-200 "
           data-scroll-section="2"
         >
           <div className="max-w-7xl mx-auto px-4 sm:px-6">
             <ScrollReveal className="text-center mb-10 sm:mb-14 md:mb-20">
-              <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-serif font-light tracking-tight text-gray-900 dark:text-gray-100 mb-3 leading-tight">
-                {getContent(content, "Featured Collection", "Title", "text", "Featured Collection")}
+              <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-serif font-light tracking-tight text-gray-900  mb-3 leading-tight">
+                {getContent(
+                  content,
+                  "Featured Collection",
+                  "Title",
+                  "text",
+                  "Featured Collection",
+                )}
               </h2>
-              <p className="text-gray-500 dark:text-gray-400 font-light text-base sm:text-lg">
-                {getContent(content, "Featured Collection", "Subtitle", "text", "Select from our curated fragrances")}
+              <p className="text-gray-600  font-light text-base sm:text-lg">
+                {getContent(
+                  content,
+                  "Featured Collection",
+                  "Subtitle",
+                  "text",
+                  "Select from our curated fragrances",
+                )}
               </p>
             </ScrollReveal>
-            <ProductCarousel fragrances={featuredList} />
+            <FeaturedProductGrid fragrances={featuredList} />
             <ScrollReveal className="text-center mt-8 sm:mt-12 md:mt-16">
               <Link href="/fragrances">
-                <Button variant="secondary" className="px-8 sm:px-12 py-4 text-lg">Explore Full Collection</Button>
+                <Button
+                  variant="secondary"
+                  className="px-8 sm:px-12 py-4 text-lg bg-white hover:bg-gray-50   border-2 border-gray-300 hover:border-black   transition-all duration-300 transform hover:scale-105"
+                >
+                  Explore Full Collection
+                </Button>
               </Link>
             </ScrollReveal>
           </div>
         </section>
 
         {/* Craftsmanship */}
-        <section className="py-20 sm:py-24 md:py-32 lg:py-40 bg-white dark:bg-gray-900 border-t border-gray-100 dark:border-gray-700">
+        <section className="py-20 sm:py-24 md:py-32 lg:py-40 bg-white  border-t border-gray-200 ">
           <div className="max-w-7xl mx-auto px-4 sm:px-6">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-20 items-center">
               <ScrollReveal>
-                <div className="rounded-2xl border border-gray-100 dark:border-gray-700 p-8 sm:p-12 md:p-16 flex flex-col items-center justify-center min-h-[300px] sm:min-h-[380px] md:min-h-[460px] relative overflow-hidden">
+                <div className="rounded-2xl border-2 border-gray-200  p-8 sm:p-12 md:p-16 flex flex-col items-center justify-center min-h-[300px] sm:min-h-[380px] md:min-h-[460px] relative overflow-hidden bg-gray-50 ">
                   <Image
-                    src={getContent(content, "Craftsmanship", "Image", "image", "https://res.cloudinary.com/djb0ekljm/image/upload/v1769277918/OIP_nkiuae.webp")}
-                    alt={getContent(content, "Craftsmanship", "Image Alt Text", "text", "Craftsmanship Image")}
+                    src={getContent(
+                      content,
+                      "Craftsmanship",
+                      "Image",
+                      "image",
+                      "https://res.cloudinary.com/djb0ekljm/image/upload/v1773665520/Gemini_Generated_Image_spf0k2spf0k2spf0_odmrkg.png",
+                    )}
+                    alt={getContent(
+                      content,
+                      "Craftsmanship",
+                      "Image Alt Text",
+                      "text",
+                      "Craftsmanship Image",
+                    )}
                     fill
                     objectFit="contain"
-                    className="object-center"
+                    className="object-center relative z-10"
                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                   />
                 </div>
               </ScrollReveal>
               <ScrollReveal delay={150}>
-                <div>
-                  <h3 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-serif font-light text-gray-900 dark:text-gray-100 mb-4 sm:mb-6 leading-tight">
-                    {getContent(content, "Craftsmanship", "Title", "text", "Crafted with intention")}
+                <div className="relative">
+                  <h3 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-serif font-light text-gray-900  mb-4 sm:mb-6 leading-tight relative z-10">
+                    {getContent(
+                      content,
+                      "Craftsmanship",
+                      "Title",
+                      "text",
+                      "Crafted with intention",
+                    )}
                   </h3>
-                  <p className="text-gray-600 dark:text-gray-300 font-light leading-relaxed mb-4 sm:mb-6 text-sm sm:text-base">
-                    {getContent(content, "Craftsmanship", "Description 1", "text", "Every bottle is a result of careful consideration. We work with master perfumers to create scents that are both timeless and contemporary.")}
+                  <p className="text-gray-700  font-light leading-relaxed mb-4 sm:mb-6 text-sm sm:text-base relative z-10">
+                    {getContent(
+                      content,
+                      "Craftsmanship",
+                      "Description 1",
+                      "text",
+                      "Every bottle is a result of careful consideration. We work with master perfumers to create scents that are both timeless and contemporary.",
+                    )}
                   </p>
-                  <p className="text-gray-500 dark:text-gray-400 font-light text-sm leading-relaxed mb-6 sm:mb-8">
-                    {getContent(content, "Craftsmanship", "Description 2", "text", "Our commitment to quality means using only the finest ingredients, blended in precise concentrations for optimal performance and longevity.")}
+                  <p className="text-gray-600  font-light text-sm leading-relaxed mb-6 sm:mb-8 relative z-10">
+                    {getContent(
+                      content,
+                      "Craftsmanship",
+                      "Description 2",
+                      "text",
+                      "Our commitment to quality means using only the finest ingredients, blended in precise concentrations for optimal performance and longevity.",
+                    )}
                   </p>
-                  <Link href="/about" className="inline-flex items-center gap-2 text-sm font-light border-b border-black dark:border-white pb-1 hover:text-gray-600 dark:hover:text-gray-300 hover:border-gray-600 dark:hover:border-gray-400 transition-colors text-gray-900 dark:text-gray-100">
-                    {getContent(content, "Craftsmanship", "Button Text", "text", "Learn about our process")} <span>→</span>
+                  <Link
+                    href="/about"
+                    className="inline-flex items-center gap-2 text-sm font-medium text-gray-900  hover:text-black  border-b-2 border-gray-200 hover:border-black   pb-1 transition-all duration-300 transform hover:scale-105 relative z-10"
+                  >
+                    {getContent(
+                      content,
+                      "Craftsmanship",
+                      "Button Text",
+                      "text",
+                      "Learn about our process",
+                    )}
+                    <span className="text-gray-600 ">→</span>
                   </Link>
                 </div>
               </ScrollReveal>
@@ -295,47 +514,72 @@ export default function HomePage() {
 
         {/* Stay Updated */}
         <section
-          className="py-20 sm:py-24 md:py-32 lg:py-40 bg-[#fafafa] dark:bg-gray-800 border-t border-gray-100 dark:border-gray-700"
+          className="py-20 sm:py-24 md:py-32 lg:py-40 bg-gray-50  border-t border-gray-200 "
           data-scroll-section="3"
         >
           <ScrollReveal className="max-w-xl mx-auto px-4 sm:px-6 text-center">
-            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-serif font-light text-gray-900 dark:text-gray-100 mb-4 sm:mb-6 leading-tight">
-              {getContent(content, "Stay Updated", "Title", "text", "Stay Updated")}
+            <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-serif font-light text-gray-900  mb-4 sm:mb-6 leading-tight">
+              {getContent(
+                content,
+                "Stay Updated",
+                "Title",
+                "text",
+                "Stay Updated",
+              )}
             </h2>
-            <p className="text-gray-600 dark:text-gray-300 font-light text-base sm:text-lg mb-2">
-              {getContent(content, "Stay Updated", "Subtitle", "text", "New releases and exclusive offers")}
+            <p className="text-gray-600  font-light text-base sm:text-lg mb-2">
+              {getContent(
+                content,
+                "Stay Updated",
+                "Subtitle",
+                "text",
+                "New releases and exclusive offers",
+              )}
             </p>
-            <p className="text-sm text-gray-400 dark:text-gray-500 mb-8 sm:mb-10 font-light">
-              {getContent(content, "Stay Updated", "Description", "text", "Order updates and collection announcements only.")}
+            <p className="text-sm text-gray-400  mb-8 sm:mb-10 font-light">
+              {getContent(
+                content,
+                "Stay Updated",
+                "Description",
+                "text",
+                "Order updates and collection announcements only.",
+              )}
             </p>
-           
-            <form onSubmit={handleSubscribe} className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
+
+            <form
+              onSubmit={handleSubscribe}
+              className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto"
+            >
               <div className="relative flex-1 group">
                 <input
                   type="email"
                   placeholder="Email address"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full px-5 sm:px-6 py-4 border border-gray-200 dark:border-gray-700 rounded-full text-base font-light focus:outline-none focus:border-black dark:focus:border-white focus:ring-1 focus:ring-black dark:focus:ring-white bg-white dark:bg-gray-900 transition-all duration-300 placeholder:text-gray-300 dark:placeholder:text-gray-500 shadow-sm group-hover:shadow-md"
+                  className="w-full px-5 sm:px-6 py-4 border border-gray-200  rounded-full text-base font-light focus:outline-none focus:border-black  focus:ring-1 focus:ring-black  bg-white  transition-all duration-300 placeholder:text-gray-300  shadow-sm group-hover:shadow-md"
                   required
                 />
               </div>
-              <Button 
-                variant="primary" 
-                type="submit" 
-                disabled={isSubmitting} 
-                className="rounded-full px-8 sm:px-10 py-4 shadow-lg hover:shadow-xl transition-all hover:-translate-y-1 whitespace-nowrap"
+              <Button
+                variant="primary"
+                type="submit"
+                disabled={isSubmitting}
+                className="rounded-full px-6 sm:px-8 md:px-10 py-3 sm:py-4 bg-gray-900 hover:bg-black text-white    shadow-lg hover:shadow-xl transition-all duration-300 hover:-translate-y-1 transform hover:scale-105 whitespace-nowrap text-sm sm:text-base font-medium"
               >
                 {isSubmitting ? "Subscribing..." : "Subscribe"}
               </Button>
             </form>
-           
+
             {message && (
-              <div className={`mt-6 p-4 rounded-xl border max-w-md mx-auto ${message.includes("successfully") ? "bg-green-50 dark:bg-green-900/40 border-green-100 dark:border-green-700 text-green-800 dark:text-green-200" : "bg-red-50 dark:bg-red-900/40 border-red-100 dark:border-red-700 text-red-800 dark:text-red-200"} text-sm font-light animate-fade-in`}>
+              <div
+                className={`mt-6 p-4 rounded-xl border max-w-md mx-auto ${message.includes("successfully") ? "bg-green-50  border-green-100  text-green-800 " : "bg-red-50  border-red-100  text-red-800 "} text-sm font-light animate-fade-in`}
+              >
                 {message}
               </div>
             )}
-            <p className="mt-10 sm:mt-12 text-[10px] text-gray-400 dark:text-gray-500 tracking-widest uppercase opacity-60">Trusted by 10,000+ customers</p>
+            <p className="mt-10 sm:mt-12 text-[10px] text-gray-400  tracking-widest uppercase opacity-60">
+              Trusted by 10,000+ customers
+            </p>
           </ScrollReveal>
           <div className="h-12 sm:h-16 md:h-24" />
         </section>
@@ -344,197 +588,289 @@ export default function HomePage() {
   );
 }
 
-// ProductCarousel Component
-function ProductCarousel({ fragrances }: { fragrances: any[] }) {
-  const carouselRef = useRef<HTMLDivElement>(null);
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [imageErrors, setImageErrors] = useState<{ [key: string]: boolean }>({});
+// FeaturedProductGrid Component - Carousel Implementation
+function FeaturedProductGrid({ fragrances }: { fragrances: FragranceItem[] }) {
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [itemsPerSlide, setItemsPerSlide] = useState(3);
+  const [imageErrors, setImageErrors] = useState<{ [key: string]: boolean }>(
+    {},
+  );
+
+  type SlideItem = FragranceItem | { id: string; isPlaceholder: true };
 
   const handleImageError = (id: string) => {
-    setImageErrors(prev => ({ ...prev, [id]: true }));
+    setImageErrors((prev) => ({ ...prev, [id]: true }));
   };
 
-  const isValidImageUrl = (image: string) => {
-    return image && (image.startsWith('http') || image.startsWith('/') || image.startsWith('./'));
+  const isValidImageUrl = (image?: string) => {
+    return (
+      image &&
+      (image.startsWith("http") ||
+        image.startsWith("/") ||
+        image.startsWith("./"))
+    );
   };
 
-  const scrollTo = (index: number) => {
-    if (carouselRef.current && carouselRef.current.children[0]) {
-      const container = carouselRef.current;
-      const innerFlex = container.children[0] as HTMLElement;
-      const slides = Array.from(innerFlex.children) as HTMLElement[];
-      if (slides[index]) {
-        const slideOffset = slides[index].offsetLeft;
-        container.scrollTo({
-          left: slideOffset,
-          behavior: 'smooth',
-        });
-        setCurrentIndex(index);
-      }
-    }
-  };
-
+  // 1 card on mobile, 2 on tablet, 3 on desktop.
   useEffect(() => {
-    const handleScroll = () => {
-      if (carouselRef.current && carouselRef.current.children[0]) {
-        const container = carouselRef.current;
-        const innerFlex = container.children[0] as HTMLElement;
-        const slides = Array.from(innerFlex.children) as HTMLElement[];
-        
-        const scrollPosition = container.scrollLeft;
-        const containerWidth = container.clientWidth;
-        
-        // Find which slide is most centered
-        let closestIndex = 0;
-        let minDistance = Infinity;
-        
-        slides.forEach((slide, index) => {
-          const slideCenter = slide.offsetLeft + slide.clientWidth / 2;
-          const containerCenter = scrollPosition + containerWidth / 2;
-          const distance = Math.abs(slideCenter - containerCenter);
-          
-          if (distance < minDistance) {
-            minDistance = distance;
-            closestIndex = index;
-          }
-        });
-        
-        setCurrentIndex(closestIndex);
+    const updateItemsPerSlide = () => {
+      if (window.innerWidth < 768) {
+        setItemsPerSlide(1);
+        return;
       }
+
+      if (window.innerWidth < 1024) {
+        setItemsPerSlide(2);
+        return;
+      }
+
+      setItemsPerSlide(3);
     };
 
-    const container = carouselRef.current;
-    if (container) {
-      container.addEventListener('scroll', handleScroll, { passive: true });
-      return () => container.removeEventListener('scroll', handleScroll);
+    updateItemsPerSlide();
+    window.addEventListener("resize", updateItemsPerSlide);
+
+    return () => {
+      window.removeEventListener("resize", updateItemsPerSlide);
+    };
+  }, []);
+
+  const totalSlides = Math.max(1, Math.ceil(fragrances.length / itemsPerSlide));
+
+  // Keep current slide valid whenever data/responsive layout changes.
+  useEffect(() => {
+    if (currentSlide > totalSlides - 1) {
+      setCurrentSlide(Math.max(0, totalSlides - 1));
     }
-    return undefined;
-  }, [fragrances.length]);
+  }, [currentSlide, totalSlides]);
+
+  // Reset to first slide when viewport layout changes.
+  useEffect(() => {
+    setCurrentSlide(0);
+  }, [itemsPerSlide]);
+
+  const slides: SlideItem[][] = Array.from(
+    {
+      length: totalSlides,
+    },
+    (_, slideIndex) => {
+      const start = slideIndex * itemsPerSlide;
+      const products = fragrances.slice(start, start + itemsPerSlide);
+
+      // Add placeholders to keep spacing even on last slide.
+      const placeholders = Array.from({
+        length: Math.max(0, itemsPerSlide - products.length),
+      }).map((_, placeholderIndex) => ({
+        id: `placeholder-${slideIndex}-${placeholderIndex}`,
+        isPlaceholder: true as const,
+      }));
+
+      return [...products, ...placeholders];
+    },
+  );
+
+  const columnsClass =
+    itemsPerSlide === 1
+      ? "grid-cols-1"
+      : itemsPerSlide === 2
+        ? "grid-cols-2"
+        : "grid-cols-3";
 
   const nextSlide = () => {
-    setCurrentIndex(prevIndex => {
-      const newIndex = Math.min(prevIndex + 1, fragrances.length - 1);
-      scrollTo(newIndex);
-      return newIndex;
-    });
+    setCurrentSlide((prev) => (prev + 1) % totalSlides);
   };
 
   const prevSlide = () => {
-    setCurrentIndex(prevIndex => {
-      const newIndex = Math.max(prevIndex - 1, 0);
-      scrollTo(newIndex);
-      return newIndex;
-    });
+    setCurrentSlide((prev) => (prev - 1 + totalSlides) % totalSlides);
+  };
+
+  const goToSlide = (index: number) => {
+    setCurrentSlide(index);
   };
 
   return (
-    <div className="relative">
+    <div className="space-y-6 sm:space-y-8">
       {fragrances.length === 0 ? (
-        <div className="text-center py-12">
-          <p className="text-gray-500 dark:text-gray-400 font-light text-base">No featured products available.</p>
+        <div className="text-center py-12 bg-white  rounded-2xl border border-gray-200  mx-4 sm:mx-0">
+          <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gray-200  flex items-center justify-center">
+            <div className="text-gray-600  text-2xl">🌸</div>
+          </div>
+          <p className="text-gray-600  font-light text-base px-4">
+            No featured products available at the moment.
+          </p>
+          <p className="text-sm text-gray-500  mt-2 px-4">
+            Check back soon for our latest collection!
+          </p>
         </div>
       ) : (
         <>
           {/* Carousel Container */}
-          <div 
-            ref={carouselRef}
-            className="overflow-x-auto hide-scrollbar pb-4 scroll-snap-x-mandatory"
-          >
-            <div className="flex gap-4 sm:gap-6 lg:gap-8">
-              {fragrances.map((fragrance, index) => (
-                <div 
-                  key={`${fragrance.id}-${index}`} 
-                  className="flex-none w-full sm:w-72 md:w-80 lg:w-1/4 flex flex-col snap-center"
-                >
-                  <Link
-                    href={`/product/${fragrance.id}`}
-                    className="group block flex flex-col h-full"
-                  >
-                    {/* Product Card with Image */}
-                    <div className="flex-shrink-0 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 rounded-2xl overflow-hidden group-hover:border-gray-200 dark:group-hover:border-gray-600 group-hover:shadow-2xl dark:group-hover:shadow-2xl transition-all duration-500 relative aspect-[4/5] flex-grow group-hover:-translate-y-2">
-                      {isValidImageUrl(fragrance.image) && !imageErrors[fragrance.id] ? (
-                        <>
-                          <Image
-                            src={fragrance.image}
-                            alt={fragrance.name}
-                            fill
-                            objectFit="contain"
-                            className="group-hover:scale-110 transition-transform duration-700 ease-out object-center object-contain"
-                            onError={() => handleImageError(fragrance.id)}
-                            sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 25vw"
-                          />
-                          <div className="absolute inset-0 bg-black/5 group-hover:bg-black/10 transition-colors duration-500" />
-                        </>
-                      ) : (
-                        <div className="w-full h-full flex flex-col items-center justify-center bg-gray-50 dark:bg-gray-700 group-hover:bg-gray-100 dark:group-hover:bg-gray-600 transition-colors duration-500 p-6 sm:p-8">
-                        <div className="text-4xl sm:text-5xl lg:text-7xl font-serif font-light text-gray-300 dark:text-gray-500 mb-3 sm:mb-4 group-hover:text-gray-400 dark:group-hover:text-gray-400 transition-colors">
-                          {fragrance.name.charAt(0).toUpperCase()}
-                        </div>
-                        <div className="w-12 sm:w-16 h-px bg-gray-300 dark:bg-gray-600 mb-3 sm:mb-4" />
-                        <h3 className="text-base sm:text-lg lg:text-xl font-serif font-light text-gray-600 dark:text-gray-300 mb-1 sm:mb-2 text-center leading-tight">
-                          {fragrance.name}
-                        </h3>
-                        <p className="text-xs tracking-widest text-gray-400 dark:text-gray-500 font-light">
-                          EAU DE PARFUM
-                        </p>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Details */}
-                  <div className="flex-grow flex flex-col items-center text-center mt-4 sm:mt-6">
-                    <h3 className="text-base sm:text-lg font-serif font-light text-gray-900 dark:text-gray-100 leading-tight">
-                      {fragrance.name}
-                    </h3>
-                    <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 font-light mt-1">
-                      {fragrance.tagline}
-                    </p>
-                    <p className="text-sm sm:text-base font-medium text-gray-700 dark:text-gray-300 mt-2">
-                      Rs {fragrance.price.toFixed(2)}
-                    </p>
-                  </div>
-                </Link>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Carousel Dots */}
-        <div className="flex justify-center gap-2 mt-6">
-          {fragrances.map((_, index) => (
+          <div className="relative overflow-hidden">
+            {/* Navigation Arrows - Desktop */}
             <button
-              key={index}
-              onClick={() => scrollTo(index)}
-              className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                currentIndex === index 
-                  ? "bg-black dark:bg-white w-6" 
-                  : "bg-gray-300 dark:bg-gray-600 hover:bg-gray-400 dark:hover:bg-gray-500"
-              }`}
-              aria-label={`Go to slide ${index + 1}`}
-            />
-          ))}
-        </div>
+              onClick={prevSlide}
+              className="absolute left-2 sm:left-4 top-1/2 transform -translate-y-1/2 z-10 bg-white  border border-gray-200  rounded-full p-2 sm:p-3 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-gray-300 "
+              disabled={totalSlides <= 1}
+            >
+              <svg
+                className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600 "
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M15 19l-7-7 7-7"
+                />
+              </svg>
+            </button>
 
-        {/* Navigation Arrows (Desktop Only) */}
-        <div className="hidden lg:block">
-          <button
-            onClick={prevSlide}
-            disabled={currentIndex === 0}
-            className="absolute left-0 top-1/2 -translate-y-1/2 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm p-3 rounded-full shadow-md hover:bg-white dark:hover:bg-gray-800 hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed z-10"
-          >
-            <ChevronLeft className="w-6 h-6 text-gray-700 dark:text-gray-300" />
-          </button>
-          <button
-            onClick={nextSlide}
-            disabled={currentIndex === fragrances.length - 1}
-            className="absolute right-0 top-1/2 -translate-y-1/2 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm p-3 rounded-full shadow-md hover:bg-white dark:hover:bg-gray-800 hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed z-10"
-          >
-            <ChevronRight className="w-6 h-6 text-gray-700 dark:text-gray-300" />
-          </button>
-        </div>
-      </>
-    )}
-  </div>
-);
+            <button
+              onClick={nextSlide}
+              className="absolute right-2 sm:right-4 top-1/2 transform -translate-y-1/2 z-10 bg-white  border border-gray-200  rounded-full p-2 sm:p-3 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-gray-300 "
+              disabled={totalSlides <= 1}
+            >
+              <svg
+                className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600 "
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M9 5l7 7-7 7"
+                />
+              </svg>
+            </button>
+
+            {/* Carousel Track */}
+            <div className="px-4 sm:px-12 lg:px-16">
+              <div
+                className="flex w-full transition-transform duration-500 ease-in-out"
+                style={{
+                  transform: `translateX(-${currentSlide * 100}%)`,
+                }}
+              >
+                {slides.map((slideItems, slideIndex) => (
+                  <div key={slideIndex} className="w-full flex-shrink-0">
+                    <div className={`grid ${columnsClass} gap-6`}>
+                      {slideItems.map((slideItem, index) => {
+                        if ("isPlaceholder" in slideItem) {
+                          return (
+                            <div
+                              key={slideItem.id}
+                              className="invisible h-full min-h-[400px] sm:min-h-[450px]"
+                              aria-hidden="true"
+                            />
+                          );
+                        }
+
+                        const fragrance = slideItem;
+
+                        return (
+                          <ScrollReveal
+                            key={`${fragrance.id}-${slideIndex}-${index}`}
+                            delay={index * 100}
+                            className="group h-full"
+                          >
+                            <Link
+                              href={`/product/${fragrance.id}`}
+                              className="block h-full"
+                            >
+                              <div className="bg-white  rounded-2xl p-4 sm:p-6 border-2 border-gray-100 hover:border-gray-300   hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 group h-full flex flex-col min-h-[400px] sm:min-h-[450px]">
+                                {/* Product Image */}
+                                <div className="relative aspect-[4/5] rounded-xl overflow-hidden mb-4 bg-white ">
+                                  {isValidImageUrl(fragrance.image) &&
+                                  !imageErrors[fragrance.id] ? (
+                                    <Image
+                                      src={fragrance.image!}
+                                      alt={fragrance.name}
+                                      fill
+                                      style={{ objectFit: "contain" }}
+                                      className="group-hover:scale-105 transition-transform duration-500 ease-out object-center p-4"
+                                      onError={() =>
+                                        handleImageError(fragrance.id)
+                                      }
+                                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                                    />
+                                  ) : (
+                                    <div className="w-full h-full flex flex-col items-center justify-center bg-white  group-hover:bg-gray-50  transition-all duration-500 p-6">
+                                      <div className="text-3xl sm:text-4xl font-serif font-light text-gray-600  mb-3 group-hover:scale-110 transition-transform duration-300">
+                                        {fragrance.name.charAt(0).toUpperCase()}
+                                      </div>
+                                      <div className="w-12 h-px bg-gray-300  mb-3" />
+                                      <h3 className="text-base sm:text-lg font-serif font-light text-gray-700  mb-1 text-center leading-tight">
+                                        {fragrance.name}
+                                      </h3>
+                                      <p className="text-xs tracking-widest text-gray-500  font-light">
+                                        EAU DE PARFUM
+                                      </p>
+                                    </div>
+                                  )}
+
+                                  {/* Floating badge */}
+                                  <div className="absolute top-3 right-3 bg-white/90  backdrop-blur-sm rounded-full px-3 py-1 text-xs font-medium text-gray-700  opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0">
+                                    View Details
+                                  </div>
+                                </div>
+
+                                {/* Product Details */}
+                                <div className="flex-grow flex flex-col justify-between">
+                                  <div className="text-center">
+                                    <h3 className="text-base sm:text-lg font-serif font-light text-gray-900  leading-tight mb-2">
+                                      {fragrance.name}
+                                    </h3>
+                                    <p className="text-xs sm:text-sm text-gray-600  font-light mb-3 line-clamp-2">
+                                      {fragrance.tagline}
+                                    </p>
+                                  </div>
+
+                                  {/* Price and CTA */}
+                                  <div className="text-center">
+                                    <p className="text-base sm:text-lg font-semibold text-gray-900  mb-3">
+                                      Rs {fragrance.price.toFixed(2)}
+                                    </p>
+                                    <div className="w-full h-8 sm:h-10 bg-gray-900  rounded-xl flex items-center justify-center opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0 transition-all duration-300">
+                                      <span className="text-white  text-xs sm:text-sm font-medium">
+                                        Shop Now
+                                      </span>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            </Link>
+                          </ScrollReveal>
+                        );
+                      })}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Pagination Dots */}
+          {totalSlides > 1 && (
+            <div className="flex justify-center space-x-2 mt-6 sm:mt-8">
+              {Array.from({ length: totalSlides }, (_, index) => (
+                <button
+                  key={index}
+                  onClick={() => goToSlide(index)}
+                  className={`w-2 h-2 sm:w-3 sm:h-3 rounded-full transition-all duration-300 ${
+                    currentSlide === index
+                      ? "bg-gray-900  scale-125"
+                      : "bg-gray-300  hover:bg-gray-500 "
+                  }`}
+                />
+              ))}
+            </div>
+          )}
+        </>
+      )}
+    </div>
+  );
 }
-

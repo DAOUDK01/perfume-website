@@ -75,8 +75,8 @@ export default function ProductPage({ params }: ProductPageProps) {
 
   if (loading) {
     return (
-      <div className="bg-white dark:bg-gray-900 min-h-screen flex items-center justify-center">
-        <p className="text-gray-500 dark:text-gray-300">Loading…</p>
+      <div className="bg-white  min-h-screen flex items-center justify-center">
+        <p className="text-gray-500 ">Loading…</p>
       </div>
     );
   }
@@ -126,15 +126,15 @@ export default function ProductPage({ params }: ProductPageProps) {
   
 
   return (
-    <div className="bg-white dark:bg-gray-900 min-h-screen">
+    <div className="bg-white  min-h-screen">
       {/* Breadcrumb */}
-      <div className="border-b border-gray-200 dark:border-gray-800">
-        <div className="max-w-7xl mx-auto px-6 py-4 text-sm text-gray-500 dark:text-gray-400 font-light">
-          <Link href="/" className="hover:text-black dark:hover:text-white">Home</Link>
+      <div className="border-b border-gray-200 ">
+        <div className="max-w-7xl mx-auto px-6 py-4 text-sm text-gray-500  font-light">
+          <Link href="/" className="hover:text-black ">Home</Link>
           <span className="mx-2">/</span>
-          <Link href="/fragrances" className="hover:text-black dark:hover:text-white">Collection</Link>
+          <Link href="/fragrances" className="hover:text-black ">Collection</Link>
           <span className="mx-2">/</span>
-          <span className="text-black dark:text-white">{fragrance.name}</span>
+          <span className="text-black ">{fragrance.name}</span>
         </div>
       </div>
 
@@ -153,48 +153,48 @@ export default function ProductPage({ params }: ProductPageProps) {
         <ScrollReveal delay={100}>
           <div className="space-y-10 animate-fade-in-up">
             <div>
-              <p className="text-xs tracking-[0.2em] text-gray-500 dark:text-gray-400 mb-4 uppercase">
+              <p className="text-xs tracking-[0.2em] text-gray-500  mb-4 uppercase">
                 EAU DE PARFUM
               </p>
-              <h1 className="text-5xl md:text-6xl font-serif font-light mb-4 tracking-tight text-gray-900 dark:text-gray-100">
+              <h1 className="text-5xl md:text-6xl font-serif font-light mb-4 tracking-tight text-gray-900 ">
                 {fragrance.name}
               </h1>
-              <p className="text-xl text-gray-600 dark:text-gray-300 font-light italic">
+              <p className="text-xl text-gray-600  font-light italic">
                 {fragrance.tagline}
               </p>
             </div>
 
-            <div className="border-y border-gray-100 dark:border-gray-800 py-8">
-              <p className="text-3xl font-light tracking-wide text-gray-900 dark:text-gray-100">Rs {fragrance.price}</p>
+            <div className="border-y border-gray-100  py-8">
+              <p className="text-3xl font-light tracking-wide text-gray-900 ">Rs {fragrance.price}</p>
             </div>
 
             <div>
-              <h2 className="text-sm tracking-[0.2em] uppercase mb-4 font-medium text-gray-900 dark:text-gray-100">
+              <h2 className="text-sm tracking-[0.2em] uppercase mb-4 font-medium text-gray-900 ">
                 Description
               </h2>
-              <p className="text-gray-600 dark:text-gray-300 font-light leading-relaxed text-lg">
+              <p className="text-gray-600  font-light leading-relaxed text-lg">
                 {fragrance.fullDescription}
               </p>
             </div>
 
             {/* QUANTITY */}
             <div className="flex items-center gap-6">
-              <span className="text-sm uppercase tracking-widest text-gray-500 dark:text-gray-400">Quantity</span>
-              <div className="flex items-center border border-gray-200 dark:border-gray-700 rounded-full px-2 py-1 hover:border-black dark:hover:border-white transition-colors duration-300">
+              <span className="text-sm uppercase tracking-widest text-gray-500 ">Quantity</span>
+              <div className="flex items-center border border-gray-200  rounded-full px-2 py-1 hover:border-black  transition-colors duration-300">
                 <button 
                   onClick={handleDecrement} 
-                  className="w-10 h-10 flex items-center justify-center text-gray-500 dark:text-gray-400 hover:text-black dark:hover:text-white transition-colors"
+                  className="w-10 h-10 flex items-center justify-center text-gray-500  hover:text-black  transition-colors"
                 >
                   −
                 </button>
                 <input
                   value={quantity}
                   readOnly
-                  className="w-12 text-center bg-transparent font-light text-gray-900 dark:text-gray-100"
+                  className="w-12 text-center bg-transparent font-light text-gray-900 "
                 />
                 <button 
                   onClick={handleIncrement} 
-                  className="w-10 h-10 flex items-center justify-center text-gray-500 dark:text-gray-400 hover:text-black dark:hover:text-white transition-colors"
+                  className="w-10 h-10 flex items-center justify-center text-gray-500  hover:text-black  transition-colors"
                 >
                   +
                 </button>
@@ -205,20 +205,20 @@ export default function ProductPage({ params }: ProductPageProps) {
             <div className="flex gap-4 flex-col sm:flex-row">
               <button
                 onClick={handleAddToCart}
-                className="flex-1 border border-black dark:border-white py-4 px-8 uppercase text-sm tracking-widest hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-all duration-500 ease-out"
+                className="flex-1 border border-black  py-4 px-8 uppercase text-sm tracking-widest hover:bg-black hover:text-white   transition-all duration-500 ease-out"
               >
                 Add to Cart
               </button>
               <button
                 onClick={handleBuyNow}
-                className="flex-1 bg-black text-white py-4 px-8 uppercase text-sm tracking-widest border border-black dark:border-white hover:bg-white hover:text-black dark:bg-white dark:text-black dark:hover:bg-black dark:hover:text-white transition-all duration-500 ease-out"
+                className="flex-1 bg-black text-white py-4 px-8 uppercase text-sm tracking-widest border border-black  hover:bg-white hover:text-black     transition-all duration-500 ease-out"
               >
                 Buy Now
               </button>
             </div>
 
             {showMessage && (
-              <div className="flex items-center gap-2 text-sm text-green-800 dark:text-green-200 bg-green-50 dark:bg-green-900/40 p-4 rounded-lg border border-green-100 dark:border-green-700 animate-fade-in-up">
+              <div className="flex items-center gap-2 text-sm text-green-800  bg-green-50  p-4 rounded-lg border border-green-100  animate-fade-in-up">
                 <span className="w-2 h-2 bg-green-500 rounded-full"></span>
                 Added to cart successfully
               </div>

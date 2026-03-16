@@ -1,4 +1,8 @@
-import { connectToLocalDb, connectToAtlasDb } from "@/lib/mongodb";
+import {
+  connectToLocalDb,
+  connectToAtlasDb,
+  safeDbOperation,
+} from "@/lib/mongodb";
 import { NextResponse } from "next/server";
 
 /**
@@ -7,7 +11,7 @@ import { NextResponse } from "next/server";
  */
 async function sendToN8nWebhook(orderData) {
   const webhookUrl = process.env.N8N_WEBHOOK_URL;
-  
+
   // Skip if webhook URL is not configured
   if (!webhookUrl) {
     console.log("N8N_WEBHOOK_URL not configured, skipping webhook");
@@ -42,15 +46,58 @@ export async function GET(request) {
     }
     if (status) filter.status = status;
 
-    const { db: localDb } = await connectToLocalDb();
-    const { db: atlasDb } = await connectToAtlasDb();
-
-    const [localOrders, atlasOrders] = await Promise.all([
-      localDb.collection('orders').find(filter).sort({ createdAt: -1 }).toArray(),
-      atlasDb.collection('orders').find(filter).sort({ createdAt: -1 }).toArray()
+    // Connect with timeout protection
+    const [localDbResult, atlasDbResult] = await Promise.allSettled([
+      safeDbOperation(
+        () => connectToLocalDb(),
+        { client: null, db: null },
+        5000,
+        "Local DB connection",
+      ),
+      safeDbOperation(
+        () => connectToAtlasDb(),
+        { client: null, db: null },
+        8000,
+        "Atlas DB connection",
+      ),
     ]);
 
-    const combinedOrders = [...localOrders, ...atlasOrders];
+    const { db: localDb } =
+      localDbResult.status === "fulfilled" ? localDbResult.value : { db: null };
+    const { db: atlasDb } =
+      atlasDbResult.status === "fulfilled" ? atlasDbResult.value : { db: null };
+
+    // Fetch orders with timeout protection
+    const [localOrders, atlasOrders] = await Promise.allSettled([
+      safeDbOperation(
+        () =>
+          localDb
+            ?.collection("orders")
+            .find(filter)
+            .sort({ createdAt: -1 })
+            .toArray() || Promise.resolve([]),
+        [],
+        4000,
+        "Local orders fetch",
+      ),
+      safeDbOperation(
+        () =>
+          atlasDb
+            ?.collection("orders")
+            .find(filter)
+            .sort({ createdAt: -1 })
+            .toArray() || Promise.resolve([]),
+        [],
+        6000,
+        "Atlas orders fetch",
+      ),
+    ]);
+
+    const localResult =
+      localOrders.status === "fulfilled" ? localOrders.value : [];
+    const atlasResult =
+      atlasOrders.status === "fulfilled" ? atlasOrders.value : [];
+    const combinedOrders = [...localResult, ...atlasResult];
 
     return NextResponse.json({
       success: true,
@@ -61,7 +108,10 @@ export async function GET(request) {
     });
   } catch (error) {
     console.error("Error fetching orders:", error);
-    return NextResponse.json({ error: "Failed to fetch orders" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to fetch orders" },
+      { status: 500 },
+    );
   }
 }
 
@@ -75,7 +125,7 @@ export async function POST(request) {
     if (!name || !name.trim()) {
       return NextResponse.json(
         { error: "Customer name is required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -86,14 +136,14 @@ export async function POST(request) {
     if (!items || !Array.isArray(items) || items.length === 0) {
       return NextResponse.json(
         { error: "Order must contain at least one item" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     if (!address || !address.trim()) {
       return NextResponse.json(
         { error: "Shipping address is required" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -102,10 +152,10 @@ export async function POST(request) {
 
     const totalAmount = items.reduce(
       (acc, item) => acc + (item.price || 0) * (item.quantity || 1),
-      0
+      0,
     );
 
-    const orderData = { 
+    const orderData = {
       customerName: name.trim(),
       email: email.trim().toLowerCase(),
       items: items.map((item) => ({
@@ -123,8 +173,8 @@ export async function POST(request) {
     };
 
     const [localResult, atlasResult] = await Promise.all([
-      localDb.collection('orders').insertOne(orderData),
-      atlasDb.collection('orders').insertOne(orderData)
+      localDb.collection("orders").insertOne(orderData),
+      atlasDb.collection("orders").insertOne(orderData),
     ]);
 
     // Send to n8n (async)
@@ -135,15 +185,18 @@ export async function POST(request) {
     });
 
     return NextResponse.json(
-      { 
-        success: true, 
-        localId: localResult?.insertedId, 
-        atlasId: atlasResult?.insertedId 
+      {
+        success: true,
+        localId: localResult?.insertedId,
+        atlasId: atlasResult?.insertedId,
       },
-      { status: 201 }
+      { status: 201 },
     );
   } catch (error) {
     console.error("Error creating order:", error);
-    return NextResponse.json({ error: "Failed to create order" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to create order" },
+      { status: 500 },
+    );
   }
 }

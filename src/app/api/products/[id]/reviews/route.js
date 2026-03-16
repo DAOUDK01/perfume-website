@@ -9,7 +9,9 @@ function normalizeReview(review) {
   const rating = Number(review?.rating);
 
   return {
-    id: String(review?.id || `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`),
+    id: String(
+      review?.id || `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+    ),
     rating: Number.isFinite(rating) ? Math.min(5, Math.max(1, rating)) : 1,
     comment: typeof review?.comment === "string" ? review.comment.trim() : "",
     createdAt: review?.createdAt
@@ -28,7 +30,10 @@ function summarizeReviews(reviews) {
     };
   }
 
-  const total = reviews.reduce((sum, item) => sum + Number(item.rating || 0), 0);
+  const total = reviews.reduce(
+    (sum, item) => sum + Number(item.rating || 0),
+    0,
+  );
 
   return {
     reviewCount,
@@ -68,7 +73,9 @@ async function findProduct(localDb, atlasDb, id) {
   const localResult =
     localProduct.status === "fulfilled" ? localProduct.value : null;
   const atlasProductsResult =
-    atlasProductsProduct.status === "fulfilled" ? atlasProductsProduct.value : null;
+    atlasProductsProduct.status === "fulfilled"
+      ? atlasProductsProduct.value
+      : null;
   const atlasSingularResult =
     atlasProductSingular.status === "fulfilled"
       ? atlasProductSingular.value
@@ -148,9 +155,14 @@ export async function POST(request, { params }) {
 
     const body = await request.json();
     const parsedRating = Number(body?.rating);
-    const comment = typeof body?.comment === "string" ? body.comment.trim() : "";
+    const comment =
+      typeof body?.comment === "string" ? body.comment.trim() : "";
 
-    if (!Number.isFinite(parsedRating) || parsedRating < 1 || parsedRating > 5) {
+    if (
+      !Number.isFinite(parsedRating) ||
+      parsedRating < 1 ||
+      parsedRating > 5
+    ) {
       return NextResponse.json(
         { error: "Rating must be between 1 and 5" },
         { status: 400 },
@@ -187,30 +199,36 @@ export async function POST(request, { params }) {
     const updates = await Promise.allSettled([
       safeDbOperation(
         () =>
-          localDb?.collection("products").updateOne(
-            { id },
-            { $push: { reviews: review }, $set: { updatedAt: new Date() } },
-          ) || Promise.resolve({ matchedCount: 0 }),
+          localDb
+            ?.collection("products")
+            .updateOne(
+              { id },
+              { $push: { reviews: review }, $set: { updatedAt: new Date() } },
+            ) || Promise.resolve({ matchedCount: 0 }),
         { matchedCount: 0 },
         4000,
         "Local review update",
       ),
       safeDbOperation(
         () =>
-          atlasDb?.collection("products").updateOne(
-            { id },
-            { $push: { reviews: review }, $set: { updatedAt: new Date() } },
-          ) || Promise.resolve({ matchedCount: 0 }),
+          atlasDb
+            ?.collection("products")
+            .updateOne(
+              { id },
+              { $push: { reviews: review }, $set: { updatedAt: new Date() } },
+            ) || Promise.resolve({ matchedCount: 0 }),
         { matchedCount: 0 },
         6000,
         "Atlas review update",
       ),
       safeDbOperation(
         () =>
-          atlasDb?.collection("product").updateOne(
-            { id },
-            { $push: { reviews: review }, $set: { updatedAt: new Date() } },
-          ) || Promise.resolve({ matchedCount: 0 }),
+          atlasDb
+            ?.collection("product")
+            .updateOne(
+              { id },
+              { $push: { reviews: review }, $set: { updatedAt: new Date() } },
+            ) || Promise.resolve({ matchedCount: 0 }),
         { matchedCount: 0 },
         6000,
         "Atlas singular review update",

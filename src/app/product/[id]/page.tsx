@@ -48,7 +48,9 @@ const getCart = (): any[] => {
 const isValidImageUrl = (value?: string) =>
   Boolean(
     value &&
-      (value.startsWith("http") || value.startsWith("/") || value.startsWith("./")),
+    (value.startsWith("http") ||
+      value.startsWith("/") ||
+      value.startsWith("./")),
   );
 
 const normalizeReview = (item: any, index: number): ReviewItem => ({
@@ -70,12 +72,22 @@ const formatReviewDate = (value: string) => {
   });
 };
 
-function Stars({ rating, sizeClass = "h-5 w-5" }: { rating: number; sizeClass?: string }) {
+function Stars({
+  rating,
+  sizeClass = "h-5 w-5",
+}: {
+  rating: number;
+  sizeClass?: string;
+}) {
   return (
-    <div className="flex items-center gap-1" aria-label={`Rating ${rating} out of 5`}>
+    <div
+      className="flex items-center gap-1"
+      aria-label={`Rating ${rating} out of 5`}
+    >
       {Array.from({ length: 5 }, (_, index) => {
         const starValue = index + 1;
-        const ActiveStar = rating >= starValue ? StarSolidIcon : StarOutlineIcon;
+        const ActiveStar =
+          rating >= starValue ? StarSolidIcon : StarOutlineIcon;
 
         return (
           <ActiveStar
@@ -93,7 +105,9 @@ export default function ProductPage({ params }: ProductPageProps) {
   const { id } = use(params);
   const router = useRouter();
   const [fragrance, setFragrance] = useState<ProductDetail | null>(null);
-  const [relatedFragrances, setRelatedFragrances] = useState<RelatedFragrance[]>([]);
+  const [relatedFragrances, setRelatedFragrances] = useState<
+    RelatedFragrance[]
+  >([]);
 
   const [reviews, setReviews] = useState<ReviewItem[]>([]);
   const [averageRating, setAverageRating] = useState(0);
@@ -108,7 +122,6 @@ export default function ProductPage({ params }: ProductPageProps) {
   const [showMessage, setShowMessage] = useState(false);
   const [quantity, setQuantity] = useState(1);
 
-
   useEffect(() => {
     if (!id) return;
     let cancelled = false;
@@ -116,9 +129,13 @@ export default function ProductPage({ params }: ProductPageProps) {
     async function load() {
       try {
         const [productRes, listRes, reviewsRes] = await Promise.all([
-          fetch(`/api/products/${encodeURIComponent(id)}`, { cache: "no-store" }),
+          fetch(`/api/products/${encodeURIComponent(id)}`, {
+            cache: "no-store",
+          }),
           fetch("/api/products", { cache: "no-store" }),
-          fetch(`/api/products/${encodeURIComponent(id)}/reviews`, { cache: "no-store" }),
+          fetch(`/api/products/${encodeURIComponent(id)}/reviews`, {
+            cache: "no-store",
+          }),
         ]);
 
         const productData = await productRes.json().catch(() => ({}));
@@ -155,20 +172,28 @@ export default function ProductPage({ params }: ProductPageProps) {
           setFragrance(currentProduct);
 
           const allProducts =
-            listRes.ok && Array.isArray(listData.products) ? listData.products : [];
-          const currentCategory = (currentProduct.category || "").toLowerCase().trim();
+            listRes.ok && Array.isArray(listData.products)
+              ? listData.products
+              : [];
+          const currentCategory = (currentProduct.category || "")
+            .toLowerCase()
+            .trim();
           const nameTokens = currentProduct.name
             .toLowerCase()
             .split(/\s+/)
             .filter((token: string) => token.length > 3);
 
-          const scoredRelated: Array<{ score: number; product: RelatedFragrance }> = allProducts
+          const scoredRelated: Array<{
+            score: number;
+            product: RelatedFragrance;
+          }> = allProducts
             .filter((item: any) => item?.id && item.id !== currentProduct.id)
             .map((item: any) => {
               const itemCategory = String(item?.category || "")
                 .toLowerCase()
                 .trim();
-              const itemText = `${String(item?.name || "")} ${String(item?.tagline || "")}`.toLowerCase();
+              const itemText =
+                `${String(item?.name || "")} ${String(item?.tagline || "")}`.toLowerCase();
 
               let score = 0;
               if (currentCategory && itemCategory === currentCategory) {
@@ -201,11 +226,17 @@ export default function ProductPage({ params }: ProductPageProps) {
           setRelatedFragrances([]);
         }
 
-        if (reviewsRes.ok && reviewsData.success && Array.isArray(reviewsData.reviews)) {
+        if (
+          reviewsRes.ok &&
+          reviewsData.success &&
+          Array.isArray(reviewsData.reviews)
+        ) {
           const normalizedReviews = reviewsData.reviews.map(normalizeReview);
           setReviews(normalizedReviews);
           setAverageRating(Number(reviewsData.averageRating) || 0);
-          setReviewCount(Number(reviewsData.reviewCount) || normalizedReviews.length);
+          setReviewCount(
+            Number(reviewsData.reviewCount) || normalizedReviews.length,
+          );
         } else {
           setReviews([]);
           setAverageRating(0);
@@ -224,7 +255,9 @@ export default function ProductPage({ params }: ProductPageProps) {
       }
     }
     load();
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, [id]);
 
   if (loading) {
@@ -242,9 +275,7 @@ export default function ProductPage({ params }: ProductPageProps) {
   /* ✅ ADD TO CART */
   const handleAddToCart = () => {
     const cart = getCart();
-    const existingItem = cart.find(
-      (item) => item.id === fragrance.id
-    );
+    const existingItem = cart.find((item) => item.id === fragrance.id);
 
     if (existingItem) {
       existingItem.quantity += quantity;
@@ -260,9 +291,7 @@ export default function ProductPage({ params }: ProductPageProps) {
   /* ✅ BUY NOW */
   const handleBuyNow = () => {
     const cart = getCart();
-    const existingItem = cart.find(
-      (item) => item.id === fragrance.id
-    );
+    const existingItem = cart.find((item) => item.id === fragrance.id);
 
     if (existingItem) {
       existingItem.quantity += quantity;
@@ -339,9 +368,13 @@ export default function ProductPage({ params }: ProductPageProps) {
       {/* Breadcrumb */}
       <div className="border-b border-gray-200 ">
         <div className="max-w-7xl mx-auto px-6 py-4 text-sm text-gray-500  font-light">
-          <Link href="/" className="hover:text-black ">Home</Link>
+          <Link href="/" className="hover:text-black ">
+            Home
+          </Link>
           <span className="mx-2">/</span>
-          <Link href="/fragrances" className="hover:text-black ">Collection</Link>
+          <Link href="/fragrances" className="hover:text-black ">
+            Collection
+          </Link>
           <span className="mx-2">/</span>
           <span className="text-black ">{fragrance.name}</span>
         </div>
@@ -352,7 +385,9 @@ export default function ProductPage({ params }: ProductPageProps) {
         <ScrollReveal>
           <div className="sticky top-24">
             <ProductImageCarousel
-              images={fragrance.images || (fragrance.image ? [fragrance.image] : [])}
+              images={
+                fragrance.images || (fragrance.image ? [fragrance.image] : [])
+              }
               name={fragrance.name}
             />
           </div>
@@ -382,7 +417,9 @@ export default function ProductPage({ params }: ProductPageProps) {
             </div>
 
             <div className="border-y border-gray-100  py-8">
-              <p className="text-3xl font-light tracking-wide text-gray-900 ">Rs {fragrance.price}</p>
+              <p className="text-3xl font-light tracking-wide text-gray-900 ">
+                Rs {fragrance.price}
+              </p>
             </div>
 
             <div>
@@ -396,10 +433,12 @@ export default function ProductPage({ params }: ProductPageProps) {
 
             {/* QUANTITY */}
             <div className="flex items-center gap-6">
-              <span className="text-sm uppercase tracking-widest text-gray-500 ">Quantity</span>
+              <span className="text-sm uppercase tracking-widest text-gray-500 ">
+                Quantity
+              </span>
               <div className="flex items-center border border-gray-200  rounded-full px-2 py-1 hover:border-black  transition-colors duration-300">
-                <button 
-                  onClick={handleDecrement} 
+                <button
+                  onClick={handleDecrement}
                   className="w-10 h-10 flex items-center justify-center text-gray-500  hover:text-black  transition-colors"
                 >
                   −
@@ -409,8 +448,8 @@ export default function ProductPage({ params }: ProductPageProps) {
                   readOnly
                   className="w-12 text-center bg-transparent font-light text-gray-900 "
                 />
-                <button 
-                  onClick={handleIncrement} 
+                <button
+                  onClick={handleIncrement}
                   className="w-10 h-10 flex items-center justify-center text-gray-500  hover:text-black  transition-colors"
                 >
                   +
@@ -467,7 +506,9 @@ export default function ProductPage({ params }: ProductPageProps) {
                     {Array.from({ length: 5 }, (_, index) => {
                       const value = index + 1;
                       const ActiveStar =
-                        selectedRating >= value ? StarSolidIcon : StarOutlineIcon;
+                        selectedRating >= value
+                          ? StarSolidIcon
+                          : StarOutlineIcon;
 
                       return (
                         <button
@@ -501,7 +542,9 @@ export default function ProductPage({ params }: ProductPageProps) {
                 </form>
 
                 {reviewMessage && (
-                  <p className="text-sm text-gray-600 font-light">{reviewMessage}</p>
+                  <p className="text-sm text-gray-600 font-light">
+                    {reviewMessage}
+                  </p>
                 )}
               </div>
             </ScrollReveal>
@@ -518,7 +561,10 @@ export default function ProductPage({ params }: ProductPageProps) {
                     </h3>
                   </div>
                   <div className="text-right">
-                    <Stars rating={Math.round(averageRating)} sizeClass="h-4 w-4" />
+                    <Stars
+                      rating={Math.round(averageRating)}
+                      sizeClass="h-4 w-4"
+                    />
                     <p className="text-sm text-gray-600 font-light mt-1">
                       {reviewCount > 0
                         ? `${averageRating.toFixed(1)} / 5 (${reviewCount})`

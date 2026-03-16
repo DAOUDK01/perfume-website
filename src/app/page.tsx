@@ -358,7 +358,7 @@ export default function HomePage() {
               <Link href="/fragrances">
                 <Button
                   variant="secondary"
-                  className="px-8 sm:px-12 py-4 text-lg bg-white hover:bg-gray-50   border-2 border-gray-300 hover:border-black   transition-all duration-300 transform hover:scale-105"
+                  className="px-8 sm:px-12 py-4 text-lg rounded-full bg-white hover:bg-gray-50   border-2 border-gray-300 hover:border-black   transition-all duration-300 transform hover:scale-105 shadow-sm hover:shadow-md"
                 >
                   Explore Full Collection
                 </Button>
@@ -791,9 +791,9 @@ function FeaturedProductGrid({ fragrances }: { fragrances: FragranceItem[] }) {
                 <button
                   key={index}
                   onClick={() => goToSlide(index)}
-                  className={`w-2 h-2 sm:w-3 sm:h-3 rounded-full transition-all duration-300 ${
+                  className={`w-[6px] h-[6px] sm:w-[8px] sm:h-[8px] rounded-full transition-all duration-300 ${
                     currentSlide === index
-                      ? "bg-gray-900  scale-125"
+                      ? "bg-gray-900  scale-110"
                       : "bg-gray-300  hover:bg-gray-500 "
                   }`}
                 />

@@ -7,6 +7,19 @@ export interface FetchOptions extends RequestInit {
   retryDelay?: number;
 }
 
+function isAbortError(error: unknown): boolean {
+  return (
+    typeof error === "object" &&
+    error !== null &&
+    "name" in error &&
+    error.name === "AbortError"
+  );
+}
+
+function toErrorMessage(error: unknown): string {
+  return error instanceof Error ? error.message : String(error);
+}
+
 /**
  * Fetch with timeout and retry functionality
  */
@@ -49,14 +62,14 @@ export async function fetchWithTimeout(
 
       // If it's the last attempt, throw the error
       if (attempt === retries) {
-        if (error.name === "AbortError") {
+        if (isAbortError(error)) {
           throw new Error(`Request timed out after ${timeout}ms`);
         }
-        throw error;
+        throw error instanceof Error ? error : new Error(String(error));
       }
 
       // Wait before retrying (only for network errors, not timeouts)
-      if (error.name !== "AbortError") {
+      if (!isAbortError(error)) {
         await new Promise((resolve) => setTimeout(resolve, retryDelay));
       }
     }
@@ -92,7 +105,7 @@ export async function fetchJSON<T = any>(
     return {
       data: null as T,
       success: false,
-      error: error.message || "Network error occurred",
+      error: toErrorMessage(error) || "Network error occurred",
     };
   }
 }

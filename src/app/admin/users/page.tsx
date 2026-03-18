@@ -75,17 +75,26 @@ export default function UsersPage() {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-serif font-light text-gray-900">Users</h1>
-          <p className="text-gray-600 font-light mt-1">Manage admin and customer accounts</p>
+          <h1 className="text-3xl font-serif font-light text-gray-900">
+            Users
+          </h1>
+          <p className="text-gray-600 font-light mt-1">
+            Manage admin and customer accounts
+          </p>
         </div>
       </div>
 
       <div className="bg-white border border-gray-200 rounded-2xl p-6 space-y-4">
         <h2 className="text-lg font-medium text-gray-900">Create User</h2>
         {error ? <p className="text-sm text-red-600">{error}</p> : null}
-        <form className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end" onSubmit={onCreate}>
+        <form
+          className="grid grid-cols-1 md:grid-cols-4 gap-4 items-end"
+          onSubmit={onCreate}
+        >
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Name
+            </label>
             <input
               value={name}
               onChange={(e) => setName(e.target.value)}
@@ -94,7 +103,9 @@ export default function UsersPage() {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Email
+            </label>
             <input
               type="email"
               value={email}
@@ -104,7 +115,9 @@ export default function UsersPage() {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Password
+            </label>
             <input
               type="password"
               value={password}
@@ -114,7 +127,9 @@ export default function UsersPage() {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Role</label>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Role
+            </label>
             <select
               value={role}
               onChange={(e) => setRole(e.target.value)}
@@ -143,10 +158,18 @@ export default function UsersPage() {
           <table className="w-full">
             <thead className="bg-gray-50">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Role</th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Name
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Email
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Role
+                </th>
+                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Actions
+                </th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
@@ -163,11 +186,20 @@ export default function UsersPage() {
                   </td>
                 </tr>
               ) : (
-                users.map((u) => (
-                  <tr key={u._id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{u.name}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">{u.email}</td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600 capitalize">{u.role}</td>
+                users.map((u, index) => (
+                  <tr
+                    key={`${u?._id?.toString?.() || u?.email || "user"}-${index}`}
+                    className="hover:bg-gray-50"
+                  >
+                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                      {u.name}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                      {u.email}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600 capitalize">
+                      {u.role}
+                    </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm">
                       <div className="inline-flex items-center gap-2">
                         <Link
@@ -196,4 +228,3 @@ export default function UsersPage() {
     </div>
   );
 }
-

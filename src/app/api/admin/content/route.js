@@ -5,6 +5,11 @@ import {
 } from "@/lib/mongodb";
 import { NextResponse } from "next/server";
 
+function toTime(value) {
+  const time = new Date(value || 0).getTime();
+  return Number.isFinite(time) ? time : 0;
+}
+
 export async function GET() {
   try {
     // Connect to databases with timeout protection
@@ -64,11 +69,31 @@ export async function GET() {
     const atlasResult =
       atlasContent.status === "fulfilled" ? atlasContent.value : [];
 
-    // Combine and deduplicate content based on page, section, and label
+    // Combine and deduplicate content by _id first.
     const combinedContent = [...localResult, ...atlasResult];
+    const dedupedByIdMap = new Map();
+    for (const item of combinedContent) {
+      const key =
+        item?._id?.toString?.() || `${item.page}-${item.section}-${item.label}`;
+      const existing = dedupedByIdMap.get(key);
+
+      if (!existing) {
+        dedupedByIdMap.set(key, item);
+        continue;
+      }
+
+      if (
+        toTime(item?.updatedAt || item?.createdAt) >=
+        toTime(existing?.updatedAt || existing?.createdAt)
+      ) {
+        dedupedByIdMap.set(key, item);
+      }
+    }
+
+    // Then dedupe by content slot to keep one item per page/section/label.
     const uniqueContent = Array.from(
       new Map(
-        combinedContent.map((item) => [
+        Array.from(dedupedByIdMap.values()).map((item) => [
           `${item.page}-${item.section}-${item.label}`,
           item,
         ]),

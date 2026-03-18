@@ -20,13 +20,22 @@ function formatMoney(value: number, currency: string) {
 function formatDate(value: any) {
   try {
     const d = new Date(value);
-    return new Intl.DateTimeFormat(undefined, { dateStyle: "medium", timeStyle: "short" }).format(d);
+    return new Intl.DateTimeFormat(undefined, {
+      dateStyle: "medium",
+      timeStyle: "short",
+    }).format(d);
   } catch {
     return String(value || "");
   }
 }
 
-const STATUSES = ["new", "processing", "shipped", "delivered", "cancelled"] as const;
+const STATUSES = [
+  "new",
+  "processing",
+  "shipped",
+  "delivered",
+  "cancelled",
+] as const;
 
 export default function OrdersPage() {
   const [orders, setOrders] = useState<any[]>([]);
@@ -34,11 +43,12 @@ export default function OrdersPage() {
   const [error, setError] = useState<string | null>(null);
   const [q, setQ] = useState("");
   const [status, setStatus] = useState("");
-   const [currency, setCurrency] = useState("USD");
+  const [currency, setCurrency] = useState("USD");
 
   const statusCounts = useMemo(() => {
     const map: Record<string, number> = {};
-    for (const o of orders) map[o?.status || "new"] = (map[o?.status || "new"] || 0) + 1;
+    for (const o of orders)
+      map[o?.status || "new"] = (map[o?.status || "new"] || 0) + 1;
     return map;
   }, [orders]);
 
@@ -97,8 +107,12 @@ export default function OrdersPage() {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-serif font-light text-gray-900">Orders</h1>
-          <p className="text-gray-600 font-light mt-1">View and update customer orders</p>
+          <h1 className="text-3xl font-serif font-light text-gray-900">
+            Orders
+          </h1>
+          <p className="text-gray-600 font-light mt-1">
+            View and update customer orders
+          </p>
         </div>
       </div>
 
@@ -115,7 +129,11 @@ export default function OrdersPage() {
                 className="w-full pl-12 pr-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-black"
               />
             </div>
-            <select value={status} onChange={(e) => setStatus(e.target.value)} className="px-4 py-3 border border-gray-200 rounded-xl focus:outline-none">
+            <select
+              value={status}
+              onChange={(e) => setStatus(e.target.value)}
+              className="px-4 py-3 border border-gray-200 rounded-xl focus:outline-none"
+            >
               <option value="">All Status</option>
               {STATUSES.map((s) => (
                 <option key={s} value={s}>
@@ -123,7 +141,10 @@ export default function OrdersPage() {
                 </option>
               ))}
             </select>
-            <button onClick={load} className="px-5 py-3 bg-gray-900 text-white rounded-xl hover:bg-black transition-colors">
+            <button
+              onClick={load}
+              className="px-5 py-3 bg-gray-900 text-white rounded-xl hover:bg-black transition-colors"
+            >
               Apply
             </button>
           </div>
@@ -134,11 +155,21 @@ export default function OrdersPage() {
           <table className="w-full">
             <thead className="bg-gray-50">
               <tr>
-                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Order</th>
-                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Customer</th>
-                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total</th>
-                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                <th className="px-6 py-4 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Order
+                </th>
+                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Customer
+                </th>
+                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Total
+                </th>
+                <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Status
+                </th>
+                <th className="px-6 py-4 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Actions
+                </th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
@@ -155,30 +186,46 @@ export default function OrdersPage() {
                   </td>
                 </tr>
               ) : (
-                orders.map((o) => (
-                  <tr key={o._id} className="hover:bg-gray-50">
+                orders.map((o, index) => (
+                  <tr
+                    key={`${o?._id?.toString?.() || "order"}-${o?.createdAt || "na"}-${index}`}
+                    className="hover:bg-gray-50"
+                  >
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-medium text-gray-900">#{String(o._id).slice(-6)}</div>
-                      <div className="text-sm text-gray-500">{formatDate(o.createdAt)}</div>
+                      <div className="text-sm font-medium text-gray-900">
+                        #{String(o._id).slice(-6)}
+                      </div>
+                      <div className="text-sm text-gray-500">
+                        {formatDate(o.createdAt)}
+                      </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-medium text-gray-900">{o.customerName}</div>
+                      <div className="text-sm font-medium text-gray-900">
+                        {o.customerName}
+                      </div>
                       <div className="text-sm text-gray-500">{o.email}</div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                       {formatMoney(Number(o.totalAmount || 0), currency)}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className="px-3 py-1 bg-gray-100 text-xs rounded-full text-gray-800 font-medium">{o.status || "new"}</span>
+                      <span className="px-3 py-1 bg-gray-100 text-xs rounded-full text-gray-800 font-medium">
+                        {o.status || "new"}
+                      </span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                       <div className="inline-flex items-center gap-2">
-                        <Link href={`/admin/orders/${encodeURIComponent(o._id)}`} className="px-3 py-2 rounded-lg border border-gray-200 hover:bg-gray-50">
+                        <Link
+                          href={`/admin/orders/${encodeURIComponent(o._id)}`}
+                          className="px-3 py-2 rounded-lg border border-gray-200 hover:bg-gray-50"
+                        >
                           View
                         </Link>
                         <select
                           value={o.status || "new"}
-                          onChange={(e) => onUpdateStatus(o._id, e.target.value)}
+                          onChange={(e) =>
+                            onUpdateStatus(o._id, e.target.value)
+                          }
                           className="px-3 py-2 rounded-lg border border-gray-200 bg-white"
                         >
                           {STATUSES.map((s) => (
@@ -199,4 +246,3 @@ export default function OrdersPage() {
     </div>
   );
 }
-

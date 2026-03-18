@@ -5,6 +5,24 @@ import {
 } from "@/lib/mongodb";
 import { NextResponse } from "next/server";
 
+function toTime(value) {
+  const time = new Date(value || 0).getTime();
+  return Number.isFinite(time) ? time : 0;
+}
+
+function getOrderKey(order) {
+  const id = order?._id?.toString?.() || order?._id;
+  if (id) return String(id);
+
+  // Fallback signature for records without an _id
+  return [
+    String(order?.email || ""),
+    String(order?.customerName || ""),
+    String(order?.createdAt || ""),
+    String(order?.totalAmount || ""),
+  ].join("|");
+}
+
 /**
  * Sends order data to n8n webhook (non-blocking)
  * This function fires and forgets - it won't block order creation if n8n is down
@@ -97,7 +115,30 @@ export async function GET(request) {
       localOrders.status === "fulfilled" ? localOrders.value : [];
     const atlasResult =
       atlasOrders.status === "fulfilled" ? atlasOrders.value : [];
-    const combinedOrders = [...localResult, ...atlasResult];
+
+    const dedupedByKey = new Map();
+    for (const order of [...localResult, ...atlasResult]) {
+      const key = getOrderKey(order);
+      const existing = dedupedByKey.get(key);
+
+      if (!existing) {
+        dedupedByKey.set(key, order);
+        continue;
+      }
+
+      // Keep the most recently updated record when duplicates exist.
+      const existingUpdated = toTime(
+        existing?.updatedAt || existing?.createdAt,
+      );
+      const currentUpdated = toTime(order?.updatedAt || order?.createdAt);
+      if (currentUpdated >= existingUpdated) {
+        dedupedByKey.set(key, order);
+      }
+    }
+
+    const combinedOrders = Array.from(dedupedByKey.values()).sort(
+      (a, b) => toTime(b?.createdAt) - toTime(a?.createdAt),
+    );
 
     return NextResponse.json({
       success: true,

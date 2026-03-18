@@ -32,7 +32,6 @@ export default function AdminContentPage() {
       if (res.ok) {
         setContent(data.content || []);
       } else {
-
       }
     } catch (err) {
     } finally {
@@ -43,7 +42,9 @@ export default function AdminContentPage() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     try {
-      const url = isEditing ? `/api/admin/content/${isEditing}` : "/api/admin/content";
+      const url = isEditing
+        ? `/api/admin/content/${isEditing}`
+        : "/api/admin/content";
       const method = isEditing ? "PATCH" : "POST";
       const res = await fetch(url, {
         method,
@@ -53,7 +54,14 @@ export default function AdminContentPage() {
       if (res.ok) {
         fetchContent();
         setIsModalOpen(false);
-        setFormData({ _id: "", label: "", page: "About", section: "Hero", type: "image", value: "" });
+        setFormData({
+          _id: "",
+          label: "",
+          page: "About",
+          section: "Hero",
+          type: "image",
+          value: "",
+        });
         setIsEditing(null);
       } else {
         alert("Failed to save content");
@@ -79,7 +87,14 @@ export default function AdminContentPage() {
 
   function openAddModal() {
     setIsEditing(null);
-    setFormData({ _id: "", label: "", page: "About", section: "Hero", type: "image", value: "" });
+    setFormData({
+      _id: "",
+      label: "",
+      page: "About",
+      section: "Hero",
+      type: "image",
+      value: "",
+    });
     setIsModalOpen(true);
   }
 
@@ -93,8 +108,12 @@ export default function AdminContentPage() {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-serif font-light text-gray-900">Site Content</h1>
-          <p className="text-gray-600 font-light mt-1">Manage images and text for various pages.</p>
+          <h1 className="text-3xl font-serif font-light text-gray-900">
+            Site Content
+          </h1>
+          <p className="text-gray-600 font-light mt-1">
+            Manage images and text for various pages.
+          </p>
         </div>
         <Button
           onClick={openAddModal}
@@ -107,26 +126,39 @@ export default function AdminContentPage() {
 
       {isModalOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <form onSubmit={handleSubmit} className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm animate-in fade-in slide-in-from-top-4 max-w-xl w-full">
-            <h2 className="text-lg font-medium mb-4">{isEditing ? "Edit Content" : "Add New Content"}</h2>
+          <form
+            onSubmit={handleSubmit}
+            className="bg-white border border-gray-200 rounded-2xl p-6 shadow-sm animate-in fade-in slide-in-from-top-4 max-w-xl w-full"
+          >
+            <h2 className="text-lg font-medium mb-4">
+              {isEditing ? "Edit Content" : "Add New Content"}
+            </h2>
             <div className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Label</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Label
+                  </label>
                   <input
                     type="text"
                     value={formData.label}
-                    onChange={(e) => setFormData({ ...formData, label: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, label: e.target.value })
+                    }
                     placeholder="e.g. About Hero Image"
                     className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-black focus:outline-none"
                     required
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Page</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Page
+                  </label>
                   <select
                     value={formData.page}
-                    onChange={(e) => setFormData({ ...formData, page: e.target.value })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, page: e.target.value })
+                    }
                     className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-black focus:outline-none"
                     required
                   >
@@ -139,21 +171,32 @@ export default function AdminContentPage() {
                 </div>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Section</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Section
+                </label>
                 <input
                   type="text"
                   value={formData.section}
-                  onChange={(e) => setFormData({ ...formData, section: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, section: e.target.value })
+                  }
                   placeholder="e.g. Hero, Footer, Banner"
                   className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-black focus:outline-none"
                   required
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Type</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Type
+                </label>
                 <select
                   value={formData.type}
-                  onChange={(e) => setFormData({ ...formData, type: e.target.value as "image" | "text" })}
+                  onChange={(e) =>
+                    setFormData({
+                      ...formData,
+                      type: e.target.value as "image" | "text",
+                    })
+                  }
                   className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-black focus:outline-none"
                   required
                 >
@@ -162,19 +205,29 @@ export default function AdminContentPage() {
                 </select>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Value (URL or Text)</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Value (URL or Text)
+                </label>
                 <input
                   type="text"
                   value={formData.value}
-                  onChange={(e) => setFormData({ ...formData, value: e.target.value })}
+                  onChange={(e) =>
+                    setFormData({ ...formData, value: e.target.value })
+                  }
                   placeholder="https://..."
                   className="w-full px-4 py-2 border border-gray-200 rounded-xl focus:ring-2 focus:ring-black focus:outline-none"
                   required
                 />
               </div>
               {formData.type === "image" && formData.value && (
-                  <div className="mt-2 h-32 w-full bg-gray-50 rounded-lg overflow-hidden border border-gray-200 flex items-center justify-center relative">
-                  <Image src={formData.value} alt="Preview" fill objectFit="contain" onError={(e) => (e.currentTarget.style.display = "none")} />
+                <div className="mt-2 h-32 w-full bg-gray-50 rounded-lg overflow-hidden border border-gray-200 flex items-center justify-center relative">
+                  <Image
+                    src={formData.value}
+                    alt="Preview"
+                    fill
+                    objectFit="contain"
+                    onError={(e) => (e.currentTarget.style.display = "none")}
+                  />
                 </div>
               )}
             </div>
@@ -201,28 +254,50 @@ export default function AdminContentPage() {
 
       <div className="bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-sm">
         {loading ? (
-          <div className="p-8 text-center text-gray-500">Loading content...</div>
+          <div className="p-8 text-center text-gray-500">
+            Loading content...
+          </div>
         ) : content.length === 0 ? (
-          <div className="p-8 text-center text-gray-500">No content found. Click &quot;Add Content&quot; to start.</div>
+          <div className="p-8 text-center text-gray-500">
+            No content found. Click &quot;Add Content&quot; to start.
+          </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead className="bg-gray-50 border-b border-gray-200">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Preview</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Label</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Page / Section</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
-                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Preview
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Label
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Page / Section
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Type
+                  </th>
+                  <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    Actions
+                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
-                {content.map((item) => (
-                  <tr key={item._id} className="hover:bg-gray-50 transition-colors">
+                {content.map((item, index) => (
+                  <tr
+                    key={`${item?._id || `${item.page}-${item.section}-${item.label}`}-${index}`}
+                    className="hover:bg-gray-50 transition-colors"
+                  >
                     <td className="px-6 py-4 whitespace-nowrap">
                       {item.type === "image" ? (
                         <div className="h-12 w-12 rounded-lg border border-gray-200 overflow-hidden bg-white relative">
-                          <Image src={item.value.replace(/"/g, '&quot;')} alt={item.label.replace(/"/g, '&quot;')} fill objectFit="cover" />
+                          <Image
+                            src={item.value.replace(/"/g, "&quot;")}
+                            alt={item.label.replace(/"/g, "&quot;")}
+                            fill
+                            objectFit="cover"
+                          />
                         </div>
                       ) : (
                         <div className="h-12 w-12 rounded-lg border border-gray-200 bg-gray-100 flex items-center justify-center text-xs text-gray-500">
@@ -231,14 +306,24 @@ export default function AdminContentPage() {
                       )}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-medium text-gray-900">{item.label}</div>
-                      <div className="text-xs text-gray-500 truncate max-w-[200px]">{item.value}</div>
+                      <div className="text-sm font-medium text-gray-900">
+                        {item.label}
+                      </div>
+                      <div className="text-xs text-gray-500 truncate max-w-[200px]">
+                        {item.value}
+                      </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span className="px-2 py-1 bg-gray-100 rounded text-xs font-medium text-gray-600 mr-2">{item.page}</span>
-                      <span className="text-sm text-gray-500">{item.section}</span>
+                      <span className="px-2 py-1 bg-gray-100 rounded text-xs font-medium text-gray-600 mr-2">
+                        {item.page}
+                      </span>
+                      <span className="text-sm text-gray-500">
+                        {item.section}
+                      </span>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 capitalize">{item.type}</td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 capitalize">
+                      {item.type}
+                    </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                       <div className="flex items-center justify-end gap-2">
                         <Button

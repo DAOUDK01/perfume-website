@@ -486,8 +486,20 @@ export default function Navigation() {
                     className="rounded-2xl border border-gray-200  bg-gray-50/80  p-4"
                   >
                     <div className="flex gap-3">
-                      <div className="w-11 h-11 rounded-xl border border-gray-200  bg-white  flex items-center justify-center text-sm font-serif text-gray-700  shrink-0">
-                        {item.name.charAt(0).toUpperCase()}
+                      <div className="relative w-11 h-11 rounded-xl border border-gray-200  bg-white  overflow-hidden shrink-0">
+                        {isValidImageUrl(item.image) ? (
+                          <Image
+                            src={item.image!}
+                            alt={item.name}
+                            fill
+                            className="object-cover"
+                            sizes="44px"
+                          />
+                        ) : (
+                          <div className="h-full w-full flex items-center justify-center text-sm font-serif text-gray-700">
+                            {item.name.charAt(0).toUpperCase()}
+                          </div>
+                        )}
                       </div>
 
                       <div className="min-w-0 flex-1">
@@ -548,20 +560,13 @@ export default function Navigation() {
               </span>
             </div>
 
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 gap-3">
               <button
                 onClick={closeCartDrawer}
-                className="py-3 rounded-full border border-gray-300 text-sm font-medium text-gray-700 hover:border-black hover:text-black transition-colors"
+                className="w-full py-3 rounded-full border border-gray-300 text-sm font-medium text-gray-700 hover:border-black hover:text-black transition-colors"
               >
                 Keep Browsing
               </button>
-              <Link
-                href="/checkout#order-summary"
-                onClick={closeCartDrawer}
-                className="py-3 rounded-full border border-gray-300 text-sm font-medium text-gray-700 text-center hover:border-black hover:text-black transition-colors"
-              >
-                View Cart
-              </Link>
             </div>
 
             <Link

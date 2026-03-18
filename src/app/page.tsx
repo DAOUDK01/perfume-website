@@ -108,6 +108,31 @@ export default function HomePage() {
     };
   }, []);
 
+  useEffect(() => {
+    if (loading) return;
+
+    const scrollToHashSection = () => {
+      const rawHash = window.location.hash;
+      if (!rawHash) return;
+
+      const targetId = decodeURIComponent(rawHash.replace(/^#/, ""));
+      if (!targetId) return;
+
+      const target = document.getElementById(targetId);
+      if (!target) return;
+
+      target.scrollIntoView({ behavior: "auto", block: "start" });
+    };
+
+    const timer = window.setTimeout(scrollToHashSection, 120);
+    window.addEventListener("hashchange", scrollToHashSection);
+
+    return () => {
+      window.clearTimeout(timer);
+      window.removeEventListener("hashchange", scrollToHashSection);
+    };
+  }, [loading]);
+
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-[#fafafa] ">
@@ -332,7 +357,7 @@ export default function HomePage() {
         {/* Featured Collection */}
         <section
           id="featured-collection"
-          className="py-20 sm:py-24 md:py-32 lg:py-40 bg-gray-50  border-t border-gray-200 "
+          className="scroll-mt-28 py-20 sm:py-24 md:py-32 lg:py-40 bg-gray-50  border-t border-gray-200 "
           data-scroll-section="1"
         >
           <div className="max-w-7xl mx-auto px-4 sm:px-6">

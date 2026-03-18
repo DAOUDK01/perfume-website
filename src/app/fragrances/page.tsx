@@ -325,47 +325,24 @@ function FragrancesContent() {
             className="relative mb-8 animate-fade-in-up opacity-0"
             style={{ animationDelay: "0.8s", animationFillMode: "forwards" }}
           >
-            <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-4">
-              <div aria-hidden="true" />
+            <div className="flex flex-col gap-4 md:grid md:grid-cols-[1fr_auto_1fr] md:items-center md:gap-4">
+              <div className="hidden md:block" aria-hidden="true" />
 
-              {/* CATEGORIES - Centered */}
-              <div className="justify-self-center">
-                <div className="inline-flex flex-wrap items-center justify-center gap-2 sm:gap-3 rounded-full border border-gray-200 bg-white/90 px-3 py-2 shadow-sm">
-                  {categoryOptions.map((option) => {
-                    const isActive = selectedCategory === option.value;
-
-                    return (
-                      <button
-                        key={option.value}
-                        onClick={() => setSelectedCategory(option.value)}
-                        className={`rounded-full border px-4 py-2 text-xs sm:text-sm tracking-wide transition-all duration-300 ${
-                          isActive
-                            ? "border-gray-900 bg-gray-900 text-white"
-                            : "border-gray-200 bg-white text-gray-700 hover:border-gray-400"
-                        }`}
-                      >
-                        {option.label}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-
-              {/* SORT - Right side */}
-              <div className="justify-self-end">
-                <div className="inline-flex items-center gap-2 rounded-full bg-white/95 px-3 py-2 shadow-sm">
+              {/* SORT - Right side on desktop, centered on mobile */}
+              <div className="order-1 flex justify-center md:order-3 md:justify-self-end">
+                <div className="inline-flex w-full max-w-[320px] items-center gap-2 rounded-full bg-white/95 px-3 py-2 shadow-sm md:w-auto">
                   <label
                     htmlFor="fragrance-sort"
                     className="text-[11px] uppercase tracking-[0.2em] text-gray-500 font-medium whitespace-nowrap"
                   >
                     Sort
                   </label>
-                  <div className="relative">
+                  <div className="relative flex-1 md:flex-none">
                     <select
                       id="fragrance-sort"
                       value={sortBy}
                       onChange={(e) => setSortBy(e.target.value as SortOption)}
-                      className="appearance-none rounded-full border border-gray-300 bg-white px-4 py-2.5 pr-10 text-sm sm:text-base text-gray-800 font-medium hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-black/10 focus:border-black transition-all duration-300 cursor-pointer min-w-[180px]"
+                      className="appearance-none w-full rounded-full border border-gray-300 bg-white px-4 py-2.5 pr-10 text-sm sm:text-base text-gray-800 font-medium hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-black/10 focus:border-black transition-all duration-300 cursor-pointer md:min-w-[180px]"
                     >
                       {sortOptions.map((option) => (
                         <option key={option.value} value={option.value}>
@@ -380,6 +357,29 @@ function FragrancesContent() {
                       ▾
                     </span>
                   </div>
+                </div>
+              </div>
+
+              {/* CATEGORIES - Centered */}
+              <div className="order-2 flex justify-center md:order-2 md:justify-self-center">
+                <div className="inline-flex max-w-full flex-wrap items-center justify-center gap-2 sm:gap-3 rounded-full border border-gray-200 bg-white/90 px-3 py-2 shadow-sm">
+                  {categoryOptions.map((option) => {
+                    const isActive = selectedCategory === option.value;
+
+                    return (
+                      <button
+                        key={option.value}
+                        onClick={() => setSelectedCategory(option.value)}
+                        className={`whitespace-nowrap rounded-full border px-4 py-2 text-xs sm:text-sm tracking-wide transition-all duration-300 ${
+                          isActive
+                            ? "border-gray-900 bg-gray-900 text-white"
+                            : "border-gray-200 bg-white text-gray-700 hover:border-gray-400"
+                        }`}
+                      >
+                        {option.label}
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
             </div>

@@ -93,6 +93,45 @@ type CartItem = {
   image?: string;
 };
 
+function readCartFromStorage(): CartItem[] {
+  if (typeof window === "undefined") return [];
+
+  try {
+    const stored = JSON.parse(localStorage.getItem("cart") || "[]");
+    if (!Array.isArray(stored)) return [];
+
+    return stored
+      .filter((item) => item && typeof item === "object")
+      .map((item: any) => ({
+        id: String(item.id ?? ""),
+        name: String(item.name ?? "Item"),
+        price: Number(item.price) || 0,
+        quantity: Math.max(1, Number(item.quantity) || 1),
+        image: typeof item.image === "string" ? item.image : "",
+      }))
+      .filter((item) => item.id);
+  } catch {
+    return [];
+  }
+}
+
+function areCartsEqual(a: CartItem[], b: CartItem[]): boolean {
+  if (a.length !== b.length) return false;
+
+  return a.every((item, index) => {
+    const other = b[index];
+    if (!other) return false;
+
+    return (
+      item.id === other.id &&
+      item.name === other.name &&
+      item.price === other.price &&
+      item.quantity === other.quantity &&
+      (item.image || "") === (other.image || "")
+    );
+  });
+}
+
 export default function FragrancesPage() {
   return (
     <Suspense fallback={<FragrancesLoading />}>
@@ -156,20 +195,42 @@ function FragrancesContent() {
   });
 
   useEffect(() => {
-    try {
-      const savedCart = JSON.parse(localStorage.getItem("cart") || "[]");
-      // Ensure cart is always an array
-      if (Array.isArray(savedCart)) {
-        setCart(savedCart);
-      } else {
-        // Old object format - clear it and start fresh
-        setCart([]);
+    const loadCart = () => {
+      const nextCart = readCartFromStorage();
+      setCart((prev) => (areCartsEqual(prev, nextCart) ? prev : nextCart));
+    };
+
+    const handleStorageChange = (event: StorageEvent) => {
+      if (!event.key || event.key === "cart") {
+        loadCart();
       }
-    } catch (error) {
-      console.error("Error loading cart:", error);
-      setCart([]);
-    }
+    };
+
+    const handleCartUpdated = () => {
+      loadCart();
+    };
+
+    const handleFocus = () => {
+      loadCart();
+    };
+
+    loadCart();
+
+    window.addEventListener("storage", handleStorageChange);
+    window.addEventListener("cartUpdated", handleCartUpdated);
+    window.addEventListener("focus", handleFocus);
+
+    return () => {
+      window.removeEventListener("storage", handleStorageChange);
+      window.removeEventListener("cartUpdated", handleCartUpdated);
+      window.removeEventListener("focus", handleFocus);
+    };
   }, []);
+
+  useEffect(() => {
+    localStorage.setItem("cart", JSON.stringify(cart));
+    window.dispatchEvent(new Event("cartUpdated"));
+  }, [cart]);
 
   useEffect(() => {
     let cancelled = false;
@@ -201,11 +262,6 @@ function FragrancesContent() {
       cancelled = true;
     };
   }, [debouncedSearchQuery]);
-
-  useEffect(() => {
-    localStorage.setItem("cart", JSON.stringify(cart));
-    window.dispatchEvent(new Event("cartUpdated"));
-  }, [cart]);
 
   const addToCart = useCallback((fragrance: FragranceItem) => {
     setCart((prev) => {

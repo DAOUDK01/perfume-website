@@ -302,10 +302,10 @@ export default function HomePage() {
                     ].map((item) => (
                       <div
                         key={item.label}
-                        className="grid grid-cols-[80px_1fr] gap-3 items-start"
+                        className="grid grid-cols-[110px_1fr] gap-3 items-start"
                       >
-                        <span className="text-[11px] tracking-[0.25em] uppercase text-gray-500  font-medium pt-1">
-                          {item.label}
+                        <span className="text-[11px] tracking-[0.25em] uppercase text-gray-500  font-medium pt-1 whitespace-nowrap">
+                          {item.label}:
                         </span>
                         <p className="text-sm text-gray-600  font-light leading-relaxed">
                           {item.value}
@@ -321,13 +321,6 @@ export default function HomePage() {
                     >
                       Explore the collection
                       <span aria-hidden="true">→</span>
-                    </Link>
-
-                    <Link
-                      href="/about"
-                      className="inline-flex items-center gap-2 rounded-full border border-gray-300 bg-white px-4 py-2 text-xs font-medium uppercase tracking-[0.12em] text-gray-800 hover:border-black hover:bg-gray-50 transition-all duration-300"
-                    >
-                      Learn about our process
                     </Link>
                   </div>
                 </div>
@@ -399,9 +392,9 @@ export default function HomePage() {
                       "Craftsmanship Image",
                     )}
                     fill
-                    objectFit="contain"
-                    className="object-center relative z-10"
+                    className="object-contain object-center relative z-10"
                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                    priority
                   />
                 </div>
               </ScrollReveal>
@@ -436,16 +429,9 @@ export default function HomePage() {
                   </p>
                   <Link
                     href="/about"
-                    className="inline-flex items-center gap-2 text-sm font-medium text-gray-900  hover:text-black  border-b-2 border-gray-200 hover:border-black   pb-1 transition-all duration-300 transform hover:scale-105 relative z-10"
+                    className="inline-flex items-center gap-2 rounded-full border border-gray-300 bg-white px-4 py-2 text-xs font-medium uppercase tracking-[0.12em] text-gray-800 hover:border-black hover:bg-gray-50 transition-all duration-300"
                   >
-                    {getContent(
-                      content,
-                      "Craftsmanship",
-                      "Button Text",
-                      "text",
-                      "Learn about our process",
-                    )}
-                    <span className="text-gray-600 ">→</span>
+                    Learn about our process
                   </Link>
                 </div>
               </ScrollReveal>

@@ -2,6 +2,7 @@ import Link from "next/link";
 
 const policySections = [
   {
+    id: "terms-conditions",
     title: "Terms & Conditions",
     points: [
       "By placing an order, you agree that all information provided is accurate and complete.",
@@ -10,6 +11,7 @@ const policySections = [
     ],
   },
   {
+    id: "damaged-or-incorrect-products",
     title: "Damaged or Incorrect Products",
     points: [
       "If your parcel arrives damaged or incorrect, contact us within 48 hours of delivery.",
@@ -18,6 +20,7 @@ const policySections = [
     ],
   },
   {
+    id: "shipping-delivery",
     title: "Shipping & Delivery",
     points: [
       "Delivery timelines are estimates and can vary due to location, weather, or courier delays.",
@@ -26,6 +29,7 @@ const policySections = [
     ],
   },
   {
+    id: "returns-refunds",
     title: "Returns & Refunds",
     points: [
       "For hygiene reasons, opened fragrances are generally not returnable unless defective.",
@@ -34,6 +38,7 @@ const policySections = [
     ],
   },
   {
+    id: "privacy-policy",
     title: "Privacy Policy",
     points: [
       "We only collect personal data required to process orders and provide customer support.",
@@ -63,8 +68,9 @@ export default function PoliciesPage() {
         <div className="space-y-5">
           {policySections.map((section) => (
             <article
+              id={section.id}
               key={section.title}
-              className="rounded-2xl border border-gray-200 bg-white p-6 md:p-7"
+              className="scroll-mt-32 rounded-2xl border border-gray-200 bg-white p-6 md:p-7"
             >
               <h2 className="text-2xl font-serif font-light text-gray-900 mb-4">
                 {section.title}

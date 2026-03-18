@@ -5,13 +5,24 @@ import ScrollReveal from "@/components/ScrollReveal";
 import { useEffect, useRef, useState } from "react";
 import { Minus, Plus, Trash2 } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 
 type CartItem = {
   id: string;
   name: string;
   price: number;
   quantity: number;
+  image?: string;
 };
+
+function isValidImageUrl(value?: string): boolean {
+  return Boolean(
+    value &&
+    (value.startsWith("http") ||
+      value.startsWith("/") ||
+      value.startsWith("./")),
+  );
+}
 
 export default function CheckoutPage() {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
@@ -310,7 +321,7 @@ export default function CheckoutPage() {
             >
               {isSubmitting
                 ? "Processing…"
-                : `Place Order — $${total.toFixed(2)}`}
+                : `Place Order — Rs ${total.toFixed(2)}`}
             </Button>
           </form>
 
@@ -327,35 +338,51 @@ export default function CheckoutPage() {
               {cartItems.map((item) => (
                 <div
                   key={item.id}
-                  className="flex justify-between rounded-2xl border border-gray-200 bg-gray-50 p-4"
+                  className="flex justify-between gap-3 rounded-2xl border border-gray-200 bg-gray-50 p-4"
                 >
-                  <div>
-                    <p className="font-medium text-gray-900">{item.name}</p>
-                    <div className="flex items-center gap-2 mt-1">
-                      <button
-                        type="button"
-                        onClick={() => decreaseQuantity(item.id)}
-                        className="h-7 w-7 rounded-full border border-gray-300 inline-flex items-center justify-center hover:border-black transition-colors"
-                        aria-label={`Decrease quantity for ${item.name}`}
-                      >
-                        <Minus size={14} />
-                      </button>
-                      <span className="text-sm font-medium w-5 text-center">
-                        {item.quantity}
-                      </span>
-                      <button
-                        type="button"
-                        onClick={() => increaseQuantity(item.id)}
-                        className="h-7 w-7 rounded-full border border-gray-300 inline-flex items-center justify-center hover:border-black transition-colors"
-                        aria-label={`Increase quantity for ${item.name}`}
-                      >
-                        <Plus size={14} />
-                      </button>
+                  <div className="flex min-w-0 gap-3">
+                    <div className="relative h-12 w-12 shrink-0 overflow-hidden rounded-xl border border-gray-200 bg-white">
+                      {isValidImageUrl(item.image) ? (
+                        <Image
+                          src={item.image!}
+                          alt={item.name}
+                          fill
+                          className="object-cover"
+                          sizes="48px"
+                        />
+                      ) : (
+                        <div className="h-full w-full bg-gray-100" />
+                      )}
+                    </div>
+
+                    <div>
+                      <p className="font-medium text-gray-900">{item.name}</p>
+                      <div className="flex items-center gap-2 mt-1">
+                        <button
+                          type="button"
+                          onClick={() => decreaseQuantity(item.id)}
+                          className="h-7 w-7 rounded-full border border-gray-300 inline-flex items-center justify-center hover:border-black transition-colors"
+                          aria-label={`Decrease quantity for ${item.name}`}
+                        >
+                          <Minus size={14} />
+                        </button>
+                        <span className="text-sm font-medium w-5 text-center">
+                          {item.quantity}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => increaseQuantity(item.id)}
+                          className="h-7 w-7 rounded-full border border-gray-300 inline-flex items-center justify-center hover:border-black transition-colors"
+                          aria-label={`Increase quantity for ${item.name}`}
+                        >
+                          <Plus size={14} />
+                        </button>
+                      </div>
                     </div>
                   </div>
                   <div className="text-right">
                     <p className="font-semibold">
-                      ${(item.price * item.quantity).toFixed(2)}
+                      Rs {(item.price * item.quantity).toFixed(2)}
                     </p>
                     <button
                       type="button"
@@ -373,19 +400,19 @@ export default function CheckoutPage() {
             <div className="border-t mt-6 pt-4 space-y-2 text-sm">
               <div className="flex justify-between">
                 <span>Subtotal</span>
-                <span>${subtotal.toFixed(2)}</span>
+                <span>Rs {subtotal.toFixed(2)}</span>
               </div>
               <div className="flex justify-between">
                 <span>Shipping</span>
-                <span>${shipping.toFixed(2)}</span>
+                <span>Rs {shipping.toFixed(2)}</span>
               </div>
               <div className="flex justify-between">
                 <span>Tax</span>
-                <span>${tax.toFixed(2)}</span>
+                <span>Rs {tax.toFixed(2)}</span>
               </div>
               <div className="flex justify-between text-lg font-bold mt-3">
                 <span>Total</span>
-                <span>${total.toFixed(2)}</span>
+                <span>Rs {total.toFixed(2)}</span>
               </div>
             </div>
           </aside>

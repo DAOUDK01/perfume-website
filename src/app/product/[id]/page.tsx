@@ -22,6 +22,7 @@ type ReviewItem = {
   id: string;
   rating: number;
   comment: string;
+  name: string;
   createdAt: string;
 };
 
@@ -61,6 +62,7 @@ const normalizeReview = (item: any, index: number): ReviewItem => ({
   id: String(item?.id ?? `review-${index}`),
   rating: Math.max(1, Math.min(5, Number(item?.rating) || 1)),
   comment: typeof item?.comment === "string" ? item.comment : "",
+  name: typeof item?.name === "string" ? item.name : "Anonymous",
   createdAt: item?.createdAt
     ? new Date(item.createdAt).toISOString()
     : new Date().toISOString(),
@@ -118,6 +120,7 @@ export default function ProductPage({ params }: ProductPageProps) {
   const [reviewCount, setReviewCount] = useState(0);
   const [selectedRating, setSelectedRating] = useState(0);
   const [reviewText, setReviewText] = useState("");
+  const [reviewName, setReviewName] = useState("");
   const [isSubmittingReview, setIsSubmittingReview] = useState(false);
   const [reviewMessage, setReviewMessage] = useState<string | null>(null);
 
@@ -342,6 +345,7 @@ export default function ProductPage({ params }: ProductPageProps) {
           body: JSON.stringify({
             rating: selectedRating,
             comment: reviewText,
+            name: reviewName || "Anonymous",
           }),
         },
       );
@@ -361,6 +365,7 @@ export default function ProductPage({ params }: ProductPageProps) {
       setReviewCount(Number(data.reviewCount) || normalizedReviews.length);
       setSelectedRating(0);
       setReviewText("");
+      setReviewName("");
       setReviewMessage("Thank you. Your review has been added.");
     } catch (error: any) {
       setReviewMessage(error?.message || "Failed to submit review.");
@@ -539,7 +544,7 @@ export default function ProductPage({ params }: ProductPageProps) {
       {/* REVIEWS */}
       <section className="border-t border-gray-200 py-16 lg:py-20 bg-gray-50/50">
         <div className="max-w-7xl mx-auto px-6">
-          <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,430px)_minmax(0,1fr)] gap-8 lg:gap-12">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
             <ScrollReveal>
               <div className="rounded-2xl border border-gray-200 bg-white p-6 sm:p-8 space-y-5">
                 <div>
@@ -555,6 +560,14 @@ export default function ProductPage({ params }: ProductPageProps) {
                 </div>
 
                 <form onSubmit={handleReviewSubmit} className="space-y-4">
+                  <input
+                    type="text"
+                    value={reviewName}
+                    onChange={(e) => setReviewName(e.target.value)}
+                    placeholder="Your name (optional)..."
+                    className="w-full rounded-xl border border-gray-200 px-4 py-3 text-sm text-gray-800 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-black/10 focus:border-black transition-colors"
+                  />
+
                   <div className="flex items-center gap-2">
                     {Array.from({ length: 5 }, (_, index) => {
                       const value = index + 1;
@@ -634,9 +647,17 @@ export default function ProductPage({ params }: ProductPageProps) {
                           key={review.id}
                           className="rounded-xl border border-gray-200 p-4 bg-gray-50/60"
                         >
-                          <div className="flex items-center justify-between gap-3 mb-2">
-                            <Stars rating={review.rating} sizeClass="h-4 w-4" />
-                            <span className="text-xs text-gray-500 font-light">
+                          <div className="flex items-center justify-between gap-3 mb-3">
+                            <div className="flex items-center gap-3">
+                              <p className="text-sm font-medium text-gray-900">
+                                {review.name}
+                              </p>
+                              <Stars
+                                rating={review.rating}
+                                sizeClass="h-4 w-4"
+                              />
+                            </div>
+                            <span className="text-xs text-gray-500 font-light whitespace-nowrap">
                               {formatReviewDate(review.createdAt)}
                             </span>
                           </div>

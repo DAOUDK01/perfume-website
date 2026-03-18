@@ -18,6 +18,7 @@ type CartItem = {
   name: string;
   price: number;
   quantity: number;
+  image?: string;
 };
 
 type SearchProduct = {
@@ -42,6 +43,7 @@ function parseCart(value: string | null): CartItem[] {
         name: String(item.name ?? "Item"),
         price: Number(item.price) || 0,
         quantity: Math.max(1, Number(item.quantity) || 1),
+        image: typeof item.image === "string" ? item.image : "",
       }))
       .filter((item) => item.id);
   } catch {
@@ -67,7 +69,6 @@ export default function Navigation() {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isCartAnimating, setIsCartAnimating] = useState(false);
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
-  const [hasAgreedToTerms, setHasAgreedToTerms] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [searchResults, setSearchResults] = useState<SearchProduct[]>([]);
@@ -547,28 +548,6 @@ export default function Navigation() {
               </span>
             </div>
 
-            <div className="rounded-2xl border border-gray-200 bg-gray-50/70 p-3">
-              <label className="flex items-start gap-3 text-xs text-gray-600">
-                <input
-                  type="checkbox"
-                  checked={hasAgreedToTerms}
-                  onChange={(e) => setHasAgreedToTerms(e.target.checked)}
-                  className="mt-0.5 h-4 w-4 rounded border-gray-300 text-black focus:ring-black"
-                />
-                <span className="leading-relaxed">
-                  I agree to the{" "}
-                  <Link
-                    href="/policies"
-                    onClick={closeCartDrawer}
-                    className="font-medium text-gray-900 underline underline-offset-2"
-                  >
-                    Terms & Policies
-                  </Link>
-                  .
-                </span>
-              </label>
-            </div>
-
             <div className="grid grid-cols-2 gap-3">
               <button
                 onClick={closeCartDrawer}
@@ -585,24 +564,13 @@ export default function Navigation() {
               </Link>
             </div>
 
-            {hasAgreedToTerms ? (
-              <Link
-                href="/checkout"
-                onClick={closeCartDrawer}
-                className="block w-full py-3 rounded-full bg-gray-900 text-white text-sm font-medium text-center hover:bg-black transition-colors"
-              >
-                Checkout
-              </Link>
-            ) : (
-              <button
-                type="button"
-                disabled
-                title="Please agree to Terms & Policies"
-                className="w-full py-3 rounded-full bg-gray-300 text-white text-sm font-medium text-center cursor-not-allowed"
-              >
-                Checkout
-              </button>
-            )}
+            <Link
+              href="/checkout"
+              onClick={closeCartDrawer}
+              className="block w-full py-3 rounded-full bg-gray-900 text-white text-sm font-medium text-center hover:bg-black transition-colors"
+            >
+              Checkout
+            </Link>
           </div>
         </aside>
       )}

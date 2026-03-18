@@ -14,6 +14,7 @@ function normalizeReview(review) {
     ),
     rating: Number.isFinite(rating) ? Math.min(5, Math.max(1, rating)) : 1,
     comment: typeof review?.comment === "string" ? review.comment.trim() : "",
+    name: typeof review?.name === "string" ? review.name.trim() : "Anonymous",
     createdAt: review?.createdAt
       ? new Date(review.createdAt).toISOString()
       : new Date().toISOString(),
@@ -157,6 +158,8 @@ export async function POST(request, { params }) {
     const parsedRating = Number(body?.rating);
     const comment =
       typeof body?.comment === "string" ? body.comment.trim() : "";
+    const name =
+      typeof body?.name === "string" ? body.name.trim() : "Anonymous";
 
     if (
       !Number.isFinite(parsedRating) ||
@@ -173,6 +176,7 @@ export async function POST(request, { params }) {
       id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
       rating: parsedRating,
       comment,
+      name,
       createdAt: new Date().toISOString(),
     });
 

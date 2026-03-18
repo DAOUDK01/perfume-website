@@ -31,12 +31,24 @@ type FragranceItem = {
 };
 
 type CategoryFilter = "all" | "men" | "women" | "uni";
+type SortOption =
+  | "featured"
+  | "price-low"
+  | "price-high"
+  | "name-asc"
+  | "name-desc";
 
 const categoryOptions: Array<{ value: CategoryFilter; label: string }> = [
   { value: "all", label: "All" },
   { value: "men", label: "Men" },
   { value: "women", label: "Women" },
   { value: "uni", label: "Uni" },
+];
+
+const sortOptions: Array<{ value: SortOption; label: string }> = [
+  { value: "featured", label: "Latest" },
+  { value: "price-low", label: "Low to High" },
+  { value: "price-high", label: "High to Low" },
 ];
 
 function normalizeCategory(value?: string): CategoryFilter | null {
@@ -78,6 +90,7 @@ type CartItem = {
   name: string;
   price: number;
   quantity: number;
+  image?: string;
 };
 
 export default function FragrancesPage() {
@@ -113,6 +126,7 @@ function FragrancesContent() {
   const searchQuery = searchParams.get("q") || "";
   const [selectedCategory, setSelectedCategory] =
     useState<CategoryFilter>("all");
+  const [sortBy, setSortBy] = useState<SortOption>("featured");
   const debouncedSearchQuery = useDebounce(searchQuery, 500);
 
   const filteredList = list.filter((item) => {
@@ -123,6 +137,22 @@ function FragrancesContent() {
       .join(" ");
 
     return normalizeCategory(categorySource) === selectedCategory;
+  });
+
+  const sortedList = [...filteredList].sort((a, b) => {
+    switch (sortBy) {
+      case "price-low":
+        return a.price - b.price;
+      case "price-high":
+        return b.price - a.price;
+      case "name-asc":
+        return a.name.localeCompare(b.name);
+      case "name-desc":
+        return b.name.localeCompare(a.name);
+      case "featured":
+      default:
+        return 0;
+    }
   });
 
   useEffect(() => {
@@ -196,6 +226,7 @@ function FragrancesContent() {
             name: fragrance.name,
             price: fragrance.price,
             quantity: 1,
+            image: fragrance.image,
           },
         ];
       }
@@ -238,25 +269,62 @@ function FragrancesContent() {
             className="relative mb-8 animate-fade-in-up opacity-0"
             style={{ animationDelay: "0.8s", animationFillMode: "forwards" }}
           >
-            <div className="flex justify-center">
-              <div className="inline-flex flex-wrap items-center justify-center gap-2 sm:gap-3 rounded-full border border-gray-200 bg-white/90 px-3 py-2 shadow-sm">
-                {categoryOptions.map((option) => {
-                  const isActive = selectedCategory === option.value;
+            <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-4">
+              <div aria-hidden="true" />
 
-                  return (
-                    <button
-                      key={option.value}
-                      onClick={() => setSelectedCategory(option.value)}
-                      className={`rounded-full border px-4 py-2 text-xs sm:text-sm tracking-wide transition-all duration-300 ${
-                        isActive
-                          ? "border-gray-900 bg-gray-900 text-white"
-                          : "border-gray-200 bg-white text-gray-700 hover:border-gray-400"
-                      }`}
+              {/* CATEGORIES - Centered */}
+              <div className="justify-self-center">
+                <div className="inline-flex flex-wrap items-center justify-center gap-2 sm:gap-3 rounded-full border border-gray-200 bg-white/90 px-3 py-2 shadow-sm">
+                  {categoryOptions.map((option) => {
+                    const isActive = selectedCategory === option.value;
+
+                    return (
+                      <button
+                        key={option.value}
+                        onClick={() => setSelectedCategory(option.value)}
+                        className={`rounded-full border px-4 py-2 text-xs sm:text-sm tracking-wide transition-all duration-300 ${
+                          isActive
+                            ? "border-gray-900 bg-gray-900 text-white"
+                            : "border-gray-200 bg-white text-gray-700 hover:border-gray-400"
+                        }`}
+                      >
+                        {option.label}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* SORT - Right side */}
+              <div className="justify-self-end">
+                <div className="inline-flex items-center gap-2 rounded-full bg-white/95 px-3 py-2 shadow-sm">
+                  <label
+                    htmlFor="fragrance-sort"
+                    className="text-[11px] uppercase tracking-[0.2em] text-gray-500 font-medium whitespace-nowrap"
+                  >
+                    Sort
+                  </label>
+                  <div className="relative">
+                    <select
+                      id="fragrance-sort"
+                      value={sortBy}
+                      onChange={(e) => setSortBy(e.target.value as SortOption)}
+                      className="appearance-none rounded-full border border-gray-300 bg-white px-4 py-2.5 pr-10 text-sm sm:text-base text-gray-800 font-medium hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-black/10 focus:border-black transition-all duration-300 cursor-pointer min-w-[180px]"
                     >
-                      {option.label}
-                    </button>
-                  );
-                })}
+                      {sortOptions.map((option) => (
+                        <option key={option.value} value={option.value}>
+                          {option.label}
+                        </option>
+                      ))}
+                    </select>
+                    <span
+                      className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-gray-500"
+                      aria-hidden="true"
+                    >
+                      ▾
+                    </span>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -277,7 +345,7 @@ function FragrancesContent() {
                 </div>
               ))}
             </div>
-          ) : filteredList.length === 0 ? (
+          ) : sortedList.length === 0 ? (
             <div className="text-center py-24">
               <p className="text-gray-500  font-light">
                 {list.length === 0
@@ -287,7 +355,7 @@ function FragrancesContent() {
             </div>
           ) : (
             <div className="grid grid-cols-1 items-stretch sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
-              {filteredList.map((fragrance) => {
+              {sortedList.map((fragrance) => {
                 const cartItem = cart.find((item) => item.id === fragrance.id);
                 return (
                   <FragranceCard

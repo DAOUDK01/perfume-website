@@ -12,12 +12,14 @@ export default function Button({
   // Check if custom styling is provided
   const hasCustomStyling =
     className.includes("bg-") || className.includes("text-");
+  const hasRoundedStyling = className.includes("rounded");
+  const roundedClass = hasRoundedStyling ? "" : "rounded-full";
 
   if (hasCustomStyling) {
     // When custom styling is provided, just apply the base styles and custom className
     return (
       <button
-        className={`px-6 py-2 text-sm border transition-all duration-300 hover:shadow-md ${className}`}
+        className={`px-6 py-2 text-sm border transition-all duration-300 hover:shadow-md ${roundedClass} ${className}`}
         {...props}
       >
         {children}
@@ -26,8 +28,7 @@ export default function Button({
   }
 
   // Default button styling when no custom styling is provided
-  const baseStyles =
-    "px-6 py-2 text-sm border transition-all duration-300 hover:shadow-md";
+  const baseStyles = `px-6 py-2 text-sm border transition-all duration-300 hover:shadow-md ${roundedClass}`;
 
   const variants = {
     primary:

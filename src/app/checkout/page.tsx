@@ -4,6 +4,7 @@ import Button from "@/components/Button";
 import ScrollReveal from "@/components/ScrollReveal";
 import { useEffect, useRef, useState } from "react";
 import { Minus, Plus, Trash2 } from "lucide-react";
+import Link from "next/link";
 
 type CartItem = {
   id: string;
@@ -18,8 +19,12 @@ export default function CheckoutPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedPaymentMethod, setSelectedPaymentMethod] =
     useState("cashOnDelivery");
+  const [hasAgreedToTerms, setHasAgreedToTerms] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const emailRef = useRef<HTMLInputElement>(null);
+
+  const inputClass =
+    "w-full px-4 py-3 rounded-2xl border border-gray-200 bg-white text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-black focus:ring-1 focus:ring-black transition-all duration-300";
 
   useEffect(() => {
     try {
@@ -36,23 +41,22 @@ export default function CheckoutPage() {
   const updateCart = (items: CartItem[]) => {
     setCartItems(items);
     localStorage.setItem("cart", JSON.stringify(items));
+    window.dispatchEvent(new Event("cartUpdated"));
   };
 
   const increaseQuantity = (id: string) => {
     updateCart(
       cartItems.map((i) =>
-        i.id === id ? { ...i, quantity: i.quantity + 1 } : i
-      )
+        i.id === id ? { ...i, quantity: i.quantity + 1 } : i,
+      ),
     );
   };
 
   const decreaseQuantity = (id: string) => {
     updateCart(
       cartItems
-        .map((i) =>
-          i.id === id ? { ...i, quantity: i.quantity - 1 } : i
-        )
-        .filter((i) => i.quantity > 0)
+        .map((i) => (i.id === id ? { ...i, quantity: i.quantity - 1 } : i))
+        .filter((i) => i.quantity > 0),
     );
   };
 
@@ -73,6 +77,8 @@ export default function CheckoutPage() {
     });
 
     if (!cartItems.length) newErrors.submit = "Your cart is empty";
+    if (!hasAgreedToTerms)
+      newErrors.terms = "Please agree to terms and policies";
 
     if (Object.keys(newErrors).length) {
       setErrors(newErrors);
@@ -96,6 +102,7 @@ export default function CheckoutPage() {
       });
 
       localStorage.removeItem("cart");
+      window.dispatchEvent(new Event("cartUpdated"));
       window.location.href = "/checkout/confirmation";
     } catch {
       setErrors({ submit: "Order failed. Please try again." });
@@ -103,10 +110,7 @@ export default function CheckoutPage() {
     }
   };
 
-  const subtotal = cartItems.reduce(
-    (s, i) => s + i.price * i.quantity,
-    0
-  );
+  const subtotal = cartItems.reduce((s, i) => s + i.price * i.quantity, 0);
   const shipping = 15;
   const tax = +(subtotal * 0.1).toFixed(2);
   const total = subtotal + shipping + tax;
@@ -137,11 +141,21 @@ export default function CheckoutPage() {
             className="lg:col-span-2 bg-white  rounded-2xl p-6 md:p-8 shadow border border-gray-100 "
           >
             {/* CONTACT */}
-            <h2 className="text-2xl font-serif mb-6 text-gray-900 ">Contact Info</h2>
+            <h2 className="text-2xl font-serif mb-6 text-gray-900 ">
+              Contact Info
+            </h2>
 
             <div className="grid md:grid-cols-2 gap-4">
-              <input name="firstName" placeholder="First name *" className="input" />
-              <input name="lastName" placeholder="Last name" className="input" />
+              <input
+                name="firstName"
+                placeholder="First name *"
+                className={inputClass}
+              />
+              <input
+                name="lastName"
+                placeholder="Last name"
+                className={inputClass}
+              />
             </div>
 
             <input
@@ -149,23 +163,35 @@ export default function CheckoutPage() {
               name="email"
               type="email"
               placeholder="Email address *"
-              className="input mt-4"
+              className={`${inputClass} mt-4`}
             />
 
-            <input name="phone" placeholder="Phone number" className="input mt-4" />
+            <input
+              name="phone"
+              placeholder="Phone number"
+              className={`${inputClass} mt-4`}
+            />
 
             {/* ADDRESS */}
-            <h2 className="text-2xl font-serif mt-10 mb-6 text-gray-900 ">Shipping Address</h2>
+            <h2 className="text-2xl font-serif mt-10 mb-6 text-gray-900 ">
+              Shipping Address
+            </h2>
 
-            <input name="street" placeholder="Street address *" className="input" />
+            <input
+              name="street"
+              placeholder="Street address *"
+              className={inputClass}
+            />
 
             <div className="grid md:grid-cols-2 gap-4 mt-4">
-              <input name="city" placeholder="City *" className="input" />
-              <input name="state" placeholder="State" className="input" />
+              <input name="city" placeholder="City *" className={inputClass} />
+              <input name="state" placeholder="State" className={inputClass} />
             </div>
 
             {/* PAYMENT */}
-            <h2 className="text-2xl font-serif mt-10 mb-6 text-gray-900 ">Payment Method</h2>
+            <h2 className="text-2xl font-serif mt-10 mb-6 text-gray-900 ">
+              Payment Method
+            </h2>
 
             <div className="grid md:grid-cols-2 gap-4">
               {[
@@ -176,7 +202,7 @@ export default function CheckoutPage() {
               ].map(([value, label]) => (
                 <label
                   key={value}
-                  className={`border rounded-xl p-4 cursor-pointer transition ${
+                  className={`border rounded-2xl p-4 cursor-pointer transition ${
                     selectedPaymentMethod === value
                       ? "border-black  bg-gray-50 "
                       : "border-gray-200 "
@@ -195,12 +221,16 @@ export default function CheckoutPage() {
 
             {/* PAYMENT DETAILS */}
             {selectedPaymentMethod !== "cashOnDelivery" && (
-              <div className="mt-6 p-5 rounded-xl bg-gray-50  border border-gray-200 ">
+              <div className="mt-6 p-5 rounded-2xl bg-gray-50  border border-gray-200 ">
                 {selectedPaymentMethod === "easyPaisa" && (
                   <>
                     <h4 className="font-semibold mb-2">EasyPaisa Details</h4>
-                    <p>Account Name: <b>Daoud Khalid</b></p>
-                    <p>EasyPaisa Number: <b>+92 315 018825</b></p>
+                    <p>
+                      Account Name: <b>Daoud Khalid</b>
+                    </p>
+                    <p>
+                      EasyPaisa Number: <b>+92 315 018825</b>
+                    </p>
                     <p className="text-sm text-gray-600  mt-2">
                       Send payment and mention your order email in notes.
                     </p>
@@ -210,8 +240,12 @@ export default function CheckoutPage() {
                 {selectedPaymentMethod === "jazzCash" && (
                   <>
                     <h4 className="font-semibold mb-2">JazzCash Details</h4>
-                    <p>Account Name: <b>Daoud Khalid</b></p>
-                    <p>JazzCash Number: <b>+92 315 018825</b></p>
+                    <p>
+                      Account Name: <b>Daoud Khalid</b>
+                    </p>
+                    <p>
+                      JazzCash Number: <b>+92 315 018825</b>
+                    </p>
                     <p className="text-sm text-gray-600  mt-2">
                       Send payment and mention your order email.
                     </p>
@@ -220,17 +254,50 @@ export default function CheckoutPage() {
 
                 {selectedPaymentMethod === "bankTransfer" && (
                   <>
-                    <h4 className="font-semibold mb-2">Bank Transfer Details</h4>
-                    <p>Bank Name: <b>Bank Al Habib</b></p>
-                    <p>Account Title: <b>Daoud Khalid</b></p>
-                    <p>IBAN: <b>PK69BAHL5541008100272501</b></p>
+                    <h4 className="font-semibold mb-2">
+                      Bank Transfer Details
+                    </h4>
+                    <p>
+                      Bank Name: <b>Bank Al Habib</b>
+                    </p>
+                    <p>
+                      Account Title: <b>Daoud Khalid</b>
+                    </p>
+                    <p>
+                      IBAN: <b>PK69BAHL5541008100272501</b>
+                    </p>
                     <p className="text-sm text-gray-600  mt-2">
-                      Please transfer the exact amount and include your email as reference.
+                      Please transfer the exact amount and include your email as
+                      reference.
                     </p>
                   </>
                 )}
               </div>
             )}
+
+            <div className="mt-8 rounded-2xl border border-gray-200 bg-gray-50 p-4">
+              <label className="flex items-start gap-3 text-sm text-gray-700">
+                <input
+                  type="checkbox"
+                  checked={hasAgreedToTerms}
+                  onChange={(e) => setHasAgreedToTerms(e.target.checked)}
+                  className="mt-0.5 h-4 w-4 rounded border-gray-300 text-black focus:ring-black"
+                />
+                <span>
+                  I agree to the{" "}
+                  <Link
+                    href="/policies"
+                    className="font-medium text-gray-900 underline underline-offset-2"
+                  >
+                    Terms and Policies
+                  </Link>
+                  .
+                </span>
+              </label>
+              {errors.terms && (
+                <p className="text-red-600 text-sm mt-2">{errors.terms}</p>
+              )}
+            </div>
 
             {errors.submit && (
               <p className="text-red-600 mt-4">{errors.submit}</p>
@@ -248,20 +315,40 @@ export default function CheckoutPage() {
           </form>
 
           {/* SUMMARY */}
-          <aside className="bg-white  rounded-2xl p-6 shadow sticky top-28 h-fit border border-gray-100 ">
-            <h3 className="text-2xl font-serif mb-6 text-gray-900 ">Order Summary</h3>
+          <aside
+            id="order-summary"
+            className="bg-white  rounded-2xl p-6 shadow sticky top-28 h-fit border border-gray-100 "
+          >
+            <h3 className="text-2xl font-serif mb-6 text-gray-900 ">
+              Order Summary
+            </h3>
 
             <div className="space-y-4">
               {cartItems.map((item) => (
-                <div key={item.id} className="flex justify-between">
+                <div
+                  key={item.id}
+                  className="flex justify-between rounded-2xl border border-gray-200 bg-gray-50 p-4"
+                >
                   <div>
-                    <p className="font-medium">{item.name}</p>
+                    <p className="font-medium text-gray-900">{item.name}</p>
                     <div className="flex items-center gap-2 mt-1">
-                      <button type="button" onClick={() => decreaseQuantity(item.id)}>
+                      <button
+                        type="button"
+                        onClick={() => decreaseQuantity(item.id)}
+                        className="h-7 w-7 rounded-full border border-gray-300 inline-flex items-center justify-center hover:border-black transition-colors"
+                        aria-label={`Decrease quantity for ${item.name}`}
+                      >
                         <Minus size={14} />
                       </button>
-                      <span>{item.quantity}</span>
-                      <button type="button" onClick={() => increaseQuantity(item.id)}>
+                      <span className="text-sm font-medium w-5 text-center">
+                        {item.quantity}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => increaseQuantity(item.id)}
+                        className="h-7 w-7 rounded-full border border-gray-300 inline-flex items-center justify-center hover:border-black transition-colors"
+                        aria-label={`Increase quantity for ${item.name}`}
+                      >
                         <Plus size={14} />
                       </button>
                     </div>
@@ -273,7 +360,8 @@ export default function CheckoutPage() {
                     <button
                       type="button"
                       onClick={() => removeItem(item.id)}
-                      className="text-red-500 mt-1"
+                      className="mt-2 inline-flex h-7 w-7 items-center justify-center rounded-full border border-red-200 text-red-500 hover:bg-red-50 transition-colors"
+                      aria-label={`Remove ${item.name}`}
                     >
                       <Trash2 size={14} />
                     </button>

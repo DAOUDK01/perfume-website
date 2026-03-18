@@ -9,7 +9,10 @@ interface ProductImageCarouselProps {
   name: string;
 }
 
-export default function ProductImageCarousel({ images, name }: ProductImageCarouselProps) {
+export default function ProductImageCarousel({
+  images,
+  name,
+}: ProductImageCarouselProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
 
   if (!images || images.length === 0) return null;
@@ -24,15 +27,14 @@ export default function ProductImageCarousel({ images, name }: ProductImageCarou
 
   return (
     <div className="space-y-4">
-      <div className="relative aspect-square bg-[#f5f5f5] rounded-xl overflow-hidden group">
+      <div className="relative aspect-square bg-white rounded-2xl overflow-hidden group border border-gray-200">
         <Image
           src={images[currentIndex]}
           alt={`${name} - View ${currentIndex + 1}`}
           fill
-          objectFit="cover"
-          className="transition-transform duration-700 ease-out group-hover:scale-105"
+          className="object-contain p-4 transition-transform duration-700 ease-out group-hover:scale-[1.03]"
         />
-        
+
         {images.length > 1 && (
           <>
             <button
@@ -59,15 +61,19 @@ export default function ProductImageCarousel({ images, name }: ProductImageCarou
             <button
               key={idx}
               onClick={() => setCurrentIndex(idx)}
-              className={`relative w-20 h-20 flex-shrink-0 rounded-lg overflow-hidden border transition-all duration-300 ${
-                currentIndex === idx ? "border-black shadow-md scale-105" : "border-transparent opacity-70 hover:opacity-100 hover:scale-105"
+              className={`relative w-20 h-20 flex-shrink-0 rounded-xl overflow-hidden bg-white border transition-all duration-300 focus:outline-none focus-visible:outline-none ${
+                currentIndex === idx
+                  ? "border-gray-300 shadow-sm ring-1 ring-gray-200"
+                  : "border-gray-200 opacity-90 hover:opacity-100 hover:border-gray-300"
               }`}
+              aria-label={`Show image ${idx + 1}`}
             >
               <Image
                 src={img}
                 alt={`${name} thumbnail ${idx + 1}`}
                 fill
-                objectFit="cover"
+                className="object-contain p-1"
+                sizes="80px"
               />
             </button>
           ))}

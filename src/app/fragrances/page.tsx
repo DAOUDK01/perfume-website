@@ -30,32 +30,42 @@ type FragranceItem = {
   category?: string;
 };
 
-type CategoryFilter = "all" | "men" | "woman" | "uni";
+type CategoryFilter = "all" | "men" | "women" | "uni";
 
 const categoryOptions: Array<{ value: CategoryFilter; label: string }> = [
   { value: "all", label: "All" },
   { value: "men", label: "Men" },
-  { value: "woman", label: "Woman" },
-  { value: "uni", label: "Unisex" },
+  { value: "women", label: "Women" },
+  { value: "uni", label: "Uni" },
 ];
 
 function normalizeCategory(value?: string): CategoryFilter | null {
   const category = (value || "").toLowerCase().trim();
 
   if (!category) return null;
-  if (category.includes("uni")) return "uni";
+  if (
+    category.includes("uni") ||
+    category.includes("unisex") ||
+    category.includes("both")
+  ) {
+    return "uni";
+  }
   if (
     category.includes("women") ||
     category.includes("woman") ||
     category.includes("female") ||
-    category.includes("lady")
+    category.includes("lady") ||
+    category.includes("for her") ||
+    category.includes(" her ")
   ) {
-    return "woman";
+    return "women";
   }
   if (
     category.includes("men") ||
     category.includes("male") ||
-    category.includes("man")
+    category.includes("man") ||
+    category.includes("for him") ||
+    category.includes(" him ")
   ) {
     return "men";
   }
@@ -107,7 +117,12 @@ function FragrancesContent() {
 
   const filteredList = list.filter((item) => {
     if (selectedCategory === "all") return true;
-    return normalizeCategory(item.category) === selectedCategory;
+
+    const categorySource = [item.category, item.tagline, item.name]
+      .filter(Boolean)
+      .join(" ");
+
+    return normalizeCategory(categorySource) === selectedCategory;
   });
 
   useEffect(() => {
@@ -119,7 +134,6 @@ function FragrancesContent() {
       } else {
         // Old object format - clear it and start fresh
         setCart([]);
-        localStorage.setItem("cart", "[]");
       }
     } catch (error) {
       console.error("Error loading cart:", error);
@@ -158,6 +172,11 @@ function FragrancesContent() {
     };
   }, [debouncedSearchQuery]);
 
+  useEffect(() => {
+    localStorage.setItem("cart", JSON.stringify(cart));
+    window.dispatchEvent(new Event("cartUpdated"));
+  }, [cart]);
+
   const addToCart = useCallback((fragrance: FragranceItem) => {
     setCart((prev) => {
       const existingItem = prev.find((item) => item.id === fragrance.id);
@@ -181,7 +200,6 @@ function FragrancesContent() {
         ];
       }
 
-      localStorage.setItem("cart", JSON.stringify(updated));
       return updated;
     });
   }, []);
@@ -220,24 +238,26 @@ function FragrancesContent() {
             className="relative mb-8 animate-fade-in-up opacity-0"
             style={{ animationDelay: "0.8s", animationFillMode: "forwards" }}
           >
-            <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3">
-              {categoryOptions.map((option) => {
-                const isActive = selectedCategory === option.value;
+            <div className="flex justify-center">
+              <div className="inline-flex flex-wrap items-center justify-center gap-2 sm:gap-3 rounded-full border border-gray-200 bg-white/90 px-3 py-2 shadow-sm">
+                {categoryOptions.map((option) => {
+                  const isActive = selectedCategory === option.value;
 
-                return (
-                  <button
-                    key={option.value}
-                    onClick={() => setSelectedCategory(option.value)}
-                    className={`rounded-full border px-4 py-2 text-xs sm:text-sm tracking-wide transition-all duration-300 ${
-                      isActive
-                        ? "border-gray-900 bg-gray-900 text-white"
-                        : "border-gray-200 bg-white text-gray-700 hover:border-gray-400"
-                    }`}
-                  >
-                    {option.label}
-                  </button>
-                );
-              })}
+                  return (
+                    <button
+                      key={option.value}
+                      onClick={() => setSelectedCategory(option.value)}
+                      className={`rounded-full border px-4 py-2 text-xs sm:text-sm tracking-wide transition-all duration-300 ${
+                        isActive
+                          ? "border-gray-900 bg-gray-900 text-white"
+                          : "border-gray-200 bg-white text-gray-700 hover:border-gray-400"
+                      }`}
+                    >
+                      {option.label}
+                    </button>
+                  );
+                })}
+              </div>
             </div>
           </div>
 
@@ -248,7 +268,7 @@ function FragrancesContent() {
                   key={i}
                   className="animate-pulse bg-white  rounded-2xl border border-gray-100  overflow-hidden"
                 >
-                  <div className="aspect-[4/5] bg-gray-100 " />
+                  <div className="aspect-[5/6] bg-gray-100 " />
                   <div className="p-5 space-y-3">
                     <div className="h-5 bg-gray-100  rounded w-3/4" />
                     <div className="h-3 bg-gray-50  rounded w-full" />
@@ -319,7 +339,7 @@ function FragranceCard({ fragrance, inCart, onAddToCart }: FragranceCardProps) {
         className="flex flex-col flex-1 relative overflow-hidden"
       >
         {/* IMAGE */}
-        <div className="relative aspect-[4/5] w-full overflow-hidden bg-gradient-to-br from-gray-50 to-gray-100  ">
+        <div className="relative aspect-[5/6] w-full overflow-hidden bg-gradient-to-br from-gray-50 to-gray-100  ">
           {showImage ? (
             <>
               <Image
@@ -343,9 +363,9 @@ function FragranceCard({ fragrance, inCart, onAddToCart }: FragranceCardProps) {
         </div>
 
         {/* CONTENT */}
-        <div className="p-5 md:p-6 flex flex-1 flex-col text-center relative">
+        <div className="p-4 md:p-5 flex flex-1 flex-col text-center relative">
           <div className="relative z-10 flex h-full flex-col">
-            <h3 className="text-xl md:text-2xl font-serif font-semibold tracking-wide text-gray-900  transition-colors duration-300">
+            <h3 className="text-lg md:text-xl font-serif font-semibold tracking-wide text-gray-900  transition-colors duration-300">
               {fragrance.name}
             </h3>
             <p className="mt-3 text-sm text-gray-500  leading-relaxed line-clamp-2 font-light">

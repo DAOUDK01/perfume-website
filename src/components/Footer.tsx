@@ -7,7 +7,12 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
           {/* Brand */}
           <div className="space-y-6">
-            <h3 className="text-3xl font-agrandir font-bold tracking-tighter text-black " style={{ letterSpacing: "-0.04em" }}>e'eora</h3>
+            <h3
+              className="text-3xl font-agrandir font-bold tracking-tighter text-black "
+              style={{ letterSpacing: "-0.04em" }}
+            >
+              e'eora
+            </h3>
             <p className="text-sm text-gray-600  font-light leading-relaxed max-w-xs">
               Quiet luxury. Thoughtfully crafted fragrances that speak softly.
             </p>
@@ -20,18 +25,27 @@ export default function Footer() {
             </h4>
             <ul className="space-y-3 text-sm text-gray-600  font-light">
               <li>
-                <Link href="/fragrances" className="hover:text-black  hover:pl-2 transition-all duration-300 block">
+                <Link
+                  href="/fragrances"
+                  className="hover:text-black  hover:pl-2 transition-all duration-300 block"
+                >
                   All Fragrances
                 </Link>
               </li>
               <li>
-                <Link href="/fragrances" className="hover:text-black  hover:pl-2 transition-all duration-300 block">
+                <Link
+                  href="/#featured-collection"
+                  className="hover:text-black  hover:pl-2 transition-all duration-300 block"
+                >
                   Collections
                 </Link>
               </li>
               <li>
-                <Link href="/checkout" className="hover:text-black  hover:pl-2 transition-all duration-300 block">
-                  Cart
+                <Link
+                  href="/checkout#order-summary"
+                  className="hover:text-black  hover:pl-2 transition-all duration-300 block"
+                >
+                  View Cart
                 </Link>
               </li>
             </ul>
@@ -44,13 +58,27 @@ export default function Footer() {
             </h4>
             <ul className="space-y-3 text-sm text-gray-600  font-light">
               <li>
-                <Link href="/about" className="hover:text-black  hover:pl-2 transition-all duration-300 block">
+                <Link
+                  href="/about"
+                  className="hover:text-black  hover:pl-2 transition-all duration-300 block"
+                >
                   Our Story
                 </Link>
               </li>
               <li>
-                <Link href="/contact" className="hover:text-black  hover:pl-2 transition-all duration-300 block">
+                <Link
+                  href="/contact"
+                  className="hover:text-black  hover:pl-2 transition-all duration-300 block"
+                >
                   Contact
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/policies"
+                  className="hover:text-black  hover:pl-2 transition-all duration-300 block"
+                >
+                  Policies
                 </Link>
               </li>
             </ul>
@@ -63,17 +91,32 @@ export default function Footer() {
             </h4>
             <ul className="space-y-3 text-sm text-gray-600  font-light">
               <li>
-                <a href="https://www.instagram.com/eeora" target="_blank" rel="noopener noreferrer" className="hover:text-black  hover:pl-2 transition-all duration-300 block">
+                <a
+                  href="https://www.instagram.com/eeora"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-black  hover:pl-2 transition-all duration-300 block"
+                >
                   Instagram
                 </a>
               </li>
               <li>
-                <a href="https://www.facebook.com/eeora" target="_blank" rel="noopener noreferrer" className="hover:text-black  hover:pl-2 transition-all duration-300 block">
+                <a
+                  href="https://www.facebook.com/eeora"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-black  hover:pl-2 transition-all duration-300 block"
+                >
                   Facebook
                 </a>
               </li>
               <li>
-                <a href="https://twitter.com/eeora" target="_blank" rel="noopener noreferrer" className="hover:text-black  hover:pl-2 transition-all duration-300 block">
+                <a
+                  href="https://twitter.com/eeora"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-black  hover:pl-2 transition-all duration-300 block"
+                >
                   Twitter
                 </a>
               </li>
@@ -86,17 +129,29 @@ export default function Footer() {
 
         {/* Bottom */}
         <div className="flex flex-col md:flex-row justify-between items-center text-xs text-gray-600  font-light">
-          <p>&copy; 2026 <span className="font-agrandir">e'eora</span>. All rights reserved.</p>
+          <p>
+            &copy; 2026 <span className="font-agrandir">e'eora</span>. All
+            rights reserved.
+          </p>
           <div className="flex gap-6 mt-4 md:mt-0">
-            <a href="#" className="hover:text-black  transition-colors">
-              Privacy Policy
-            </a>
-            <a href="#" className="hover:text-black  transition-colors">
-              Terms of Service
-            </a>
-            <a href="#" className="hover:text-black  transition-colors">
+            <Link
+              href="/policies"
+              className="hover:text-black  transition-colors"
+            >
+              Terms & Policy
+            </Link>
+            <Link
+              href="/policies"
+              className="hover:text-black  transition-colors"
+            >
+              Damaged Products
+            </Link>
+            <Link
+              href="/policies"
+              className="hover:text-black  transition-colors"
+            >
               Shipping Info
-            </a>
+            </Link>
           </div>
         </div>
       </div>

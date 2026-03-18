@@ -5,11 +5,42 @@ import {
 } from "@/lib/mongodb";
 import { NextResponse } from "next/server";
 
+function normalizeCategoryValue(value = "") {
+  const raw = typeof value === "string" ? value.trim() : "";
+  const category = raw.toLowerCase();
+
+  if (
+    category.includes("women") ||
+    category.includes("woman") ||
+    category.includes("female") ||
+    category.includes("lady") ||
+    category.includes("for her")
+  ) {
+    return "women";
+  }
+
+  if (
+    category.includes("men") ||
+    category.includes("man") ||
+    category.includes("male") ||
+    category.includes("for him")
+  ) {
+    return "men";
+  }
+
+  if (category.includes("uni") || category.includes("unisex")) {
+    return "uni";
+  }
+
+  return raw;
+}
+
 export async function GET(request) {
   try {
     const { searchParams } = new URL(request.url);
     const q = (searchParams.get("q") || "").trim();
     const category = (searchParams.get("category") || "").trim();
+    const normalizedCategory = normalizeCategoryValue(category);
 
     // TEMPORARY: Ignore filters if we are debugging empty results
     const filter = {};
@@ -20,7 +51,26 @@ export async function GET(request) {
         { id: { $regex: q, $options: "i" } },
       ];
     }
-    if (category) filter.category = category;
+    if (category) {
+      if (normalizedCategory === "women") {
+        filter.category = {
+          $regex: "women|woman|female|lady|for her",
+          $options: "i",
+        };
+      } else if (normalizedCategory === "men") {
+        filter.category = {
+          $regex: "men|man|male|for him",
+          $options: "i",
+        };
+      } else if (normalizedCategory === "uni") {
+        filter.category = {
+          $regex: "uni|unisex",
+          $options: "i",
+        };
+      } else {
+        filter.category = { $regex: category, $options: "i" };
+      }
+    }
 
     console.log(
       "Fetching products. Filter active:",
@@ -134,7 +184,12 @@ export async function GET(request) {
             p.id || p._id?.toString() || `temp-${Math.random()}`;
           return [
             productId,
-            { ...p, id: productId, _id: p._id?.toString?.() || p._id },
+            {
+              ...p,
+              id: productId,
+              _id: p._id?.toString?.() || p._id,
+              category: normalizeCategoryValue(String(p.category || "")),
+            },
           ];
         }),
       ).values(),
@@ -238,7 +293,7 @@ export async function POST(request) {
       tagline: typeof tagline === "string" ? tagline.trim() : "",
       price: parsedPrice,
       stock: parsedStock,
-      category: typeof category === "string" ? category.trim() : "",
+      category: normalizeCategoryValue(String(category || "")),
       image: typeof image === "string" ? image.trim() : "",
       images: Array.isArray(images) ? images.filter(Boolean) : [],
       topNotes: Array.isArray(topNotes) ? topNotes.filter(Boolean) : [],

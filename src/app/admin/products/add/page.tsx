@@ -12,6 +12,41 @@ function csvToArray(input: string) {
     .filter(Boolean);
 }
 
+const CATEGORY_OPTIONS = [
+  { value: "men", label: "Men" },
+  { value: "women", label: "Women" },
+  { value: "uni", label: "Uni (Unisex)" },
+] as const;
+
+function normalizeCategoryValue(value: string) {
+  const category = (value || "").toLowerCase().trim();
+
+  if (
+    category.includes("women") ||
+    category.includes("woman") ||
+    category.includes("female") ||
+    category.includes("lady") ||
+    category.includes("for her")
+  ) {
+    return "women";
+  }
+
+  if (
+    category.includes("men") ||
+    category.includes("man") ||
+    category.includes("male") ||
+    category.includes("for him")
+  ) {
+    return "men";
+  }
+
+  if (category.includes("uni") || category.includes("unisex")) {
+    return "uni";
+  }
+
+  return "";
+}
+
 export default function AddProduct() {
   const router = useRouter();
   const [saving, setSaving] = useState(false);
@@ -43,7 +78,7 @@ export default function AddProduct() {
           tagline,
           price,
           stock,
-          category,
+          category: normalizeCategoryValue(category),
           image: images[0] || "",
           images: images.filter(Boolean),
           topNotes: csvToArray(topNotes),
@@ -64,23 +99,32 @@ export default function AddProduct() {
 
   return (
     <div className="space-y-6">
-      <Link href="/admin/products" className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 font-medium">
+      <Link
+        href="/admin/products"
+        className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 font-medium"
+      >
         <ArrowLeft className="w-4 h-4" />
         Back to Products
       </Link>
 
       <div className="bg-white border border-gray-200 rounded-2xl p-8 max-w-3xl">
         <h1 className="text-3xl font-serif font-light mb-2">Add New Product</h1>
-        <p className="text-gray-600 font-light mb-8">Create a fragrance that appears in your store.</p>
+        <p className="text-gray-600 font-light mb-8">
+          Create a fragrance that appears in your store.
+        </p>
 
         <form className="space-y-6" onSubmit={onSubmit}>
           {error ? (
-            <div className="p-4 rounded-xl bg-red-50 border border-red-200 text-red-700 text-sm">{error}</div>
+            <div className="p-4 rounded-xl bg-red-50 border border-red-200 text-red-700 text-sm">
+              {error}
+            </div>
           ) : null}
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Product ID (slug)</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Product ID (slug)
+              </label>
               <input
                 value={id}
                 onChange={(e) => setId(e.target.value)}
@@ -90,7 +134,9 @@ export default function AddProduct() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Name</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Name
+              </label>
               <input
                 value={name}
                 onChange={(e) => setName(e.target.value)}
@@ -101,7 +147,9 @@ export default function AddProduct() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Tagline</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Tagline
+            </label>
             <input
               value={tagline}
               onChange={(e) => setTagline(e.target.value)}
@@ -112,7 +160,9 @@ export default function AddProduct() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Price</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Price
+              </label>
               <input
                 type="number"
                 value={price}
@@ -124,7 +174,9 @@ export default function AddProduct() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Stock</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Stock
+              </label>
               <input
                 type="number"
                 value={stock}
@@ -136,18 +188,32 @@ export default function AddProduct() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Category</label>
-              <input
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Category
+              </label>
+              <select
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
                 className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-black"
-                placeholder="Woody / Fresh / Floral ..."
-              />
+                required
+              >
+                <option value="">Select Category</option>
+                {CATEGORY_OPTIONS.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+              <p className="mt-2 text-xs text-gray-500">
+                Used by storefront filters: All, Men, Women, Uni.
+              </p>
             </div>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Image URLs</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Image URLs
+            </label>
             <div className="space-y-3">
               {images.map((img, idx) => (
                 <div key={idx} className="flex gap-2">
@@ -159,13 +225,19 @@ export default function AddProduct() {
                       setImages(newImages);
                     }}
                     className="flex-1 px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-black"
-                    placeholder={idx === 0 ? "Primary Image URL (required)" : "Additional Image URL"}
+                    placeholder={
+                      idx === 0
+                        ? "Primary Image URL (required)"
+                        : "Additional Image URL"
+                    }
                     required={idx === 0}
                   />
                   {images.length > 1 && (
                     <button
                       type="button"
-                      onClick={() => setImages(images.filter((_, i) => i !== idx))}
+                      onClick={() =>
+                        setImages(images.filter((_, i) => i !== idx))
+                      }
                       className="p-3 text-red-500 hover:bg-red-50 rounded-xl transition-colors"
                     >
                       <X className="w-5 h-5" />
@@ -186,21 +258,41 @@ export default function AddProduct() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Top Notes (comma separated)</label>
-              <input value={topNotes} onChange={(e) => setTopNotes(e.target.value)} className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-black" />
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Top Notes (comma separated)
+              </label>
+              <input
+                value={topNotes}
+                onChange={(e) => setTopNotes(e.target.value)}
+                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-black"
+              />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Heart Notes</label>
-              <input value={heartNotes} onChange={(e) => setHeartNotes(e.target.value)} className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-black" />
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Heart Notes
+              </label>
+              <input
+                value={heartNotes}
+                onChange={(e) => setHeartNotes(e.target.value)}
+                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-black"
+              />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Base Notes</label>
-              <input value={baseNotes} onChange={(e) => setBaseNotes(e.target.value)} className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-black" />
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Base Notes
+              </label>
+              <input
+                value={baseNotes}
+                onChange={(e) => setBaseNotes(e.target.value)}
+                className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-black"
+              />
             </div>
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">Full Description</label>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Full Description
+            </label>
             <textarea
               value={fullDescription}
               onChange={(e) => setFullDescription(e.target.value)}

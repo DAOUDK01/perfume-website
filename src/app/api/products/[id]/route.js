@@ -5,6 +5,36 @@ import {
 } from "@/lib/mongodb";
 import { NextResponse } from "next/server";
 
+function normalizeCategoryValue(value = "") {
+  const raw = typeof value === "string" ? value.trim() : "";
+  const category = raw.toLowerCase();
+
+  if (
+    category.includes("women") ||
+    category.includes("woman") ||
+    category.includes("female") ||
+    category.includes("lady") ||
+    category.includes("for her")
+  ) {
+    return "women";
+  }
+
+  if (
+    category.includes("men") ||
+    category.includes("man") ||
+    category.includes("male") ||
+    category.includes("for him")
+  ) {
+    return "men";
+  }
+
+  if (category.includes("uni") || category.includes("unisex")) {
+    return "uni";
+  }
+
+  return raw;
+}
+
 export async function GET(_request, { params }) {
   try {
     const { id } = await params;
@@ -68,7 +98,11 @@ export async function GET(_request, { params }) {
 
     return NextResponse.json({
       success: true,
-      product: { ...product, _id: product._id?.toString?.() || product._id },
+      product: {
+        ...product,
+        _id: product._id?.toString?.() || product._id,
+        category: normalizeCategoryValue(String(product.category || "")),
+      },
     });
   } catch (error) {
     console.error("Error fetching product:", error);
@@ -133,6 +167,10 @@ export async function PATCH(request, { params }) {
       }
       if (["topNotes", "heartNotes", "baseNotes", "images"].includes(key)) {
         update[key] = Array.isArray(val) ? val.filter(Boolean) : [];
+        continue;
+      }
+      if (key === "category") {
+        update.category = normalizeCategoryValue(String(val || ""));
         continue;
       }
       update[key] = typeof val === "string" ? val.trim() : val;

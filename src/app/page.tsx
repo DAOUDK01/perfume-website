@@ -246,8 +246,8 @@ export default function HomePage() {
         <section className="py-20 sm:py-24 md:py-28 lg:py-32 bg-white  border-t border-gray-200  overflow-hidden">
           <div className="max-w-7xl mx-auto px-4 sm:px-6">
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-stretch">
-              <ScrollReveal className="lg:col-span-7">
-                <div className="relative min-h-[340px] sm:min-h-[430px] lg:min-h-[520px] rounded-[2rem] border border-gray-200  overflow-hidden bg-gray-50  group shadow-[0_22px_70px_rgba(15,23,42,0.07)] animate-float">
+              <ScrollReveal className="lg:col-span-7 h-full">
+                <div className="relative h-full min-h-[340px] sm:min-h-[430px] lg:min-h-[520px] rounded-[2rem] border border-gray-200  overflow-hidden bg-gray-50  group shadow-[0_22px_70px_rgba(15,23,42,0.07)]">
                   <Image
                     src={featuredStoryImage}
                     alt="The personality behind e'eora"
@@ -269,8 +269,8 @@ export default function HomePage() {
                 </div>
               </ScrollReveal>
 
-              <ScrollReveal delay={120} className="lg:col-span-5">
-                <div className="h-full rounded-[1.75rem] border border-gray-200/80 bg-white/60  backdrop-blur-lg px-6 py-8 sm:px-8 sm:py-10 shadow-[0_18px_55px_rgba(15,23,42,0.05)]">
+              <ScrollReveal delay={120} className="lg:col-span-5 h-full">
+                <div className="h-full min-h-[340px] sm:min-h-[430px] lg:min-h-[520px] rounded-[1.75rem] border border-gray-200/80 bg-white/60  backdrop-blur-lg px-6 py-8 sm:px-8 sm:py-10 shadow-[0_18px_55px_rgba(15,23,42,0.05)] flex flex-col text-left">
                   <span className="inline-block text-[10px] tracking-[0.35em] text-gray-500  uppercase font-medium mb-4">
                     Featured Story
                   </span>
@@ -282,7 +282,7 @@ export default function HomePage() {
                     fragrance identity that feels polished, calm, and lasting.
                   </p>
 
-                  <div className="space-y-4 mb-7">
+                  <div className="space-y-4 mb-7 flex-1">
                     {[
                       {
                         label: "Quiet",
@@ -314,13 +314,22 @@ export default function HomePage() {
                     ))}
                   </div>
 
-                  <Link
-                    href="/fragrances"
-                    className="inline-flex items-center gap-2 text-sm font-medium text-gray-900  border-b-2 border-gray-200 hover:border-black   pb-1 transition-all duration-300"
-                  >
-                    Explore the collection
-                    <span aria-hidden="true">→</span>
-                  </Link>
+                  <div className="flex flex-wrap items-center gap-3">
+                    <Link
+                      href="/fragrances"
+                      className="inline-flex items-center gap-2 text-sm font-medium text-gray-900  border-b-2 border-gray-200 hover:border-black   pb-1 transition-all duration-300"
+                    >
+                      Explore the collection
+                      <span aria-hidden="true">→</span>
+                    </Link>
+
+                    <Link
+                      href="/about"
+                      className="inline-flex items-center gap-2 rounded-full border border-gray-300 bg-white px-4 py-2 text-xs font-medium uppercase tracking-[0.12em] text-gray-800 hover:border-black hover:bg-gray-50 transition-all duration-300"
+                    >
+                      Learn about our process
+                    </Link>
+                  </div>
                 </div>
               </ScrollReveal>
             </div>
@@ -329,6 +338,7 @@ export default function HomePage() {
 
         {/* Featured Collection */}
         <section
+          id="featured-collection"
           className="py-20 sm:py-24 md:py-32 lg:py-40 bg-gray-50  border-t border-gray-200 "
           data-scroll-section="1"
         >
@@ -636,7 +646,7 @@ function FeaturedProductGrid({ fragrances }: { fragrances: FragranceItem[] }) {
       ) : (
         <>
           {/* Carousel Container */}
-          <div className="relative overflow-hidden">
+          <div className="relative overflow-x-hidden overflow-y-visible pt-2">
             {/* Navigation Arrows - Desktop */}
             <button
               onClick={prevSlide}
@@ -694,7 +704,7 @@ function FeaturedProductGrid({ fragrances }: { fragrances: FragranceItem[] }) {
                           return (
                             <div
                               key={slideItem.id}
-                              className="invisible h-full min-h-[400px] sm:min-h-[450px]"
+                              className="invisible h-full min-h-[360px] sm:min-h-[410px]"
                               aria-hidden="true"
                             />
                           );
@@ -712,9 +722,9 @@ function FeaturedProductGrid({ fragrances }: { fragrances: FragranceItem[] }) {
                               href={`/product/${fragrance.id}`}
                               className="block h-full"
                             >
-                              <div className="bg-white  rounded-2xl p-4 sm:p-6 border-2 border-gray-100 hover:border-gray-300   hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 group h-full flex flex-col min-h-[400px] sm:min-h-[450px]">
+                              <div className="bg-white  rounded-2xl p-4 sm:p-5 border border-gray-200 hover:border-gray-300 hover:ring-1 hover:ring-gray-200 hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 group h-full flex flex-col min-h-[360px] sm:min-h-[410px]">
                                 {/* Product Image */}
-                                <div className="relative aspect-[4/5] rounded-xl overflow-hidden mb-4 bg-white ">
+                                <div className="relative aspect-[5/6] rounded-xl overflow-hidden mb-3 bg-white ">
                                   {isValidImageUrl(fragrance.image) &&
                                   !imageErrors[fragrance.id] ? (
                                     <Image

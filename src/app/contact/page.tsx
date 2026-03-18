@@ -21,7 +21,11 @@ export default function ContactPage() {
         const res = await fetch("/api/admin/content");
         const data = await res.json();
         if (res.ok) {
-          setContent(data.content.filter((item: ContentItem) => item.page === "Contact") || []);
+          setContent(
+            data.content.filter(
+              (item: ContentItem) => item.page === "Contact",
+            ) || [],
+          );
         } else {
           setError(data.error);
         }
@@ -95,7 +99,7 @@ export default function ContactPage() {
     <div className="bg-[#fafafa]  pt-32 pb-20">
       {/* Page Header */}
       <section className="relative py-20 mb-20 bg-white  border-b border-gray-100  overflow-hidden">
-         <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-gray-50 via-white to-white    opacity-60" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-gray-50 via-white to-white    opacity-60" />
         <ScrollReveal className="relative z-10 max-w-7xl mx-auto px-6 text-center">
           <span className="text-xs tracking-[0.3em] uppercase text-gray-400 font-medium mb-4 block">
             {getContent(content, "Header", "Subtitle", "text", "Contact Us")}
@@ -104,7 +108,13 @@ export default function ContactPage() {
             {getContent(content, "Header", "Title", "text", "Get In Touch")}
           </h1>
           <p className="text-gray-500  font-light text-lg md:text-xl max-w-2xl mx-auto leading-relaxed">
-            {getContent(content, "Header", "Description", "text", "We'd love to hear from you. Questions about our fragrances? Feedback on your experience? We are here to help.")}
+            {getContent(
+              content,
+              "Header",
+              "Description",
+              "text",
+              "We'd love to hear from you. Questions about our fragrances? Feedback on your experience? We are here to help.",
+            )}
           </p>
         </ScrollReveal>
       </section>
@@ -117,9 +127,23 @@ export default function ContactPage() {
             <ScrollReveal className="bg-white  p-8 md:p-12 rounded-2xl shadow-sm border border-gray-100 ">
               <div>
                 <h2 className="text-3xl font-light tracking-tight mb-2 font-serif">
-                  {getContent(content, "Contact Form", "Title", "text", "Send a message")}
+                  {getContent(
+                    content,
+                    "Contact Form",
+                    "Title",
+                    "text",
+                    "Send a message",
+                  )}
                 </h2>
-                <p className="text-gray-500 font-light mb-10">{getContent(content, "Contact Form", "Description", "text", "We usually respond within 24 hours.")}</p>
+                <p className="text-gray-500 font-light mb-10">
+                  {getContent(
+                    content,
+                    "Contact Form",
+                    "Description",
+                    "text",
+                    "We usually respond within 24 hours.",
+                  )}
+                </p>
 
                 <form onSubmit={handleSubmit} className="space-y-8">
                   {/* Name */}
@@ -131,7 +155,7 @@ export default function ContactPage() {
                       ref={nameRef}
                       type="text"
                       name="name"
-                      className={`w-full px-4 py-3 bg-gray-50  border-b-2 border-transparent focus:border-black  transition-all duration-300 focus:bg-white  outline-none ${
+                      className={`w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-2xl focus:border-black transition-all duration-300 focus:bg-white outline-none ${
                         errors.name
                           ? "bg-red-50 border-red-300"
                           : "hover:bg-gray-100"
@@ -153,7 +177,7 @@ export default function ContactPage() {
                     <input
                       type="email"
                       name="email"
-                      className={`w-full px-4 py-3 bg-gray-50  border-b-2 border-transparent focus:border-black  transition-all duration-300 focus:bg-white  outline-none ${
+                      className={`w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-2xl focus:border-black transition-all duration-300 focus:bg-white outline-none ${
                         errors.email
                           ? "bg-red-50 border-red-300"
                           : "hover:bg-gray-100"
@@ -175,7 +199,7 @@ export default function ContactPage() {
                     <textarea
                       name="message"
                       rows={6}
-                      className={`w-full px-4 py-3 bg-gray-50  border-b-2 border-transparent focus:border-black  transition-all duration-300 focus:bg-white  outline-none resize-none ${
+                      className={`w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-2xl focus:border-black transition-all duration-300 focus:bg-white outline-none resize-none ${
                         errors.message
                           ? "bg-red-50 border-red-300"
                           : "hover:bg-gray-100"
@@ -204,84 +228,174 @@ export default function ContactPage() {
             <ScrollReveal delay={100} className="space-y-12 lg:pt-12">
               <div>
                 <h2 className="text-3xl font-light tracking-tight mb-8 font-serif">
-                  {getContent(content, "Contact Info", "Title", "text", "Connect with us")}
+                  {getContent(
+                    content,
+                    "Contact Info",
+                    "Title",
+                    "text",
+                    "Connect with us",
+                  )}
                 </h2>
 
                 <div className="grid gap-8">
                   {/* Email */}
-                  <div className="flex items-start gap-5 p-6 rounded-xl hover:bg-white  hover:shadow-lg hover:-translate-y-1 transition-all duration-300 border border-transparent hover:border-gray-100  group">
+                  <div className="flex items-start gap-5 p-6 rounded-2xl hover:bg-white  hover:shadow-lg hover:-translate-y-1 transition-all duration-300 border border-transparent hover:border-gray-100  group">
                     <div className="p-3 bg-gray-100  rounded-full group-hover:bg-black group-hover:text-white   transition-colors duration-300">
                       <Mail className="w-5 h-5" />
                     </div>
                     <div>
                       <p className="text-xs font-medium tracking-widest uppercase text-gray-400 mb-1">
-                        {getContent(content, "Contact Info", "Email Label", "text", "Email")}
+                        {getContent(
+                          content,
+                          "Contact Info",
+                          "Email Label",
+                          "text",
+                          "Email",
+                        )}
                       </p>
                       <a
                         href={`mailto:${getContent(content, "Contact Info", "Email Address", "text", "hello@eeora.com")}`}
                         className="text-lg font-light text-gray-900  hover:text-gray-600  transition-colors"
                       >
-                        {getContent(content, "Contact Info", "Email Address", "text", "eeora@gmail.com")}
-                      </a>  
+                        {getContent(
+                          content,
+                          "Contact Info",
+                          "Email Address",
+                          "text",
+                          "eeora@gmail.com",
+                        )}
+                      </a>
                     </div>
                   </div>
 
                   {/* Phone */}
-                  <div className="flex items-start gap-5 p-6 rounded-xl hover:bg-white  hover:shadow-lg hover:-translate-y-1 transition-all duration-300 border border-transparent hover:border-gray-100  group">
+                  <div className="flex items-start gap-5 p-6 rounded-2xl hover:bg-white  hover:shadow-lg hover:-translate-y-1 transition-all duration-300 border border-transparent hover:border-gray-100  group">
                     <div className="p-3 bg-gray-100  rounded-full group-hover:bg-black group-hover:text-white   transition-colors duration-300">
                       <Phone className="w-5 h-5" />
                     </div>
                     <div>
                       <p className="text-xs font-medium tracking-widest uppercase text-gray-400 mb-1">
-                        {getContent(content, "Contact Info", "Phone Label", "text", "Phone")}
+                        {getContent(
+                          content,
+                          "Contact Info",
+                          "Phone Label",
+                          "text",
+                          "Phone",
+                        )}
                       </p>
                       <a
                         href={`tel:${getContent(content, "Contact Info", "Phone Number", "text", "+923105018825")}`}
                         className="text-lg font-light text-gray-900  hover:text-gray-600  transition-colors"
                       >
-                        {getContent(content, "Contact Info", "Phone Number", "text", "+92 310 5018825")}
+                        {getContent(
+                          content,
+                          "Contact Info",
+                          "Phone Number",
+                          "text",
+                          "+92 310 5018825",
+                        )}
                       </a>
                     </div>
                   </div>
 
                   {/* Hours */}
-                  <div className="flex items-start gap-5 p-6 rounded-xl hover:bg-white  hover:shadow-lg hover:-translate-y-1 transition-all duration-300 border border-transparent hover:border-gray-100  group">
+                  <div className="flex items-start gap-5 p-6 rounded-2xl hover:bg-white  hover:shadow-lg hover:-translate-y-1 transition-all duration-300 border border-transparent hover:border-gray-100  group">
                     <div className="p-3 bg-gray-100  rounded-full group-hover:bg-black group-hover:text-white   transition-colors duration-300">
                       <Clock className="w-5 h-5" />
                     </div>
                     <div>
                       <p className="text-xs font-medium tracking-widest uppercase text-gray-400 mb-1">
-                        {getContent(content, "Contact Info", "Hours Label", "text", "Hours")}
+                        {getContent(
+                          content,
+                          "Contact Info",
+                          "Hours Label",
+                          "text",
+                          "Hours",
+                        )}
                       </p>
                       <div className="space-y-1 text-gray-600  font-light">
-                        <p>{getContent(content, "Contact Info", "Hours Mon-Fri", "text", "Mon - Fri: 9:00 AM - 6:00 PM")}</p>
-                        <p>{getContent(content, "Contact Info", "Hours Sat-Sun", "text", "Sat - Sun: 10:00 AM - 4:00 PM")}</p>
-                        <p className="text-xs text-gray-400 mt-1">{getContent(content, "Contact Info", "Hours Timezone", "text", "(EST)")}</p>
+                        <p>
+                          {getContent(
+                            content,
+                            "Contact Info",
+                            "Hours Mon-Fri",
+                            "text",
+                            "Mon - Fri: 9:00 AM - 6:00 PM",
+                          )}
+                        </p>
+                        <p>
+                          {getContent(
+                            content,
+                            "Contact Info",
+                            "Hours Sat-Sun",
+                            "text",
+                            "Sat - Sun: 10:00 AM - 4:00 PM",
+                          )}
+                        </p>
+                        <p className="text-xs text-gray-400 mt-1">
+                          {getContent(
+                            content,
+                            "Contact Info",
+                            "Hours Timezone",
+                            "text",
+                            "(EST)",
+                          )}
+                        </p>
                       </div>
                     </div>
                   </div>
 
                   {/* Social */}
-                  <div className="flex items-start gap-5 p-6 rounded-xl hover:bg-white  hover:shadow-lg hover:-translate-y-1 transition-all duration-300 border border-transparent hover:border-gray-100  group">
-                     <div className="p-3 bg-gray-100  rounded-full group-hover:bg-black group-hover:text-white   transition-colors duration-300">
+                  <div className="flex items-start gap-5 p-6 rounded-2xl hover:bg-white  hover:shadow-lg hover:-translate-y-1 transition-all duration-300 border border-transparent hover:border-gray-100  group">
+                    <div className="p-3 bg-gray-100  rounded-full group-hover:bg-black group-hover:text-white   transition-colors duration-300">
                       <Instagram className="w-5 h-5" />
                     </div>
                     <div>
                       <p className="text-xs font-medium tracking-widest uppercase text-gray-400  mb-3">
-                        {getContent(content, "Contact Info", "Social Label", "text", "Social Media")}
+                        {getContent(
+                          content,
+                          "Contact Info",
+                          "Social Label",
+                          "text",
+                          "Social Media",
+                        )}
                       </p>
                       <div className="flex gap-6">
                         <a
-                          href={getContent(content, "Contact Info", "Instagram Link", "text", "#instagram")}
+                          href={getContent(
+                            content,
+                            "Contact Info",
+                            "Instagram Link",
+                            "text",
+                            "#instagram",
+                          )}
                           className="text-base font-light text-gray-900  hover:underline underline-offset-4 decoration-gray-300  transition-all"
                         >
-                          {getContent(content, "Contact Info", "Instagram Text", "text", "Instagram")}
+                          {getContent(
+                            content,
+                            "Contact Info",
+                            "Instagram Text",
+                            "text",
+                            "Instagram",
+                          )}
                         </a>
                         <a
-                          href={getContent(content, "Contact Info", "Twitter Link", "text", "#twitter")}
+                          href={getContent(
+                            content,
+                            "Contact Info",
+                            "Twitter Link",
+                            "text",
+                            "#twitter",
+                          )}
                           className="text-base font-light text-gray-900  hover:underline underline-offset-4 decoration-gray-300  transition-all"
                         >
-                          {getContent(content, "Contact Info", "Twitter Text", "text", "Twitter")}
+                          {getContent(
+                            content,
+                            "Contact Info",
+                            "Twitter Text",
+                            "text",
+                            "Twitter",
+                          )}
                         </a>
                       </div>
                     </div>

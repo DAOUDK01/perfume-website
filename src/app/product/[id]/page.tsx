@@ -3,7 +3,11 @@
 import type { Fragrance } from "@/data/fragrances";
 import ScrollReveal from "@/components/ScrollReveal";
 import ProductImageCarousel from "@/components/ProductImageCarousel";
-import { StarIcon as StarOutlineIcon } from "@heroicons/react/24/outline";
+import {
+  MinusIcon,
+  PlusIcon,
+  StarIcon as StarOutlineIcon,
+} from "@heroicons/react/24/outline";
 import { StarIcon as StarSolidIcon } from "@heroicons/react/24/solid";
 import Image from "next/image";
 import { notFound, useRouter } from "next/navigation";
@@ -284,6 +288,7 @@ export default function ProductPage({ params }: ProductPageProps) {
     }
 
     localStorage.setItem("cart", JSON.stringify(cart));
+    window.dispatchEvent(new Event("cartUpdated"));
     setShowMessage(true);
     setTimeout(() => setShowMessage(false), 3000);
   };
@@ -300,6 +305,7 @@ export default function ProductPage({ params }: ProductPageProps) {
     }
 
     localStorage.setItem("cart", JSON.stringify(cart));
+    window.dispatchEvent(new Event("cartUpdated"));
     router.push("/checkout");
   };
 
@@ -431,28 +437,75 @@ export default function ProductPage({ params }: ProductPageProps) {
               </p>
             </div>
 
+            <div className="rounded-2xl border border-gray-200 bg-gray-50/60 p-6">
+              <h2 className="text-sm tracking-[0.2em] uppercase mb-4 font-medium text-gray-900">
+                Perfume Notes
+              </h2>
+
+              {fragrance.topNotes.length > 0 ||
+              fragrance.heartNotes.length > 0 ||
+              fragrance.baseNotes.length > 0 ? (
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  {[
+                    { label: "Top", notes: fragrance.topNotes },
+                    { label: "Heart", notes: fragrance.heartNotes },
+                    { label: "Base", notes: fragrance.baseNotes },
+                  ].map((group) => (
+                    <div
+                      key={group.label}
+                      className="rounded-xl border border-gray-200 bg-white p-4"
+                    >
+                      <p className="text-xs uppercase tracking-[0.2em] text-gray-500 mb-3">
+                        {group.label} Notes
+                      </p>
+                      <p className="text-sm text-gray-700 font-light leading-relaxed">
+                        {group.notes.length > 0
+                          ? group.notes.join(" • ")
+                          : "Not specified"}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-sm text-gray-500 font-light">
+                  Perfume notes will be updated soon.
+                </p>
+              )}
+            </div>
+
             {/* QUANTITY */}
             <div className="flex items-center gap-6">
               <span className="text-sm uppercase tracking-widest text-gray-500 ">
                 Quantity
               </span>
-              <div className="flex items-center border border-gray-200  rounded-full px-2 py-1 hover:border-black  transition-colors duration-300">
+              <div className="inline-flex items-center rounded-full border border-gray-200 bg-white p-1 shadow-sm hover:border-gray-300 transition-colors duration-300">
                 <button
+                  type="button"
                   onClick={handleDecrement}
-                  className="w-10 h-10 flex items-center justify-center text-gray-500  hover:text-black  transition-colors"
+                  disabled={quantity === 1}
+                  className={`h-10 w-10 rounded-full flex items-center justify-center transition-all duration-200 ${
+                    quantity === 1
+                      ? "text-gray-300 cursor-not-allowed"
+                      : "text-gray-500 hover:text-black hover:bg-gray-100"
+                  }`}
+                  aria-label="Decrease quantity"
                 >
-                  −
+                  <MinusIcon className="h-4 w-4" aria-hidden="true" />
                 </button>
-                <input
-                  value={quantity}
-                  readOnly
-                  className="w-12 text-center bg-transparent font-light text-gray-900 "
-                />
+
+                <div className="mx-1 min-w-[52px] rounded-full border border-gray-100 bg-gray-50 px-4 py-2 text-center">
+                  <span className="text-base font-medium text-gray-900 tabular-nums">
+                    {quantity}
+                  </span>
+                </div>
+
                 <button
+                  type="button"
                   onClick={handleIncrement}
-                  className="w-10 h-10 flex items-center justify-center text-gray-500  hover:text-black  transition-colors"
+                  className="h-10 w-10 rounded-full flex items-center justify-center text-gray-500 hover:text-black hover:bg-gray-100 transition-all duration-200"
+                  aria-label="Increase quantity"
                 >
-                  +
+                  <PlusIcon className="h-4 w-4" aria-hidden="true" />
                 </button>
               </div>
             </div>
@@ -461,13 +514,13 @@ export default function ProductPage({ params }: ProductPageProps) {
             <div className="flex gap-4 flex-col sm:flex-row">
               <button
                 onClick={handleAddToCart}
-                className="flex-1 border border-black  py-4 px-8 uppercase text-sm tracking-widest hover:bg-black hover:text-white   transition-all duration-500 ease-out"
+                className="flex-1 border border-black rounded-full py-4 px-8 uppercase text-sm tracking-widest hover:bg-black hover:text-white   transition-all duration-500 ease-out"
               >
                 Add to Cart
               </button>
               <button
                 onClick={handleBuyNow}
-                className="flex-1 bg-black text-white py-4 px-8 uppercase text-sm tracking-widest border border-black  hover:bg-white hover:text-black     transition-all duration-500 ease-out"
+                className="flex-1 bg-black text-white rounded-full py-4 px-8 uppercase text-sm tracking-widest border border-black  hover:bg-white hover:text-black     transition-all duration-500 ease-out"
               >
                 Buy Now
               </button>

@@ -166,6 +166,9 @@ export default function HomePage() {
     ? `${firstPhilosophySentence}.`
     : "Fragrance should feel quiet and intentional.";
 
+  const stayUpdatedBgImage =
+    "https://res.cloudinary.com/djb0ekljm/image/upload/v1774258159/Gemini_Generated_Image_1yd4jv1yd4jv1yd4_wvpan8.png";
+
   const featuredStoryImage =
     "https://res.cloudinary.com/djb0ekljm/image/upload/v1773663999/eeora_profile_pic_olqq41.jpg";
 
@@ -466,10 +469,22 @@ export default function HomePage() {
 
         {/* Stay Updated */}
         <section
-          className="py-20 sm:py-24 md:py-32 lg:py-40 bg-gray-50  border-t border-gray-200 "
+          className="relative py-20 sm:py-24 md:py-32 lg:py-40 border-t border-gray-200 overflow-hidden"
           data-scroll-section="3"
+          style={{
+            backgroundImage: `url('${stayUpdatedBgImage}')`,
+            backgroundSize: "80%",
+            backgroundPosition: "center",
+            backgroundRepeat: "no-repeat",
+            backgroundAttachment: "fixed",
+          }}
         >
-          <ScrollReveal className="max-w-xl mx-auto px-4 sm:px-6 text-center">
+          {/* Background overlays */}
+          <div className="absolute inset-0 bg-white/45 backdrop-blur-sm pointer-events-none" />
+          <div className="absolute inset-0 bg-gradient-to-br from-white/30 via-white/25 to-white/35 pointer-events-none" />
+          <div className="absolute inset-0 bg-gradient-to-t from-gray-50/20 to-transparent pointer-events-none" />
+
+          <ScrollReveal className="max-w-xl mx-auto px-4 sm:px-6 text-center relative z-10">
             <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-serif font-light text-gray-900  mb-4 sm:mb-6 leading-tight">
               {getContent(
                 content,

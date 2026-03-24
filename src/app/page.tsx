@@ -4,7 +4,7 @@ import Button from "@/components/Button";
 import ScrollReveal from "@/components/ScrollReveal";
 import Link from "next/link";
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ContentItem, getContent } from "@/types/content";
 
 type FragranceItem = {
@@ -562,6 +562,7 @@ function FeaturedProductGrid({ fragrances }: { fragrances: FragranceItem[] }) {
   const [imageErrors, setImageErrors] = useState<{ [key: string]: boolean }>(
     {},
   );
+  const carouselRef = useRef<HTMLDivElement | null>(null);
 
   type SlideItem = FragranceItem | { id: string; isPlaceholder: true };
 
@@ -644,16 +645,56 @@ function FeaturedProductGrid({ fragrances }: { fragrances: FragranceItem[] }) {
         : "grid-cols-3";
 
   const nextSlide = () => {
-    setCurrentSlide((prev) => (prev + 1) % totalSlides);
+    if (!carouselRef.current) return;
+
+    const nextIndex = (currentSlide + 1) % totalSlides;
+    carouselRef.current.scrollTo({
+      left: nextIndex * carouselRef.current.clientWidth,
+      behavior: "smooth",
+    });
+    setCurrentSlide(nextIndex);
   };
 
   const prevSlide = () => {
-    setCurrentSlide((prev) => (prev - 1 + totalSlides) % totalSlides);
+    if (!carouselRef.current) return;
+
+    const prevIndex = (currentSlide - 1 + totalSlides) % totalSlides;
+    carouselRef.current.scrollTo({
+      left: prevIndex * carouselRef.current.clientWidth,
+      behavior: "smooth",
+    });
+    setCurrentSlide(prevIndex);
   };
 
   const goToSlide = (index: number) => {
+    if (carouselRef.current) {
+      carouselRef.current.scrollTo({
+        left: index * carouselRef.current.clientWidth,
+        behavior: "smooth",
+      });
+    }
     setCurrentSlide(index);
   };
+
+  const handleCarouselScroll = () => {
+    if (!carouselRef.current) return;
+
+    const slideWidth = carouselRef.current.clientWidth;
+    if (slideWidth === 0) return;
+
+    const index = Math.round(carouselRef.current.scrollLeft / slideWidth);
+    const boundedIndex = Math.max(0, Math.min(index, totalSlides - 1));
+
+    if (boundedIndex !== currentSlide) {
+      setCurrentSlide(boundedIndex);
+    }
+  };
+
+  useEffect(() => {
+    if (!carouselRef.current) return;
+
+    carouselRef.current.scrollTo({ left: 0, behavior: "auto" });
+  }, [itemsPerSlide, fragrances.length]);
 
   return (
     <div className="space-y-6 sm:space-y-8">
@@ -672,7 +713,7 @@ function FeaturedProductGrid({ fragrances }: { fragrances: FragranceItem[] }) {
       ) : (
         <>
           {/* Carousel Container */}
-          <div className="relative overflow-x-hidden overflow-y-visible pt-2">
+          <div className="relative overflow-y-visible pt-2">
             {/* Navigation Arrows - Desktop */}
             <button
               onClick={prevSlide}
@@ -714,16 +755,19 @@ function FeaturedProductGrid({ fragrances }: { fragrances: FragranceItem[] }) {
               </svg>
             </button>
 
-            {/* Carousel Track */}
-            <div className="px-4 sm:px-12 lg:px-16">
-              <div
-                className="flex w-full transition-transform duration-500 ease-in-out"
-                style={{
-                  transform: `translateX(-${currentSlide * 100}%)`,
-                }}
-              >
+            {/* Carousel Track (scrollable) */}
+            <div
+              ref={carouselRef}
+              onScroll={handleCarouselScroll}
+              className="px-4 sm:px-12 lg:px-16 overflow-x-auto overflow-y-visible snap-x snap-mandatory scroll-smooth [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
+              aria-label="Featured products carousel"
+            >
+              <div className="flex w-full">
                 {slides.map((slideItems, slideIndex) => (
-                  <div key={slideIndex} className="w-full flex-shrink-0">
+                  <div
+                    key={slideIndex}
+                    className="w-full flex-shrink-0 snap-start"
+                  >
                     <div className={`grid ${columnsClass} gap-6`}>
                       {slideItems.map((slideItem, index) => {
                         if ("isPlaceholder" in slideItem) {

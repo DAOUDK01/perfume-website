@@ -579,11 +579,11 @@ function FeaturedProductGrid({ fragrances }: { fragrances: FragranceItem[] }) {
     );
   };
 
-  // 1 card on mobile, 2 on tablet, 3 on desktop.
+  // 2 cards on mobile/tablet, 3 on desktop.
   useEffect(() => {
     const updateItemsPerSlide = () => {
       if (window.innerWidth < 768) {
-        setItemsPerSlide(1);
+        setItemsPerSlide(2);
         return;
       }
 
@@ -637,12 +637,7 @@ function FeaturedProductGrid({ fragrances }: { fragrances: FragranceItem[] }) {
     },
   );
 
-  const columnsClass =
-    itemsPerSlide === 1
-      ? "grid-cols-1"
-      : itemsPerSlide === 2
-        ? "grid-cols-2"
-        : "grid-cols-3";
+  const columnsClass = itemsPerSlide === 2 ? "grid-cols-2" : "grid-cols-3";
 
   const nextSlide = () => {
     if (!carouselRef.current) return;
@@ -759,7 +754,7 @@ function FeaturedProductGrid({ fragrances }: { fragrances: FragranceItem[] }) {
             <div
               ref={carouselRef}
               onScroll={handleCarouselScroll}
-              className="px-4 sm:px-12 lg:px-16 overflow-x-auto overflow-y-visible snap-x snap-mandatory scroll-smooth [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
+              className="px-1 sm:px-12 lg:px-16 overflow-x-auto overflow-y-visible snap-x snap-mandatory scroll-smooth [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
               aria-label="Featured products carousel"
             >
               <div className="flex w-full">
@@ -768,13 +763,15 @@ function FeaturedProductGrid({ fragrances }: { fragrances: FragranceItem[] }) {
                     key={slideIndex}
                     className={`w-full flex-shrink-0 snap-start ${slideIndex < totalSlides - 1 ? "pr-5" : ""}`}
                   >
-                    <div className={`grid ${columnsClass} gap-5`}>
+                    <div
+                      className={`grid ${columnsClass} gap-3 sm:gap-4 md:gap-6`}
+                    >
                       {slideItems.map((slideItem, index) => {
                         if ("isPlaceholder" in slideItem) {
                           return (
                             <div
                               key={slideItem.id}
-                              className="invisible h-full min-h-[360px]"
+                              className="invisible h-full min-h-[320px] sm:min-h-[360px]"
                               aria-hidden="true"
                             />
                           );
@@ -792,7 +789,7 @@ function FeaturedProductGrid({ fragrances }: { fragrances: FragranceItem[] }) {
                               href={`/product/${fragrance.id}`}
                               className="block h-full"
                             >
-                              <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden hover:shadow-lg transition-all duration-300 group h-full flex flex-col min-h-[360px]">
+                              <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden hover:shadow-lg transition-all duration-300 group h-full flex flex-col min-h-[320px] sm:min-h-[360px]">
                                 {/* Product Image */}
                                 <div className="relative aspect-[4/5] bg-gray-50 overflow-hidden">
                                   {isValidImageUrl(fragrance.image) &&
@@ -806,7 +803,7 @@ function FeaturedProductGrid({ fragrances }: { fragrances: FragranceItem[] }) {
                                       onError={() =>
                                         handleImageError(fragrance.id)
                                       }
-                                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                                      sizes="(max-width: 640px) 50vw, (max-width: 1024px) 50vw, 33vw"
                                     />
                                   ) : (
                                     <div className="w-full h-full flex flex-col items-center justify-center bg-gray-50 transition-all duration-500 p-6">

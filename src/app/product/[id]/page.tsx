@@ -11,7 +11,7 @@ import {
 import { StarIcon as StarSolidIcon } from "@heroicons/react/24/solid";
 import Image from "next/image";
 import { notFound, useRouter } from "next/navigation";
-import { useEffect, useState, use } from "react";
+import { useEffect, useRef, useState, use } from "react";
 import Link from "next/link";
 
 interface ProductPageProps {
@@ -128,6 +128,7 @@ export default function ProductPage({ params }: ProductPageProps) {
 
   const [showMessage, setShowMessage] = useState(false);
   const [quantity, setQuantity] = useState(1);
+  const relatedCarouselRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     if (!id) return;
@@ -314,6 +315,23 @@ export default function ProductPage({ params }: ProductPageProps) {
 
   const handleIncrement = () => setQuantity((q) => q + 1);
   const handleDecrement = () => quantity > 1 && setQuantity((q) => q - 1);
+
+  const scrollRelatedCarousel = (direction: "prev" | "next") => {
+    const container = relatedCarouselRef.current;
+    if (!container) return;
+
+    const firstCard = container.querySelector<HTMLElement>(
+      '[data-related-card="true"]',
+    );
+    const cardWidth = firstCard?.offsetWidth || 280;
+    const gap = 20;
+    const distance = cardWidth + gap;
+
+    container.scrollBy({
+      left: direction === "next" ? distance : -distance,
+      behavior: "smooth",
+    });
+  };
 
   const orderedReviews = reviews.slice().sort((a, b) => {
     const aTime = new Date(a.createdAt).getTime();
@@ -699,43 +717,68 @@ export default function ProductPage({ params }: ProductPageProps) {
               </div>
             </ScrollReveal>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-              {relatedFragrances.map((item, index) => (
-                <ScrollReveal key={item.id} delay={index * 90}>
-                  <Link
-                    href={`/product/${item.id}`}
-                    className="group block rounded-2xl border border-gray-200 bg-white overflow-hidden hover:shadow-lg transition-all duration-300"
-                  >
-                    <div className="relative aspect-[4/5] bg-gray-50 overflow-hidden">
-                      {isValidImageUrl(item.image) ? (
-                        <Image
-                          src={item.image!}
-                          alt={item.name}
-                          fill
-                          className="object-cover transition-transform duration-500 group-hover:scale-105"
-                          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-                        />
-                      ) : (
-                        <div className="h-full w-full flex items-center justify-center text-3xl font-serif font-light text-gray-500">
-                          {item.name.charAt(0).toUpperCase()}
-                        </div>
-                      )}
-                    </div>
+            <div className="relative">
+              <button
+                type="button"
+                onClick={() => scrollRelatedCarousel("prev")}
+                className="hidden md:flex absolute left-0 top-1/2 z-10 -translate-y-1/2 -translate-x-1/2 h-11 w-11 items-center justify-center rounded-full border border-gray-200 bg-white shadow-sm text-gray-700 hover:text-black hover:border-black transition-colors"
+                aria-label="Scroll related impressions left"
+              >
+                ‹
+              </button>
 
-                    <div className="p-4 space-y-2">
-                      <h3 className="text-lg font-serif font-medium text-gray-900 leading-tight">
-                        {item.name}
-                      </h3>
-                      <p className="text-sm text-gray-600 font-light line-clamp-2 min-h-[2.5rem]">
-                        {item.tagline || "Eau de parfum"}
-                      </p>
-                      <p className="text-sm font-semibold text-gray-900">
-                        Rs {item.price.toFixed(2)}
-                      </p>
-                    </div>
-                  </Link>
-                </ScrollReveal>
-              ))}
+              <button
+                type="button"
+                onClick={() => scrollRelatedCarousel("next")}
+                className="hidden md:flex absolute right-0 top-1/2 z-10 -translate-y-1/2 translate-x-1/2 h-11 w-11 items-center justify-center rounded-full border border-gray-200 bg-white shadow-sm text-gray-700 hover:text-black hover:border-black transition-colors"
+                aria-label="Scroll related impressions right"
+              >
+                ›
+              </button>
+
+              <div
+                ref={relatedCarouselRef}
+                className="flex gap-4 overflow-x-auto scroll-smooth pb-2 pr-1 snap-x snap-mandatory [&::-webkit-scrollbar]:hidden"
+                style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+              >
+                {relatedFragrances.map((item, index) => (
+                  <ScrollReveal key={item.id} delay={index * 90}>
+                    <Link
+                      href={`/product/${item.id}`}
+                      data-related-card="true"
+                      className="group block shrink-0 snap-start rounded-2xl border border-gray-200 bg-white overflow-hidden hover:shadow-lg transition-all duration-300 w-[260px] sm:w-[280px] lg:w-[300px]"
+                    >
+                      <div className="relative aspect-[4/5] bg-gray-50 overflow-hidden">
+                        {isValidImageUrl(item.image) ? (
+                          <Image
+                            src={item.image!}
+                            alt={item.name}
+                            fill
+                            className="object-cover transition-transform duration-500 group-hover:scale-105"
+                            sizes="(max-width: 640px) 260px, (max-width: 1024px) 280px, 300px"
+                          />
+                        ) : (
+                          <div className="h-full w-full flex items-center justify-center text-3xl font-serif font-light text-gray-500">
+                            {item.name.charAt(0).toUpperCase()}
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="p-4 space-y-2">
+                        <h3 className="text-lg font-serif font-medium text-gray-900 leading-tight">
+                          {item.name}
+                        </h3>
+                        <p className="text-sm text-gray-600 font-light line-clamp-2 min-h-[2.5rem]">
+                          {item.tagline || "Eau de parfum"}
+                        </p>
+                        <p className="text-sm font-semibold text-gray-900">
+                          Rs {item.price.toFixed(2)}
+                        </p>
+                      </div>
+                    </Link>
+                  </ScrollReveal>
+                ))}
+              </div>
             </div>
           </div>
         </section>

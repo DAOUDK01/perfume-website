@@ -766,15 +766,15 @@ function FeaturedProductGrid({ fragrances }: { fragrances: FragranceItem[] }) {
                 {slides.map((slideItems, slideIndex) => (
                   <div
                     key={slideIndex}
-                    className="w-full flex-shrink-0 snap-start"
+                    className={`w-full flex-shrink-0 snap-start ${slideIndex < totalSlides - 1 ? "pr-5" : ""}`}
                   >
-                    <div className={`grid ${columnsClass} gap-6`}>
+                    <div className={`grid ${columnsClass} gap-5`}>
                       {slideItems.map((slideItem, index) => {
                         if ("isPlaceholder" in slideItem) {
                           return (
                             <div
                               key={slideItem.id}
-                              className="invisible h-full min-h-[360px] sm:min-h-[410px]"
+                              className="invisible h-full min-h-[360px]"
                               aria-hidden="true"
                             />
                           );
@@ -792,61 +792,56 @@ function FeaturedProductGrid({ fragrances }: { fragrances: FragranceItem[] }) {
                               href={`/product/${fragrance.id}`}
                               className="block h-full"
                             >
-                              <div className="bg-white  rounded-2xl p-4 sm:p-5 border border-gray-200 hover:border-gray-300 hover:ring-1 hover:ring-gray-200 hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-2 group h-full flex flex-col min-h-[360px] sm:min-h-[410px]">
+                              <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden hover:shadow-lg transition-all duration-300 group h-full flex flex-col min-h-[360px]">
                                 {/* Product Image */}
-                                <div className="relative aspect-[5/6] rounded-xl overflow-hidden mb-3 bg-white ">
+                                <div className="relative aspect-[4/5] bg-gray-50 overflow-hidden">
                                   {isValidImageUrl(fragrance.image) &&
                                   !imageErrors[fragrance.id] ? (
                                     <Image
                                       src={fragrance.image!}
                                       alt={fragrance.name}
                                       fill
-                                      style={{ objectFit: "contain" }}
-                                      className="group-hover:scale-105 transition-transform duration-500 ease-out object-center p-4"
+                                      style={{ objectFit: "cover" }}
+                                      className="group-hover:scale-105 transition-transform duration-500 ease-out"
                                       onError={() =>
                                         handleImageError(fragrance.id)
                                       }
                                       sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
                                     />
                                   ) : (
-                                    <div className="w-full h-full flex flex-col items-center justify-center bg-white  group-hover:bg-gray-50  transition-all duration-500 p-6">
-                                      <div className="text-3xl sm:text-4xl font-serif font-light text-gray-600  mb-3 group-hover:scale-110 transition-transform duration-300">
+                                    <div className="w-full h-full flex flex-col items-center justify-center bg-gray-50 transition-all duration-500 p-6">
+                                      <div className="text-3xl sm:text-4xl font-serif font-light text-gray-600 mb-3 group-hover:scale-110 transition-transform duration-300">
                                         {fragrance.name.charAt(0).toUpperCase()}
                                       </div>
-                                      <div className="w-12 h-px bg-gray-300  mb-3" />
-                                      <h3 className="text-base sm:text-lg font-serif font-light text-gray-700  mb-1 text-center leading-tight">
+                                      <div className="w-12 h-px bg-gray-300 mb-3" />
+                                      <h3 className="text-base sm:text-lg font-serif font-light text-gray-700 mb-1 text-center leading-tight">
                                         {fragrance.name}
                                       </h3>
-                                      <p className="text-xs tracking-widest text-gray-500  font-light">
+                                      <p className="text-xs tracking-widest text-gray-500 font-light">
                                         EAU DE PARFUM
                                       </p>
                                     </div>
                                   )}
-
-                                  {/* Floating badge */}
-                                  <div className="absolute top-3 right-3 bg-white/90  backdrop-blur-sm rounded-full px-3 py-1 text-xs font-medium text-gray-700  opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0">
-                                    View Details
-                                  </div>
                                 </div>
 
                                 {/* Product Details */}
-                                <div className="flex-grow flex flex-col justify-between">
+                                <div className="p-4 space-y-2 flex-grow flex flex-col justify-between">
                                   <div className="text-center">
-                                    <h3 className="text-base sm:text-lg font-serif font-light text-gray-900  leading-tight mb-2">
+                                    <h3 className="text-lg font-serif font-medium text-gray-900 leading-tight mb-2">
                                       {fragrance.name}
                                     </h3>
-                                    <p className="text-xs sm:text-sm text-gray-600  font-light mb-3 line-clamp-2">
+                                    <p className="text-sm text-gray-600 font-light mb-3 line-clamp-2 min-h-[2.5rem]">
                                       {fragrance.tagline}
                                     </p>
                                   </div>
 
                                   {/* Price and CTA */}
                                   <div className="text-center">
-                                    <p className="text-base sm:text-lg font-semibold text-gray-900  mb-3">
+                                    <p className="text-sm font-semibold text-gray-900 mb-3">
                                       Rs {fragrance.price.toFixed(2)}
                                     </p>
-                                    <div className="w-full h-8 sm:h-10 bg-gray-900  rounded-xl flex items-center justify-center opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0 transition-all duration-300">
-                                      <span className="text-white  text-xs sm:text-sm font-medium">
+                                    <div className="w-full h-9 bg-gray-900 rounded-xl flex items-center justify-center opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0 transition-all duration-300">
+                                      <span className="text-white text-xs sm:text-sm font-medium">
                                         Shop Now
                                       </span>
                                     </div>

@@ -15,11 +15,17 @@ import {
 
 type CartItem = {
   id: string;
+  productId?: string;
   name: string;
   price: number;
   quantity: number;
   image?: string;
+  variant?: "full" | "tester";
+  maxQuantity?: number;
 };
+
+const TESTER_MAX_QTY = 1;
+const TESTER_PACK_SIZE = 5;
 
 type SearchProduct = {
   id: string;
@@ -38,17 +44,36 @@ function parseCart(value: string | null): CartItem[] {
 
     return parsed
       .filter((item) => item && typeof item === "object")
-      .map((item: any) => ({
-        id: String(item.id ?? ""),
-        name: String(item.name ?? "Item"),
-        price: Number(item.price) || 0,
-        quantity: Math.max(1, Number(item.quantity) || 1),
-        image: typeof item.image === "string" ? item.image : "",
-      }))
+      .map((item: any) => {
+        const variant: "full" | "tester" =
+          item.variant === "tester" ? "tester" : "full";
+        const maxQuantity = variant === "tester" ? TESTER_MAX_QTY : undefined;
+        const quantity = Math.max(1, Number(item.quantity) || 1);
+
+        return {
+          id: String(item.id ?? ""),
+          productId: String(item.productId ?? ""),
+          name: String(item.name ?? "Item"),
+          price: Number(item.price) || 0,
+          quantity: maxQuantity ? Math.min(maxQuantity, quantity) : quantity,
+          image: typeof item.image === "string" ? item.image : "",
+          variant,
+          maxQuantity,
+        };
+      })
       .filter((item) => item.id);
   } catch {
     return [];
   }
+}
+
+function isTesterItem(item: CartItem): boolean {
+  return item.variant === "tester" || item.id.endsWith("::tester");
+}
+
+function extractTesterProductId(item: CartItem): string {
+  if (item.productId) return item.productId;
+  return item.id.replace(/::tester$/, "");
 }
 
 function isValidImageUrl(value?: string): boolean {
@@ -150,7 +175,14 @@ export default function Navigation() {
   const incrementQty = (id: string) => {
     updateCart(
       cartItems.map((item) =>
-        item.id === id ? { ...item, quantity: item.quantity + 1 } : item,
+        item.id === id
+          ? {
+              ...item,
+              quantity: isTesterItem(item)
+                ? Math.min(TESTER_MAX_QTY, item.quantity + 1)
+                : item.quantity + 1,
+            }
+          : item,
       ),
     );
   };
@@ -178,6 +210,22 @@ export default function Navigation() {
     () => cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0),
     [cartItems],
   );
+
+  const testerVariantCount = useMemo(
+    () =>
+      new Set(
+        cartItems
+          .filter((item) => isTesterItem(item))
+          .map((item) => extractTesterProductId(item)),
+      ).size,
+    [cartItems],
+  );
+
+  const hasTesterSelection = testerVariantCount > 0;
+  const isTesterPackReady = testerVariantCount === TESTER_PACK_SIZE;
+  const disableCheckout = hasTesterSelection && !isTesterPackReady;
+  const displaySubtotal =
+    hasTesterSelection && isTesterPackReady ? 1500 : cartSubtotal;
 
   useEffect(() => {
     loadCart();
@@ -518,6 +566,11 @@ export default function Navigation() {
                         <p className="text-sm text-gray-600  mt-1">
                           Rs {item.price.toFixed(2)}
                         </p>
+                        {isTesterItem(item) && (
+                          <p className="text-[11px] uppercase tracking-[0.14em] text-gray-500 mt-1">
+                            Tester (1 per variant)
+                          </p>
+                        )}
 
                         <div className="mt-3 flex items-center justify-between">
                           <div className="inline-flex items-center rounded-full border border-gray-300  bg-white ">
@@ -533,8 +586,17 @@ export default function Navigation() {
                             </span>
                             <button
                               onClick={() => incrementQty(item.id)}
-                              className="w-8 h-8 flex items-center justify-center text-gray-600  hover:text-black  transition-colors"
+                              className={`w-8 h-8 flex items-center justify-center transition-colors ${
+                                isTesterItem(item) &&
+                                item.quantity >= TESTER_MAX_QTY
+                                  ? "text-gray-300 cursor-not-allowed"
+                                  : "text-gray-600  hover:text-black "
+                              }`}
                               aria-label={`Increase quantity for ${item.name}`}
+                              disabled={
+                                isTesterItem(item) &&
+                                item.quantity >= TESTER_MAX_QTY
+                              }
                             >
                               <PlusIcon className="h-4 w-4" />
                             </button>
@@ -553,10 +615,18 @@ export default function Navigation() {
           </div>
 
           <div className="border-t border-gray-200  p-5 space-y-4">
+            {disableCheckout && (
+              <p className="rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-700">
+                Tester pack requires exactly {TESTER_PACK_SIZE} variants. Add{" "}
+                {TESTER_PACK_SIZE - testerVariantCount} more tester variant
+                {TESTER_PACK_SIZE - testerVariantCount === 1 ? "" : "s"} to
+                checkout.
+              </p>
+            )}
             <div className="flex items-center justify-between">
               <span className="text-sm text-gray-600 ">Subtotal</span>
               <span className="text-lg font-semibold text-gray-900 ">
-                Rs {cartSubtotal.toFixed(2)}
+                Rs {displaySubtotal.toFixed(2)}
               </span>
             </div>
 
@@ -569,13 +639,23 @@ export default function Navigation() {
               </button>
             </div>
 
-            <Link
-              href="/checkout"
-              onClick={closeCartDrawer}
-              className="block w-full py-3 rounded-full bg-gray-900 text-white text-sm font-medium text-center hover:bg-black transition-colors"
-            >
-              Checkout
-            </Link>
+            {disableCheckout ? (
+              <button
+                type="button"
+                disabled
+                className="block w-full py-3 rounded-full bg-gray-200 text-gray-500 text-sm font-medium text-center cursor-not-allowed"
+              >
+                Checkout Locked
+              </button>
+            ) : (
+              <Link
+                href="/checkout"
+                onClick={closeCartDrawer}
+                className="block w-full py-3 rounded-full bg-gray-900 text-white text-sm font-medium text-center hover:bg-black transition-colors"
+              >
+                Checkout
+              </Link>
+            )}
           </div>
         </aside>
       )}

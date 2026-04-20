@@ -9,11 +9,52 @@ import Image from "next/image";
 
 type CartItem = {
   id: string;
+  productId?: string;
   name: string;
   price: number;
   quantity: number;
   image?: string;
+  variant?: "full" | "tester";
+  maxQuantity?: number;
 };
+
+const TESTER_MAX_QTY = 1;
+const TESTER_PACK_SIZE = 5;
+const TESTER_PACK_PRICE = 1500;
+
+function isTesterItem(item: CartItem): boolean {
+  return item.variant === "tester" || item.id.endsWith("::tester");
+}
+
+function extractTesterProductId(item: CartItem): string {
+  if (item.productId) return item.productId;
+  return item.id.replace(/::tester$/, "");
+}
+
+function sanitizeCartItems(rawItems: unknown): CartItem[] {
+  if (!Array.isArray(rawItems)) return [];
+
+  return rawItems
+    .filter((item) => item && typeof item === "object")
+    .map((item: any) => {
+      const variant: "full" | "tester" =
+        item.variant === "tester" ? "tester" : "full";
+      const maxQuantity = variant === "tester" ? TESTER_MAX_QTY : undefined;
+      const quantity = Math.max(1, Number(item.quantity) || 1);
+
+      return {
+        id: String(item.id ?? ""),
+        productId: String(item.productId ?? ""),
+        name: String(item.name ?? "Item"),
+        price: Number(item.price) || 0,
+        quantity: maxQuantity ? Math.min(maxQuantity, quantity) : quantity,
+        image: typeof item.image === "string" ? item.image : "",
+        variant,
+        maxQuantity,
+      };
+    })
+    .filter((item) => item.id);
+}
 
 function isValidImageUrl(value?: string): boolean {
   return Boolean(
@@ -40,7 +81,7 @@ export default function CheckoutPage() {
   useEffect(() => {
     try {
       const cart = JSON.parse(localStorage.getItem("cart") || "[]");
-      setCartItems(Array.isArray(cart) ? cart : []);
+      setCartItems(sanitizeCartItems(cart));
     } catch {
       setCartItems([]);
     } finally {
@@ -58,22 +99,39 @@ export default function CheckoutPage() {
   const increaseQuantity = (id: string) => {
     updateCart(
       cartItems.map((i) =>
-        i.id === id ? { ...i, quantity: i.quantity + 1 } : i,
+        i.id === id
+          ? {
+              ...i,
+              quantity: isTesterItem(i)
+                ? Math.min(TESTER_MAX_QTY, i.quantity + 1)
+                : i.quantity + 1,
+            }
+          : i,
       ),
     );
   };
 
   const decreaseQuantity = (id: string) => {
     updateCart(
-      cartItems
-        .map((i) => (i.id === id ? { ...i, quantity: i.quantity - 1 } : i))
-        .filter((i) => i.quantity > 0),
+      cartItems.map((i) =>
+        i.id === id ? { ...i, quantity: Math.max(1, i.quantity - 1) } : i,
+      ),
     );
   };
 
   const removeItem = (id: string) => {
     updateCart(cartItems.filter((i) => i.id !== id));
   };
+
+  const testerItems = cartItems.filter((item) => isTesterItem(item));
+  const testerVariantCount = new Set(
+    testerItems.map((item) => extractTesterProductId(item)),
+  ).size;
+  const hasTesterSelection = testerVariantCount > 0;
+  const isTesterPackOnly =
+    hasTesterSelection && testerItems.length === cartItems.length;
+  const isTesterPackReady = testerVariantCount === TESTER_PACK_SIZE;
+  const isValidTesterPackCheckout = !hasTesterSelection || isTesterPackReady;
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -88,6 +146,9 @@ export default function CheckoutPage() {
     });
 
     if (!cartItems.length) newErrors.submit = "Your cart is empty";
+    if (hasTesterSelection && !isTesterPackReady) {
+      newErrors.submit = `Tester pack requires exactly ${TESTER_PACK_SIZE} different variants.`;
+    }
     if (!hasAgreedToTerms)
       newErrors.terms = "Please agree to terms and policies";
 
@@ -121,9 +182,15 @@ export default function CheckoutPage() {
     }
   };
 
-  const subtotal = cartItems.reduce((s, i) => s + i.price * i.quantity, 0);
-  const shipping = 250;
+  const defaultSubtotal = cartItems.reduce(
+    (s, i) => s + i.price * i.quantity,
+    0,
+  );
+  const subtotal =
+    isTesterPackOnly && isTesterPackReady ? TESTER_PACK_PRICE : defaultSubtotal;
+  const shipping = isTesterPackOnly && isTesterPackReady ? 0 : 250;
   const total = subtotal + shipping;
+  const testerPackApplied = isTesterPackOnly && isTesterPackReady;
 
   if (loading)
     return (
@@ -313,9 +380,16 @@ export default function CheckoutPage() {
               <p className="text-red-600 mt-4">{errors.submit}</p>
             )}
 
+            {hasTesterSelection && !isTesterPackReady && (
+              <p className="text-amber-700 mt-4">
+                Add exactly {TESTER_PACK_SIZE} tester variants to place this
+                order.
+              </p>
+            )}
+
             <Button
               type="submit"
-              disabled={isSubmitting}
+              disabled={isSubmitting || !isValidTesterPackCheckout}
               className="w-full mt-10 py-4 text-lg"
             >
               {isSubmitting
@@ -356,6 +430,11 @@ export default function CheckoutPage() {
 
                     <div>
                       <p className="font-medium text-gray-900">{item.name}</p>
+                      {isTesterItem(item) && (
+                        <p className="text-[11px] uppercase tracking-[0.14em] text-gray-500 mt-1">
+                          Tester (1 per variant)
+                        </p>
+                      )}
                       <div className="flex items-center gap-2 mt-1">
                         <button
                           type="button"
@@ -371,8 +450,17 @@ export default function CheckoutPage() {
                         <button
                           type="button"
                           onClick={() => increaseQuantity(item.id)}
-                          className="h-7 w-7 rounded-full border border-gray-300 inline-flex items-center justify-center hover:border-black transition-colors"
+                          className={`h-7 w-7 rounded-full border inline-flex items-center justify-center transition-colors ${
+                            isTesterItem(item) &&
+                            item.quantity >= TESTER_MAX_QTY
+                              ? "border-gray-200 text-gray-300 cursor-not-allowed"
+                              : "border-gray-300 hover:border-black"
+                          }`}
                           aria-label={`Increase quantity for ${item.name}`}
+                          disabled={
+                            isTesterItem(item) &&
+                            item.quantity >= TESTER_MAX_QTY
+                          }
                         >
                           <Plus size={14} />
                         </button>
@@ -381,7 +469,9 @@ export default function CheckoutPage() {
                   </div>
                   <div className="text-right">
                     <p className="font-semibold">
-                      Rs {(item.price * item.quantity).toFixed(2)}
+                      {testerPackApplied && isTesterItem(item)
+                        ? "Included in tester pack"
+                        : `Rs ${(item.price * item.quantity).toFixed(2)}`}
                     </p>
                     <button
                       type="button"
@@ -397,6 +487,12 @@ export default function CheckoutPage() {
             </div>
 
             <div className="border-t mt-6 pt-4 space-y-2 text-sm">
+              {testerPackApplied && (
+                <div className="rounded-xl border border-gray-200 bg-gray-50 px-3 py-2 text-xs uppercase tracking-[0.14em] text-gray-700">
+                  Tester pack applied: {TESTER_PACK_SIZE} variants for Rs{" "}
+                  {TESTER_PACK_PRICE} with free delivery
+                </div>
+              )}
               <div className="flex justify-between">
                 <span>Subtotal</span>
                 <span>Rs {subtotal.toFixed(2)}</span>

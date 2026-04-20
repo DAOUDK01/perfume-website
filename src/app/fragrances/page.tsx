@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback, Suspense } from "react";
+import { useEffect, useState, useCallback, Suspense, useMemo } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
@@ -30,7 +30,13 @@ type FragranceItem = {
   category?: string;
 };
 
-type CategoryFilter = "all" | "men" | "women" | "uni";
+type ProductVariant = "full" | "tester";
+
+const TESTER_MIN_QTY = 1;
+const TESTER_MAX_QTY = 1;
+const TESTER_MAX_VARIANTS = 5;
+
+type CategoryFilter = "all" | "men" | "women" | "uni" | "tester";
 type SortOption =
   | "featured"
   | "price-low"
@@ -43,6 +49,7 @@ const categoryOptions: Array<{ value: CategoryFilter; label: string }> = [
   { value: "men", label: "Men" },
   { value: "women", label: "Women" },
   { value: "uni", label: "Uni" },
+  { value: "tester", label: "Tester" },
 ];
 
 const sortOptions: Array<{ value: SortOption; label: string }> = [
@@ -87,10 +94,13 @@ function normalizeCategory(value?: string): CategoryFilter | null {
 
 type CartItem = {
   id: string;
+  productId?: string;
   name: string;
   price: number;
   quantity: number;
   image?: string;
+  variant?: ProductVariant;
+  maxQuantity?: number;
 };
 
 function readCartFromStorage(): CartItem[] {
@@ -102,13 +112,23 @@ function readCartFromStorage(): CartItem[] {
 
     return stored
       .filter((item) => item && typeof item === "object")
-      .map((item: any) => ({
-        id: String(item.id ?? ""),
-        name: String(item.name ?? "Item"),
-        price: Number(item.price) || 0,
-        quantity: Math.max(1, Number(item.quantity) || 1),
-        image: typeof item.image === "string" ? item.image : "",
-      }))
+      .map((item: any) => {
+        const variant: ProductVariant =
+          item.variant === "tester" ? "tester" : "full";
+        const maxQuantity = variant === "tester" ? TESTER_MAX_QTY : undefined;
+        const quantity = Math.max(1, Number(item.quantity) || 1);
+
+        return {
+          id: String(item.id ?? ""),
+          productId: String(item.productId ?? ""),
+          name: String(item.name ?? "Item"),
+          price: Number(item.price) || 0,
+          quantity: maxQuantity ? Math.min(maxQuantity, quantity) : quantity,
+          image: typeof item.image === "string" ? item.image : "",
+          variant,
+          maxQuantity,
+        };
+      })
       .filter((item) => item.id);
   } catch {
     return [];
@@ -124,12 +144,24 @@ function areCartsEqual(a: CartItem[], b: CartItem[]): boolean {
 
     return (
       item.id === other.id &&
+      (item.productId || "") === (other.productId || "") &&
       item.name === other.name &&
       item.price === other.price &&
       item.quantity === other.quantity &&
-      (item.image || "") === (other.image || "")
+      (item.image || "") === (other.image || "") &&
+      (item.variant || "full") === (other.variant || "full") &&
+      (item.maxQuantity || 0) === (other.maxQuantity || 0)
     );
   });
+}
+
+function buildCartItemId(fragranceId: string, variant: ProductVariant): string {
+  return variant === "tester" ? `${fragranceId}::tester` : fragranceId;
+}
+
+function extractTesterProductId(item: CartItem): string {
+  if (item.productId) return item.productId;
+  return item.id.replace(/::tester$/, "");
 }
 
 export default function FragrancesPage() {
@@ -169,7 +201,8 @@ function FragrancesContent() {
   const debouncedSearchQuery = useDebounce(searchQuery, 500);
 
   const filteredList = list.filter((item) => {
-    if (selectedCategory === "all") return true;
+    if (selectedCategory === "all" || selectedCategory === "tester")
+      return true;
 
     const categorySource = [item.category, item.tagline, item.name]
       .filter(Boolean)
@@ -263,33 +296,80 @@ function FragrancesContent() {
     };
   }, [debouncedSearchQuery]);
 
-  const addToCart = useCallback((fragrance: FragranceItem) => {
-    setCart((prev) => {
-      const existingItem = prev.find((item) => item.id === fragrance.id);
-      let updated: CartItem[];
+  const addToCart = useCallback(
+    (fragrance: FragranceItem, variant: ProductVariant) => {
+      const cartItemId = buildCartItemId(fragrance.id, variant);
+      const maxQuantity = variant === "tester" ? TESTER_MAX_QTY : undefined;
 
-      if (existingItem) {
-        updated = prev.map((item) =>
-          item.id === fragrance.id
-            ? { ...item, quantity: item.quantity + 1 }
-            : item,
-        );
-      } else {
-        updated = [
-          ...prev,
-          {
-            id: fragrance.id,
-            name: fragrance.name,
-            price: fragrance.price,
-            quantity: 1,
-            image: fragrance.image,
-          },
-        ];
-      }
+      setCart((prev) => {
+        if (variant === "tester") {
+          const testerVariantCount = new Set(
+            prev
+              .filter(
+                (item) =>
+                  item.variant === "tester" || item.id.endsWith("::tester"),
+              )
+              .map((item) => extractTesterProductId(item)),
+          ).size;
+          const hasTesterVariant = prev.some((item) => item.id === cartItemId);
 
-      return updated;
-    });
-  }, []);
+          if (!hasTesterVariant && testerVariantCount >= TESTER_MAX_VARIANTS) {
+            return prev;
+          }
+        }
+
+        const existingItem = prev.find((item) => item.id === cartItemId);
+        let updated: CartItem[];
+
+        if (existingItem) {
+          updated = prev.map((item) =>
+            item.id === cartItemId
+              ? {
+                  ...item,
+                  quantity: maxQuantity
+                    ? Math.min(maxQuantity, item.quantity + 1)
+                    : item.quantity + 1,
+                }
+              : item,
+          );
+        } else {
+          updated = [
+            ...prev,
+            {
+              id: cartItemId,
+              productId: fragrance.id,
+              name:
+                variant === "tester"
+                  ? `${fragrance.name} (Tester)`
+                  : fragrance.name,
+              price: fragrance.price,
+              quantity: 1,
+              image: fragrance.image,
+              variant,
+              maxQuantity,
+            },
+          ];
+        }
+
+        return updated;
+      });
+    },
+    [],
+  );
+
+  const testerVariantCount = useMemo(
+    () =>
+      new Set(
+        cart
+          .filter(
+            (item) => item.variant === "tester" || item.id.endsWith("::tester"),
+          )
+          .map((item) => extractTesterProductId(item)),
+      ).size,
+    [cart],
+  );
+
+  const testerLimitReached = testerVariantCount >= TESTER_MAX_VARIANTS;
 
   return (
     <main className="min-h-screen w-full bg-[#fafafa] overflow-visible">
@@ -385,8 +465,48 @@ function FragrancesContent() {
             </div>
           </div>
 
+          {selectedCategory === "tester" && (
+            <div className="mb-8 rounded-2xl border border-gray-200 bg-white px-5 py-5 md:px-6 md:py-6">
+              <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+                <div>
+                  <p className="text-[11px] uppercase tracking-[0.22em] text-gray-500 font-medium">
+                    Tester Selection Block
+                  </p>
+                  <h2 className="mt-1 text-xl md:text-2xl font-serif font-light text-gray-900">
+                    Select exactly {TESTER_MAX_VARIANTS} different fragrance
+                    testers
+                  </h2>
+                </div>
+                <div className="rounded-full border border-gray-300 bg-gray-50 px-4 py-2 text-sm text-gray-700">
+                  Selected Variants:{" "}
+                  <span className="font-semibold text-gray-900">
+                    {testerVariantCount}/{TESTER_MAX_VARIANTS}
+                  </span>
+                </div>
+              </div>
+              <p className="mt-3 text-sm text-gray-600">
+                Exactly five different tester variants are required, and each
+                tester variant can only be selected once.
+              </p>
+              {!testerLimitReached && (
+                <p className="mt-3 rounded-xl border border-gray-200 bg-gray-50 px-3 py-2 text-sm text-gray-700">
+                  Add {TESTER_MAX_VARIANTS - testerVariantCount} more tester
+                  variant
+                  {TESTER_MAX_VARIANTS - testerVariantCount === 1 ? "" : "s"} to
+                  complete your tester pack.
+                </p>
+              )}
+              {testerLimitReached && (
+                <p className="mt-3 rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-700">
+                  Tester limit reached. Remove one tester variant from your bag
+                  to add another fragrance tester.
+                </p>
+              )}
+            </div>
+          )}
+
           {loading ? (
-            <div className="grid grid-cols-1 items-stretch sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
+            <div className="grid grid-cols-2 items-stretch lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
               {[1, 2, 3, 4, 5, 6].map((i) => (
                 <div
                   key={i}
@@ -410,15 +530,27 @@ function FragrancesContent() {
               </p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 items-stretch sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">
+            <div className="grid grid-cols-2 items-stretch lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
               {sortedList.map((fragrance) => {
-                const cartItem = cart.find((item) => item.id === fragrance.id);
+                const fullCartItem = cart.find(
+                  (item) => item.id === fragrance.id,
+                );
+                const testerCartItem = cart.find(
+                  (item) => item.id === buildCartItemId(fragrance.id, "tester"),
+                );
                 return (
                   <FragranceCard
                     key={fragrance.id}
                     fragrance={fragrance}
-                    inCart={cartItem?.quantity || 0}
-                    onAddToCart={() => addToCart(fragrance)}
+                    fullInCart={fullCartItem?.quantity || 0}
+                    testerInCart={testerCartItem?.quantity || 0}
+                    showTesterOption={selectedCategory === "tester"}
+                    forceTesterMode={selectedCategory === "tester"}
+                    disableTesterAdd={
+                      testerLimitReached &&
+                      (testerCartItem?.quantity || 0) === 0
+                    }
+                    onAddToCart={(variant) => addToCart(fragrance, variant)}
                   />
                 );
               })}
@@ -436,25 +568,59 @@ function FragrancesContent() {
 
 interface FragranceCardProps {
   fragrance: FragranceItem;
-  inCart: number;
-  onAddToCart: () => void;
+  fullInCart: number;
+  testerInCart: number;
+  showTesterOption: boolean;
+  forceTesterMode: boolean;
+  disableTesterAdd: boolean;
+  onAddToCart: (variant: ProductVariant) => void;
 }
 
 const isValidImageUrl = (url: string | undefined) =>
   url && (url.startsWith("http") || url.startsWith("/"));
 
-function FragranceCard({ fragrance, inCart, onAddToCart }: FragranceCardProps) {
+function FragranceCard({
+  fragrance,
+  fullInCart,
+  testerInCart,
+  showTesterOption,
+  forceTesterMode,
+  disableTesterAdd,
+  onAddToCart,
+}: FragranceCardProps) {
   const [added, setAdded] = useState(false);
+  const [selectedVariant, setSelectedVariant] =
+    useState<ProductVariant>("full");
   const [imgError, setImgError] = useState(false);
   const showImage = isValidImageUrl(fragrance.image) && !imgError;
+  const selectedInCart =
+    selectedVariant === "tester" ? testerInCart : fullInCart;
+  const isAddDisabled =
+    selectedVariant === "tester" &&
+    ((disableTesterAdd && testerInCart === 0) ||
+      testerInCart >= TESTER_MAX_QTY);
+
+  useEffect(() => {
+    if (forceTesterMode) {
+      setSelectedVariant("tester");
+    }
+  }, [forceTesterMode]);
 
   const handleAdd = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    onAddToCart();
+    if (isAddDisabled) return;
+    onAddToCart(selectedVariant);
     setAdded(true);
     setTimeout(() => setAdded(false), 1500);
   };
+
+  const handleVariantChange =
+    (variant: ProductVariant) => (e: React.MouseEvent<HTMLButtonElement>) => {
+      e.preventDefault();
+      e.stopPropagation();
+      setSelectedVariant(variant);
+    };
 
   return (
     <article className="group flex h-full flex-col bg-white/90  backdrop-blur-sm rounded-2xl border border-gray-100  overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 hover:scale-[1.02]">
@@ -495,6 +661,46 @@ function FragranceCard({ fragrance, inCart, onAddToCart }: FragranceCardProps) {
             <p className="mt-3 text-sm text-gray-500  leading-relaxed line-clamp-2 font-light">
               {fragrance.tagline || "Eau de parfum"}
             </p>
+            {showTesterOption ? (
+              <div className="mt-4 inline-flex w-full items-center justify-center gap-2">
+                {(
+                  [
+                    { value: "full", label: "Full" },
+                    { value: "tester", label: "Tester" },
+                  ] as Array<{ value: ProductVariant; label: string }>
+                ).map((option) => {
+                  const isActive = selectedVariant === option.value;
+                  const isDisabled = forceTesterMode && option.value === "full";
+                  return (
+                    <button
+                      key={option.value}
+                      onClick={handleVariantChange(option.value)}
+                      disabled={isDisabled}
+                      className={`rounded-full border px-3 py-1.5 text-[11px] uppercase tracking-[0.16em] transition-colors ${
+                        isActive
+                          ? "border-black bg-black text-white"
+                          : isDisabled
+                            ? "border-gray-200 bg-gray-100 text-gray-400 cursor-not-allowed"
+                            : "border-gray-300 bg-white text-gray-700 hover:border-gray-500"
+                      }`}
+                    >
+                      {option.label}
+                    </button>
+                  );
+                })}
+              </div>
+            ) : (
+              <div className="mt-4 flex justify-center">
+                <span className="rounded-full border border-gray-200 bg-gray-50 px-3 py-1.5 text-[11px] uppercase tracking-[0.16em] text-gray-500">
+                  Full Size
+                </span>
+              </div>
+            )}
+            {selectedVariant === "tester" && (
+              <p className="mt-2 text-[11px] uppercase tracking-[0.14em] text-gray-500">
+                Tester quantity: {TESTER_MIN_QTY} only
+              </p>
+            )}
             <div className="mt-auto pt-4 flex flex-col items-center gap-3">
               <div className="relative">
                 <span className="text-base font-semibold text-gray-900 ">
@@ -503,13 +709,26 @@ function FragranceCard({ fragrance, inCart, onAddToCart }: FragranceCardProps) {
               </div>
               <button
                 onClick={handleAdd}
+                disabled={isAddDisabled}
                 className={`w-full max-w-[180px] py-2 px-5 text-xs tracking-[0.2em] uppercase rounded-full transition-all duration-300 ${
-                  inCart > 0
-                    ? "bg-black  text-white  shadow-lg"
-                    : "bg-white/90  backdrop-blur-sm text-black  border border-gray-200  hover:border-black  hover:bg-black  hover:text-white  shadow-sm"
+                  isAddDisabled
+                    ? "bg-gray-200 text-gray-500 cursor-not-allowed"
+                    : selectedInCart > 0
+                      ? "bg-black  text-white  shadow-lg"
+                      : "bg-white/90  backdrop-blur-sm text-black  border border-gray-200  hover:border-black  hover:bg-black  hover:text-white  shadow-sm"
                 }`}
               >
-                {inCart > 0 ? `In Bag (${inCart})` : "Add to Bag"}
+                {isAddDisabled
+                  ? testerInCart >= TESTER_MAX_QTY
+                    ? "Tester Selected"
+                    : "Tester Limit Reached"
+                  : selectedInCart > 0
+                    ? selectedVariant === "tester"
+                      ? "Tester Selected"
+                      : `In Bag (${selectedInCart})`
+                    : selectedVariant === "tester"
+                      ? "Add Tester"
+                      : "Add to Bag"}
               </button>
             </div>
           </div>

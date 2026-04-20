@@ -442,7 +442,7 @@ function FragrancesContent() {
 
               {/* CATEGORIES - Centered */}
               <div className="order-2 flex justify-center md:order-2 md:justify-self-center">
-                <div className="inline-flex max-w-full flex-wrap items-center justify-center gap-2 sm:gap-3 rounded-full border border-gray-200 bg-white/90 px-3 py-2 shadow-sm">
+                <div className="inline-flex max-w-full flex-nowrap items-center justify-start gap-2 sm:gap-3 rounded-full border border-gray-200 bg-white/90 px-3 py-2 shadow-sm overflow-x-auto whitespace-nowrap [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
                   {categoryOptions.map((option) => {
                     const isActive = selectedCategory === option.value;
 

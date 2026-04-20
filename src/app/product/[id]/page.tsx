@@ -87,7 +87,7 @@ function Stars({
 }) {
   return (
     <div
-      className="flex items-center gap-1"
+      className="inline-flex items-center gap-1 leading-none shrink-0"
       aria-label={`Rating ${rating} out of 5`}
     >
       {Array.from({ length: 5 }, (_, index) => {
@@ -98,7 +98,7 @@ function Stars({
         return (
           <ActiveStar
             key={starValue}
-            className={`${sizeClass} ${rating >= starValue ? "text-amber-500" : "text-gray-300"}`}
+            className={`block align-middle ${sizeClass} ${rating >= starValue ? "text-amber-500" : "text-gray-300"}`}
             aria-hidden="true"
           />
         );
@@ -435,9 +435,9 @@ export default function ProductPage({ params }: ProductPageProps) {
               <p className="text-xl text-gray-600  font-light italic">
                 {fragrance.tagline}
               </p>
-              <div className="mt-5 flex items-center gap-3">
+              <div className="mt-5 inline-flex items-center gap-2.5 leading-none">
                 <Stars rating={Math.round(averageRating)} sizeClass="h-5 w-5" />
-                <p className="text-sm text-gray-600 font-light">
+                <p className="text-sm text-gray-600 font-light leading-none">
                   {reviewCount > 0
                     ? `${averageRating.toFixed(1)} average (${reviewCount} ${reviewCount === 1 ? "review" : "reviews"})`
                     : "No ratings yet"}
@@ -644,12 +644,12 @@ export default function ProductPage({ params }: ProductPageProps) {
                       Customer Impressions
                     </h3>
                   </div>
-                  <div className="text-right">
+                  <div className="inline-flex items-center gap-2.5 leading-none">
                     <Stars
                       rating={Math.round(averageRating)}
                       sizeClass="h-4 w-4"
                     />
-                    <p className="text-sm text-gray-600 font-light mt-1">
+                    <p className="text-sm text-gray-600 font-light leading-none">
                       {reviewCount > 0
                         ? `${averageRating.toFixed(1)} / 5 (${reviewCount})`
                         : "No reviews yet"}

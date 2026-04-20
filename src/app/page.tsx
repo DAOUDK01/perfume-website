@@ -579,11 +579,11 @@ function FeaturedProductGrid({ fragrances }: { fragrances: FragranceItem[] }) {
     );
   };
 
-  // 2 cards on mobile/tablet, 3 on desktop.
+  // 1 card on mobile, 2 on tablet, 3 on desktop.
   useEffect(() => {
     const updateItemsPerSlide = () => {
       if (window.innerWidth < 768) {
-        setItemsPerSlide(2);
+        setItemsPerSlide(1);
         return;
       }
 
@@ -637,7 +637,12 @@ function FeaturedProductGrid({ fragrances }: { fragrances: FragranceItem[] }) {
     },
   );
 
-  const columnsClass = itemsPerSlide === 2 ? "grid-cols-2" : "grid-cols-3";
+  const columnsClass =
+    itemsPerSlide === 1
+      ? "grid-cols-1"
+      : itemsPerSlide === 2
+        ? "grid-cols-2"
+        : "grid-cols-3";
 
   const nextSlide = () => {
     if (!carouselRef.current) return;

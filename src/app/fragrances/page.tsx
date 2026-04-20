@@ -488,6 +488,9 @@ function FragrancesContent() {
                 Exactly five different tester variants are required, and each
                 tester variant can only be selected once.
               </p>
+              <p className="mt-2 text-sm font-medium text-gray-900">
+                Tester pack price: Rs 1500.00
+              </p>
               {!testerLimitReached && (
                 <p className="mt-3 rounded-xl border border-gray-200 bg-gray-50 px-3 py-2 text-sm text-gray-700">
                   Add {TESTER_MAX_VARIANTS - testerVariantCount} more tester

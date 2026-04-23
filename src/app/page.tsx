@@ -172,6 +172,9 @@ export default function HomePage() {
   const featuredStoryImage =
     "https://res.cloudinary.com/djb0ekljm/image/upload/v1773663999/eeora_profile_pic_olqq41.jpg";
 
+  const heroBannerImage =
+    "https://res.cloudinary.com/djb0ekljm/image/upload/v1776965814/9998ef50-ff25-4cb8-9aa9-72900ec898e0_inoulk.png";
+
   return (
     <>
       <div className="bg-[#fafafa] ">
@@ -190,48 +193,81 @@ export default function HomePage() {
             style={{ animationDelay: "1.3s" }}
           />
 
-          <ScrollReveal className="max-w-4xl mx-auto text-center w-full relative z-10">
-            <h1
-              className="font-agrandir font-bold tracking-tighter text-[clamp(2.5rem,10vw,6rem)] sm:text-[clamp(3.5rem,12vw,8rem)] md:text-[clamp(4rem,15vw,10rem)] leading-[0.85] text-gray-900  mb-6 animate-fade-in-up md:leading-[0.9]"
-              style={{ letterSpacing: "-0.05em" }}
-              title="e'eora"
-            >
-              e'eora
-            </h1>
-            <div className="space-y-4 animate-fade-in-up delay-100">
-              <p className="text-lg sm:text-xl md:text-2xl lg:text-3xl text-gray-600  font-light tracking-wide">
-                {getContent(
-                  content,
-                  "Hero",
-                  "Subtitle",
-                  "text",
-                  "A quiet expression of scent",
-                )}
-              </p>
-              <p className="text-sm sm:text-base md:text-lg text-gray-400  font-light max-w-lg mx-auto leading-relaxed px-4">
-                {getContent(
-                  content,
-                  "Hero",
-                  "Description",
-                  "text",
-                  "Thoughtfully crafted fragrances that speak softly, designed to linger in memory rather than dominate the room.",
-                )}
-              </p>
-            </div>
-            <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 justify-center mt-10 sm:mt-12 animate-fade-in-up delay-200">
-              <Link href="/fragrances">
-                <Button className="px-8 py-4 text-base md:text-lg font-medium bg-gray-900 hover:bg-black text-white    shadow-md hover:shadow-lg rounded-full transition-all duration-300 w-full sm:w-auto">
-                  Discover Collection
-                </Button>
-              </Link>
-              <Link href="/about">
-                <Button
-                  variant="secondary"
-                  className="px-6 sm:px-8 md:px-10 py-3 sm:py-4 text-sm sm:text-base md:text-lg border-2 border-gray-300 hover:border-gray-900 hover:bg-gray-100 text-gray-900     w-full sm:w-auto transition-all duration-300 transform hover:scale-105 rounded-full"
-                >
-                  Our Philosophy
-                </Button>
-              </Link>
+          <ScrollReveal className="relative z-10 w-full max-w-7xl mx-auto">
+            <div className="relative overflow-hidden rounded-[2.25rem] border border-gray-200 bg-white shadow-[0_24px_80px_rgba(15,23,42,0.10)]">
+              <div className="grid lg:grid-cols-[1.45fr_0.85fr] min-h-[70vh] lg:min-h-[78vh]">
+                <div className="relative order-2 lg:order-1 min-h-[28rem] lg:min-h-full">
+                  <Image
+                    src={heroBannerImage}
+                    alt="e'eora hero banner"
+                    fill
+                    priority
+                    sizes="(max-width: 1024px) 100vw, 65vw"
+                    className="object-cover object-center"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-tr from-black/30 via-black/8 to-transparent" />
+                  <div className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-black/35 to-transparent" />
+                </div>
+
+                <div className="order-1 lg:order-2 flex items-end lg:items-center bg-gradient-to-br from-white via-white to-gray-50 px-6 py-8 sm:px-10 sm:py-10 lg:px-12 lg:py-14">
+                  <div className="w-full max-w-xl">
+                    <span className="inline-block text-[10px] tracking-[0.35em] uppercase text-gray-500 font-medium mb-4">
+                      {getContent(
+                        content,
+                        "Hero",
+                        "Eyebrow",
+                        "text",
+                        "Quiet Expression",
+                      )}
+                    </span>
+
+                    <h1
+                      className="font-agrandir font-bold tracking-tighter text-[clamp(3rem,7vw,6.5rem)] leading-[0.84] text-gray-950 mb-5 md:mb-6 animate-fade-in-up"
+                      style={{ letterSpacing: "-0.055em" }}
+                      title="e'eora"
+                    >
+                      e'eora
+                    </h1>
+
+                    <div className="space-y-4 animate-fade-in-up delay-100">
+                      <p className="text-lg sm:text-xl lg:text-2xl text-gray-700 font-light tracking-wide max-w-md">
+                        {getContent(
+                          content,
+                          "Hero",
+                          "Subtitle",
+                          "text",
+                          "A quiet expression of scent",
+                        )}
+                      </p>
+                      <p className="text-sm sm:text-base text-gray-500 font-light max-w-md leading-relaxed">
+                        {getContent(
+                          content,
+                          "Hero",
+                          "Description",
+                          "text",
+                          "Thoughtfully crafted fragrances that speak softly, designed to linger in memory rather than dominate the room.",
+                        )}
+                      </p>
+                    </div>
+
+                    <div className="flex flex-col sm:flex-row gap-4 sm:gap-5 mt-8 sm:mt-10 animate-fade-in-up delay-200">
+                      <Link href="/fragrances">
+                        <Button className="px-8 py-4 text-base font-medium bg-gray-900 hover:bg-black text-white shadow-md hover:shadow-lg rounded-full transition-all duration-300 w-full sm:w-auto">
+                          Discover Collection
+                        </Button>
+                      </Link>
+                      <Link href="/about">
+                        <Button
+                          variant="secondary"
+                          className="px-8 py-4 text-base border-2 border-gray-300 hover:border-gray-900 hover:bg-gray-100 text-gray-900 w-full sm:w-auto transition-all duration-300 transform hover:scale-105 rounded-full"
+                        >
+                          Our Philosophy
+                        </Button>
+                      </Link>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </ScrollReveal>
         </section>

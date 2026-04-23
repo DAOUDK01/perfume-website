@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 
 function formatMoney(value: number, currency: string) {
-  const code = (currency || "USD").toUpperCase();
+  const code = (currency || "PKR").toUpperCase();
   try {
     return new Intl.NumberFormat(undefined, {
       style: "currency",
@@ -33,7 +33,7 @@ export default function Dashboard() {
   const [error, setError] = useState<string | null>(null);
   const [metrics, setMetrics] = useState<any>(null);
   const [recentOrders, setRecentOrders] = useState<any[]>([]);
-  const [currency, setCurrency] = useState("USD");
+  const [currency, setCurrency] = useState("PKR");
 
   useEffect(() => {
     let cancelled = false;

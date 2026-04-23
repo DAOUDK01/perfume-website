@@ -6,7 +6,7 @@ import { Plus, Search, Trash2, Pencil } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 
 function formatMoney(value: number, currency: string) {
-  const code = (currency || "INR").toUpperCase();
+  const code = (currency || "PKR").toUpperCase();
   try {
     return new Intl.NumberFormat(undefined, {
       style: "currency",
@@ -24,7 +24,7 @@ export default function ProductsPage() {
   const [error, setError] = useState<string | null>(null);
   const [q, setQ] = useState("");
   const [category, setCategory] = useState("");
-  const [currency, setCurrency] = useState("INR");
+  const [currency, setCurrency] = useState("PKR");
 
   const categories = useMemo(() => {
     const set = new Set<string>();

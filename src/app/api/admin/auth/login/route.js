@@ -15,26 +15,50 @@ export async function POST(request) {
       );
     }
 
-    const { db: localDb } = await connectToLocalDb();
-    const { db: atlasDb } = await connectToAtlasDb();
-
     const normalizedEmail = String(email).trim().toLowerCase();
 
-    const [localUser, atlasUser] = await Promise.all([
-      localDb.collection("users").findOne({ email: normalizedEmail }),
-      atlasDb.collection("users").findOne({ email: normalizedEmail }),
+    const [localDbResult, atlasDbResult] = await Promise.allSettled([
+      connectToLocalDb(),
+      connectToAtlasDb(),
     ]);
 
-    const user = localUser || atlasUser;
+    const dbs = [localDbResult, atlasDbResult]
+      .filter((result) => result.status === "fulfilled")
+      .map((result) => result.value.db)
+      .filter(Boolean);
 
-    if (!user || !user.passwordHash) {
+    if (dbs.length === 0) {
+      return NextResponse.json(
+        {
+          error:
+            "Authentication database is unavailable. Please configure MongoDB or create an admin user.",
+        },
+        { status: 503 },
+      );
+    }
+
+    const users = await Promise.all(
+      dbs.map((db) =>
+        db.collection("users").findOne({ email: normalizedEmail }),
+      ),
+    );
+
+    const user = users.find(Boolean);
+
+    const passwordHash = user?.passwordHash || user?.hashedPassword;
+    const legacyPassword = user?.password;
+
+    if (!user || (!passwordHash && !legacyPassword)) {
       return NextResponse.json(
         { error: "Invalid email or password" },
         { status: 401 },
       );
     }
 
-    const ok = await bcrypt.compare(String(password), user.passwordHash);
+    const ok = passwordHash
+      ? await bcrypt.compare(String(password), passwordHash)
+      : String(password) === String(legacyPassword);
+
     if (!ok) {
       return NextResponse.json(
         { error: "Invalid email or password" },

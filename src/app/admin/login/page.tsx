@@ -13,7 +13,7 @@ function AdminLoginForm() {
   const searchParams = useSearchParams();
 
   // Get redirect URL from query params
-  const redirectTo = searchParams.get('redirect') || '/admin';
+  const redirectTo = searchParams.get("redirect") || "/admin";
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -23,6 +23,7 @@ function AdminLoginForm() {
     try {
       const res = await fetch("/api/admin/auth/login", {
         method: "POST",
+        credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
       });
@@ -34,9 +35,11 @@ function AdminLoginForm() {
       }
 
       // Cookie is set by the API, redirect to intended page
-      router.push(redirectTo);
+      router.replace(redirectTo);
+      router.refresh();
     } catch (err: any) {
       setError(err?.message || "Failed to sign in");
+    } finally {
       setLoading(false);
     }
   };
@@ -48,7 +51,9 @@ function AdminLoginForm() {
           <h1 className="text-4xl font-light text-gray-900 mb-4">
             <span className="font-agrandir font-bold">e&apos;eora</span> Admin
           </h1>
-          <p className="text-gray-600 font-light">Sign in to manage your store</p>
+          <p className="text-gray-600 font-light">
+            Sign in to manage your store
+          </p>
         </div>
         <form className="space-y-6" onSubmit={handleSubmit}>
           {error && (
@@ -57,7 +62,9 @@ function AdminLoginForm() {
             </div>
           )}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-3">Email</label>
+            <label className="block text-sm font-medium text-gray-700 mb-3">
+              Email
+            </label>
             <input
               type="email"
               value={email}
@@ -68,7 +75,9 @@ function AdminLoginForm() {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-3">Password</label>
+            <label className="block text-sm font-medium text-gray-700 mb-3">
+              Password
+            </label>
             <div className="relative">
               <input
                 type={showPassword ? "text" : "password"}
@@ -83,7 +92,11 @@ function AdminLoginForm() {
                 className="absolute inset-y-0 right-0 pr-4 flex items-center"
                 onClick={() => setShowPassword(!showPassword)}
               >
-                {showPassword ? <EyeOff className="h-5 w-5 text-gray-400" /> : <Eye className="h-5 w-5 text-gray-400" />}
+                {showPassword ? (
+                  <EyeOff className="h-5 w-5 text-gray-400" />
+                ) : (
+                  <Eye className="h-5 w-5 text-gray-400" />
+                )}
               </button>
             </div>
           </div>
@@ -102,13 +115,15 @@ function AdminLoginForm() {
 
 export default function AdminLogin() {
   return (
-    <Suspense fallback={
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100">
-        <div className="animate-pulse">
-          <div className="w-8 h-8 bg-gray-300 rounded-full"></div>
+    <Suspense
+      fallback={
+        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100">
+          <div className="animate-pulse">
+            <div className="w-8 h-8 bg-gray-300 rounded-full"></div>
+          </div>
         </div>
-      </div>
-    }>
+      }
+    >
       <AdminLoginForm />
     </Suspense>
   );

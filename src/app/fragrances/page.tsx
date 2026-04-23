@@ -666,39 +666,18 @@ function FragranceCard({
             </p>
             {showTesterOption ? (
               <div className="mt-4 inline-flex w-full items-center justify-center gap-2">
-                {(
-                  [
-                    { value: "full", label: "Full" },
-                    { value: "tester", label: "Tester" },
-                  ] as Array<{ value: ProductVariant; label: string }>
-                ).map((option) => {
-                  const isActive = selectedVariant === option.value;
-                  const isDisabled = forceTesterMode && option.value === "full";
-                  return (
-                    <button
-                      key={option.value}
-                      onClick={handleVariantChange(option.value)}
-                      disabled={isDisabled}
-                      className={`rounded-full border px-3 py-1.5 text-[11px] uppercase tracking-[0.16em] transition-colors ${
-                        isActive
-                          ? "border-black bg-black text-white"
-                          : isDisabled
-                            ? "border-gray-200 bg-gray-100 text-gray-400 cursor-not-allowed"
-                            : "border-gray-300 bg-white text-gray-700 hover:border-gray-500"
-                      }`}
-                    >
-                      {option.label}
-                    </button>
-                  );
-                })}
+                <button
+                  onClick={handleVariantChange("tester")}
+                  className={`rounded-full border px-3 py-1.5 text-[11px] uppercase tracking-[0.16em] transition-colors ${
+                    selectedVariant === "tester"
+                      ? "border-black bg-black text-white"
+                      : "border-gray-300 bg-white text-gray-700 hover:border-gray-500"
+                  }`}
+                >
+                  Tester
+                </button>
               </div>
-            ) : (
-              <div className="mt-4 flex justify-center">
-                <span className="rounded-full border border-gray-200 bg-gray-50 px-3 py-1.5 text-[11px] uppercase tracking-[0.16em] text-gray-500">
-                  Full Size
-                </span>
-              </div>
-            )}
+            ) : null}
             {selectedVariant === "tester" && (
               <p className="mt-2 text-[11px] uppercase tracking-[0.14em] text-gray-500">
                 Tester quantity: {TESTER_MIN_QTY} only

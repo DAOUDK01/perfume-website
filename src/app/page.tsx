@@ -795,17 +795,17 @@ function FeaturedProductGrid({ fragrances }: { fragrances: FragranceItem[] }) {
             <div
               ref={carouselRef}
               onScroll={handleCarouselScroll}
-              className="px-1 sm:px-12 lg:px-16 overflow-x-auto overflow-y-visible snap-x snap-mandatory scroll-smooth [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
+              className="px-0 sm:px-12 lg:px-16 overflow-x-auto overflow-y-visible snap-x snap-mandatory scroll-smooth [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
               aria-label="Featured products carousel"
             >
               <div className="flex w-full">
                 {slides.map((slideItems, slideIndex) => (
                   <div
                     key={slideIndex}
-                    className={`w-full flex-shrink-0 snap-start ${slideIndex < totalSlides - 1 ? "pr-5" : ""}`}
+                    className={`w-full flex-shrink-0 snap-start ${slideIndex < totalSlides - 1 ? "pr-8" : ""} px-4 sm:px-0 flex justify-center items-start`}
                   >
                     <div
-                      className={`grid ${columnsClass} gap-3 sm:gap-4 md:gap-6`}
+                      className={`grid ${columnsClass} gap-3 sm:gap-4 md:gap-6 max-w-[330px] sm:max-w-[500px] md:max-w-none mx-auto w-full`}
                     >
                       {slideItems.map((slideItem, index) => {
                         if ("isPlaceholder" in slideItem) {
@@ -824,13 +824,13 @@ function FeaturedProductGrid({ fragrances }: { fragrances: FragranceItem[] }) {
                           <ScrollReveal
                             key={`${fragrance.id}-${slideIndex}-${index}`}
                             delay={index * 100}
-                            className="group h-full"
+                            className="group h-full w-full"
                           >
                             <Link
                               href={`/product/${fragrance.id}`}
-                              className="block h-full"
+                              className="block h-full w-full"
                             >
-                              <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden hover:shadow-lg transition-all duration-300 group h-full flex flex-col min-h-[320px] sm:min-h-[360px]">
+                              <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden hover:shadow-lg transition-all duration-300 group h-full flex flex-col min-h-[320px] sm:min-h-[360px] w-full">
                                 {/* Product Image */}
                                 <div className="relative aspect-[4/5] bg-gray-50 overflow-hidden">
                                   {isValidImageUrl(fragrance.image) &&

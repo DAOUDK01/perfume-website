@@ -170,7 +170,7 @@ export default function HomePage() {
     "https://res.cloudinary.com/djb0ekljm/image/upload/v1774258159/Gemini_Generated_Image_1yd4jv1yd4jv1yd4_wvpan8.png";
 
   const featuredStoryImage =
-    "https://res.cloudinary.com/djb0ekljm/image/upload/v1773663999/eeora_profile_pic_olqq41.jpg";
+    "https://res.cloudinary.com/djb0ekljm/image/upload/v1777026902/Gemini_Generated_Image_6t2le76t2le76t2l_upmov5.png";
 
   const heroBannerImage =
     "https://res.cloudinary.com/djb0ekljm/image/upload/v1776965814/9998ef50-ff25-4cb8-9aa9-72900ec898e0_inoulk.png";

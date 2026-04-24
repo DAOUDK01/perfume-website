@@ -180,7 +180,7 @@ export default function HomePage() {
       <div className="bg-[#fafafa] ">
         {/* Hero — Clean minimal design */}
         <section
-          className="min-h-screen flex flex-col items-center justify-center px-4 sm:px-6 relative overflow-hidden bg-white  pt-20 md:pt-0"
+          className="min-h-screen flex flex-col items-center justify-center px-4 sm:px-6 relative overflow-hidden bg-white pt-20 md:pt-24"
           data-scroll-section="0"
         >
           <div className="absolute inset-0 bg-gradient-to-b from-gray-50/10 to-transparent  opacity-30 pointer-events-none" />
@@ -211,14 +211,8 @@ export default function HomePage() {
 
                 <div className="order-1 lg:order-2 flex items-end lg:items-center bg-gradient-to-br from-white via-white to-gray-50 px-6 py-8 sm:px-10 sm:py-10 lg:px-12 lg:py-14">
                   <div className="w-full max-w-xl">
-                    <span className="inline-block text-[10px] tracking-[0.35em] uppercase text-gray-500 font-medium mb-4">
-                      {getContent(
-                        content,
-                        "Hero",
-                        "Eyebrow",
-                        "text",
-                        "Quiet Expression",
-                      )}
+                    <span className="inline-block text-[10px] tracking-[0.35em] uppercase text-gray-500 font-medium mb-5">
+                      A Gentle Trace
                     </span>
 
                     <h1
@@ -231,37 +225,27 @@ export default function HomePage() {
 
                     <div className="space-y-4 animate-fade-in-up delay-100">
                       <p className="text-lg sm:text-xl lg:text-2xl text-gray-700 font-light tracking-wide max-w-md">
-                        {getContent(
-                          content,
-                          "Hero",
-                          "Subtitle",
-                          "text",
-                          "A quiet expression of scent",
-                        )}
+                        Quiet, but unforgettable
                       </p>
                       <p className="text-sm sm:text-base text-gray-500 font-light max-w-md leading-relaxed">
-                        {getContent(
-                          content,
-                          "Hero",
-                          "Description",
-                          "text",
-                          "Thoughtfully crafted fragrances that speak softly, designed to linger in memory rather than dominate the room.",
-                        )}
+                        Thoughtfully composed fragrances that settle softly on
+                        the skin, leaving an impression that stays, never
+                        overwhelms.
                       </p>
                     </div>
 
-                    <div className="flex flex-col sm:flex-row gap-4 sm:gap-5 mt-8 sm:mt-10 animate-fade-in-up delay-200">
-                      <Link href="/fragrances">
-                        <Button className="px-8 py-4 text-base font-medium bg-gray-900 hover:bg-black text-white shadow-md hover:shadow-lg rounded-full transition-all duration-300 w-full sm:w-auto">
+                    <div className="flex flex-row flex-nowrap items-center gap-2 sm:gap-4 mt-8 sm:mt-10 animate-fade-in-up delay-200">
+                      <Link href="/fragrances" className="inline-flex">
+                        <Button className="px-6 sm:px-7 py-3.5 text-sm sm:text-base font-medium bg-gray-900 hover:bg-black text-white shadow-md hover:shadow-lg rounded-full transition-all duration-300 whitespace-nowrap">
                           Discover Collection
                         </Button>
                       </Link>
-                      <Link href="/about">
+                      <Link href="/policies" className="inline-flex">
                         <Button
                           variant="secondary"
-                          className="px-8 py-4 text-base border-2 border-gray-300 hover:border-gray-900 hover:bg-gray-100 text-gray-900 w-full sm:w-auto transition-all duration-300 transform hover:scale-105 rounded-full"
+                          className="px-6 sm:px-7 py-3.5 text-sm sm:text-base border-2 border-gray-300 hover:border-gray-900 hover:bg-gray-100 text-gray-900 transition-all duration-300 transform hover:scale-105 rounded-full whitespace-nowrap"
                         >
-                          Our Philosophy
+                          Our Policy
                         </Button>
                       </Link>
                     </div>

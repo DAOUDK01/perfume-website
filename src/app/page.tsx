@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import Button from "@/components/Button";
 import ScrollReveal from "@/components/ScrollReveal";
@@ -166,9 +166,6 @@ export default function HomePage() {
     ? `${firstPhilosophySentence}.`
     : "Fragrance should feel quiet and intentional.";
 
-  const stayUpdatedBgImage =
-    "https://res.cloudinary.com/djb0ekljm/image/upload/v1774258159/Gemini_Generated_Image_1yd4jv1yd4jv1yd4_wvpan8.png";
-
   const featuredStoryImage =
     "https://res.cloudinary.com/djb0ekljm/image/upload/v1777026902/Gemini_Generated_Image_6t2le76t2le76t2l_upmov5.png";
 
@@ -178,7 +175,7 @@ export default function HomePage() {
   return (
     <>
       <div className="bg-[#fafafa] ">
-        {/* Hero — Clean minimal design */}
+        {/* Hero - Clean minimal design */}
         <section
           className="min-h-screen flex flex-col items-center justify-center px-4 sm:px-6 relative overflow-hidden bg-white pt-20 md:pt-24"
           data-scroll-section="0"
@@ -237,7 +234,7 @@ export default function HomePage() {
                     <div className="flex flex-row flex-nowrap items-center gap-2 sm:gap-4 mt-8 sm:mt-10 animate-fade-in-up delay-200">
                       <Link href="/fragrances" className="inline-flex">
                         <Button className="px-6 sm:px-7 py-3.5 text-sm sm:text-base font-medium bg-gray-900 hover:bg-black text-white shadow-md hover:shadow-lg rounded-full transition-all duration-300 whitespace-nowrap">
-                          Discover Collection
+                          Discover the Collection
                         </Button>
                       </Link>
                       <Link href="/policies" className="inline-flex">
@@ -245,7 +242,7 @@ export default function HomePage() {
                           variant="secondary"
                           className="px-6 sm:px-7 py-3.5 text-sm sm:text-base border-2 border-gray-300 hover:border-gray-900 hover:bg-gray-100 text-gray-900 transition-all duration-300 transform hover:scale-105 rounded-full whitespace-nowrap"
                         >
-                          Our Policy
+                          Our Policies
                         </Button>
                       </Link>
                     </div>
@@ -383,38 +380,69 @@ export default function HomePage() {
           className="scroll-mt-28 py-20 sm:py-24 md:py-32 lg:py-40 bg-gray-50  border-t border-gray-200 "
           data-scroll-section="1"
         >
-          <div className="max-w-7xl mx-auto px-4 sm:px-6">
-            <ScrollReveal className="text-center mb-10 sm:mb-14 md:mb-20">
-              <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-serif font-light tracking-tight text-gray-900  mb-3 leading-tight">
-                {getContent(
-                  content,
-                  "Featured Collection",
-                  "Title",
-                  "text",
-                  "Featured Collection",
-                )}
-              </h2>
-              <p className="text-gray-600  font-light text-base sm:text-lg">
-                {getContent(
-                  content,
-                  "Featured Collection",
-                  "Subtitle",
-                  "text",
-                  "Select from our curated fragrances",
-                )}
-              </p>
-            </ScrollReveal>
-            <FeaturedProductGrid fragrances={featuredList} />
-            <ScrollReveal className="text-center mt-8 sm:mt-12 md:mt-16">
-              <Link href="/fragrances">
-                <Button
-                  variant="secondary"
-                  className="px-8 sm:px-12 py-4 text-lg rounded-full bg-white hover:bg-gray-50   border-2 border-gray-300 hover:border-black   transition-all duration-300 transform hover:scale-105 shadow-sm hover:shadow-md"
-                >
-                  Explore Full Collection
-                </Button>
-              </Link>
-            </ScrollReveal>
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 relative">
+            <div className="absolute -top-16 left-6 h-40 w-40 rounded-full bg-white/80 blur-3xl" />
+            <div className="absolute bottom-10 right-0 h-56 w-56 rounded-full bg-gray-200/50 blur-3xl" />
+
+            <div className="relative overflow-hidden rounded-[2.5rem] border border-white/70 bg-white/85 backdrop-blur-xl shadow-[0_26px_90px_rgba(15,23,42,0.08)]">
+              <div className="absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.95),rgba(249,250,251,0.9))]" />
+              <div className="relative px-4 py-10 sm:px-6 sm:py-12 md:px-10 md:py-14 lg:px-12 lg:py-16">
+                <ScrollReveal className="mb-10 sm:mb-12 md:mb-14">
+                  <div className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
+                    <div className="max-w-2xl text-center lg:text-left">
+                      <span className="inline-flex items-center rounded-full border border-gray-200 bg-white/90 px-3 py-1 text-[10px] font-medium uppercase tracking-[0.32em] text-gray-500 shadow-sm">
+                        Curated Fragrances
+                      </span>
+                      <h2 className="mt-4 text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-serif font-light tracking-tight text-gray-950 leading-[1.02]">
+                        {getContent(
+                          content,
+                          "Featured Collection",
+                          "Title",
+                          "text",
+                          "Featured Collection",
+                        )}
+                      </h2>
+                      <p className="mt-4 text-sm sm:text-base md:text-lg text-gray-600 font-light leading-relaxed max-w-xl mx-auto lg:mx-0">
+                        {getContent(
+                          content,
+                          "Featured Collection",
+                          "Subtitle",
+                          "text",
+                          "Select from our curated fragrances",
+                        )}
+                      </p>
+                    </div>
+
+                    <div className="flex items-center justify-center lg:justify-end gap-3">
+                      <Link
+                        href="/fragrances"
+                        className="hidden sm:inline-flex"
+                      >
+                        <Button
+                          variant="secondary"
+                          className="px-5 py-3 rounded-full bg-gray-900 hover:bg-black text-white border border-gray-900 shadow-md hover:shadow-lg transition-all duration-300 whitespace-nowrap"
+                        >
+                          View all
+                        </Button>
+                      </Link>
+                    </div>
+                  </div>
+                </ScrollReveal>
+
+                <FeaturedProductGrid fragrances={featuredList} />
+
+                <ScrollReveal className="mt-8 sm:mt-10 md:mt-12 text-center">
+                  <Link href="/fragrances" className="inline-flex sm:hidden">
+                    <Button
+                      variant="secondary"
+                      className="px-8 sm:px-12 py-4 text-lg rounded-full bg-gray-900 hover:bg-black text-white border border-gray-900 transition-all duration-300 transform hover:scale-105 shadow-sm hover:shadow-md"
+                    >
+                      Explore Full Collection
+                    </Button>
+                  </Link>
+                </ScrollReveal>
+              </div>
+            </div>
           </div>
         </section>
 
@@ -489,20 +517,13 @@ export default function HomePage() {
 
         {/* Stay Updated */}
         <section
-          className="relative py-20 sm:py-24 md:py-32 lg:py-40 border-t border-gray-200 overflow-hidden"
+          className="relative py-20 sm:py-24 md:py-32 lg:py-40 border-t border-gray-200 overflow-hidden bg-gray-50"
           data-scroll-section="3"
-          style={{
-            backgroundImage: `url('${stayUpdatedBgImage}')`,
-            backgroundSize: "80%",
-            backgroundPosition: "center",
-            backgroundRepeat: "no-repeat",
-            backgroundAttachment: "fixed",
-          }}
         >
           {/* Background overlays */}
-          <div className="absolute inset-0 bg-white/45 backdrop-blur-sm pointer-events-none" />
-          <div className="absolute inset-0 bg-gradient-to-br from-white/30 via-white/25 to-white/35 pointer-events-none" />
-          <div className="absolute inset-0 bg-gradient-to-t from-gray-50/20 to-transparent pointer-events-none" />
+          <div className="absolute inset-0 bg-white/30 backdrop-blur-sm pointer-events-none" />
+          <div className="absolute inset-0 bg-gradient-to-br from-gray-50/30 via-white/20 to-gray-100/30 pointer-events-none" />
+          <div className="absolute inset-0 bg-gradient-to-t from-gray-100/30 to-transparent pointer-events-none" />
 
           <ScrollReveal className="max-w-xl mx-auto px-4 sm:px-6 text-center relative z-10">
             <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-serif font-light text-gray-900  mb-4 sm:mb-6 leading-tight">
@@ -719,14 +740,14 @@ function FeaturedProductGrid({ fragrances }: { fragrances: FragranceItem[] }) {
   return (
     <div className="space-y-6 sm:space-y-8">
       {fragrances.length === 0 ? (
-        <div className="text-center py-12 bg-white  rounded-2xl border border-gray-200  mx-4 sm:mx-0">
-          <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gray-200  flex items-center justify-center">
-            <div className="text-gray-600  text-2xl">🌸</div>
+        <div className="text-center py-14 sm:py-16 bg-white/80 backdrop-blur-sm rounded-[2rem] border border-gray-200 mx-4 sm:mx-0 shadow-[0_18px_55px_rgba(15,23,42,0.05)]">
+          <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gray-100 flex items-center justify-center shadow-inner">
+            <div className="text-gray-600 text-2xl">🌸</div>
           </div>
-          <p className="text-gray-600  font-light text-base px-4">
+          <p className="text-gray-600 font-light text-base px-4">
             No featured products available at the moment.
           </p>
-          <p className="text-sm text-gray-500  mt-2 px-4">
+          <p className="text-sm text-gray-500 mt-2 px-4">
             Check back soon for our latest collection!
           </p>
         </div>
@@ -737,11 +758,11 @@ function FeaturedProductGrid({ fragrances }: { fragrances: FragranceItem[] }) {
             {/* Navigation Arrows - Desktop */}
             <button
               onClick={prevSlide}
-              className="absolute left-2 sm:left-4 top-1/2 transform -translate-y-1/2 z-10 bg-white  border border-gray-200  rounded-full p-2 sm:p-3 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-gray-300 "
+              className="absolute left-1 sm:left-3 top-1/2 transform -translate-y-1/2 z-10 hidden md:flex h-11 w-11 items-center justify-center bg-white/95 backdrop-blur border border-gray-200 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-gray-300"
               disabled={totalSlides <= 1}
             >
               <svg
-                className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600 "
+                className="w-4 h-4 text-gray-600"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -757,11 +778,11 @@ function FeaturedProductGrid({ fragrances }: { fragrances: FragranceItem[] }) {
 
             <button
               onClick={nextSlide}
-              className="absolute right-2 sm:right-4 top-1/2 transform -translate-y-1/2 z-10 bg-white  border border-gray-200  rounded-full p-2 sm:p-3 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-gray-300 "
+              className="absolute right-1 sm:right-3 top-1/2 transform -translate-y-1/2 z-10 hidden md:flex h-11 w-11 items-center justify-center bg-white/95 backdrop-blur border border-gray-200 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-gray-300"
               disabled={totalSlides <= 1}
             >
               <svg
-                className="w-4 h-4 sm:w-5 sm:h-5 text-gray-600 "
+                className="w-4 h-4 text-gray-600"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -779,24 +800,24 @@ function FeaturedProductGrid({ fragrances }: { fragrances: FragranceItem[] }) {
             <div
               ref={carouselRef}
               onScroll={handleCarouselScroll}
-              className="px-0 sm:px-12 lg:px-16 overflow-x-auto overflow-y-visible snap-x snap-mandatory scroll-smooth [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
+              className="px-0 sm:px-10 lg:px-14 overflow-x-auto overflow-y-visible snap-x snap-mandatory scroll-smooth [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
               aria-label="Featured products carousel"
             >
               <div className="flex w-full">
                 {slides.map((slideItems, slideIndex) => (
                   <div
                     key={slideIndex}
-                    className={`w-full flex-shrink-0 snap-start ${slideIndex < totalSlides - 1 ? "pr-8" : ""} px-4 sm:px-0 flex justify-center items-start`}
+                    className={`w-full flex-shrink-0 snap-start ${slideIndex < totalSlides - 1 ? "pr-6 sm:pr-8" : ""} px-3 sm:px-0 flex justify-center items-start`}
                   >
                     <div
-                      className={`grid ${columnsClass} gap-3 sm:gap-4 md:gap-6 max-w-[330px] sm:max-w-[500px] md:max-w-none mx-auto w-full`}
+                      className={`grid ${columnsClass} gap-4 sm:gap-5 md:gap-6 max-w-[360px] sm:max-w-[540px] md:max-w-none mx-auto w-full`}
                     >
                       {slideItems.map((slideItem, index) => {
                         if ("isPlaceholder" in slideItem) {
                           return (
                             <div
                               key={slideItem.id}
-                              className="invisible h-full min-h-[320px] sm:min-h-[360px]"
+                              className="invisible h-full min-h-[340px] sm:min-h-[380px]"
                               aria-hidden="true"
                             />
                           );
@@ -814,9 +835,8 @@ function FeaturedProductGrid({ fragrances }: { fragrances: FragranceItem[] }) {
                               href={`/product/${fragrance.id}`}
                               className="block h-full w-full"
                             >
-                              <div className="bg-white rounded-2xl border border-gray-200 overflow-hidden hover:shadow-lg transition-all duration-300 group h-full flex flex-col min-h-[320px] sm:min-h-[360px] w-full">
-                                {/* Product Image */}
-                                <div className="relative aspect-[4/5] bg-gray-50 overflow-hidden">
+                              <div className="bg-white rounded-[1.75rem] border border-gray-200 overflow-hidden hover:shadow-[0_20px_60px_rgba(15,23,42,0.12)] transition-all duration-300 group h-full flex flex-col min-h-[340px] sm:min-h-[380px] w-full">
+                                <div className="relative aspect-[5/6] bg-gray-50 overflow-hidden">
                                   {isValidImageUrl(fragrance.image) &&
                                   !imageErrors[fragrance.id] ? (
                                     <Image
@@ -824,19 +844,19 @@ function FeaturedProductGrid({ fragrances }: { fragrances: FragranceItem[] }) {
                                       alt={fragrance.name}
                                       fill
                                       style={{ objectFit: "cover" }}
-                                      className="group-hover:scale-105 transition-transform duration-500 ease-out"
+                                      className="group-hover:scale-105 transition-transform duration-700 ease-out"
                                       onError={() =>
                                         handleImageError(fragrance.id)
                                       }
                                       sizes="(max-width: 640px) 50vw, (max-width: 1024px) 50vw, 33vw"
                                     />
                                   ) : (
-                                    <div className="w-full h-full flex flex-col items-center justify-center bg-gray-50 transition-all duration-500 p-6">
-                                      <div className="text-3xl sm:text-4xl font-serif font-light text-gray-600 mb-3 group-hover:scale-110 transition-transform duration-300">
+                                    <div className="w-full h-full flex flex-col items-center justify-center bg-[linear-gradient(180deg,#fafafa,#f3f4f6)] transition-all duration-500 p-6">
+                                      <div className="text-3xl sm:text-4xl font-serif font-light text-gray-700 mb-3 group-hover:scale-110 transition-transform duration-300">
                                         {fragrance.name.charAt(0).toUpperCase()}
                                       </div>
                                       <div className="w-12 h-px bg-gray-300 mb-3" />
-                                      <h3 className="text-base sm:text-lg font-serif font-light text-gray-700 mb-1 text-center leading-tight">
+                                      <h3 className="text-base sm:text-lg font-serif font-light text-gray-800 mb-1 text-center leading-tight">
                                         {fragrance.name}
                                       </h3>
                                       <p className="text-xs tracking-widest text-gray-500 font-light">
@@ -846,24 +866,22 @@ function FeaturedProductGrid({ fragrances }: { fragrances: FragranceItem[] }) {
                                   )}
                                 </div>
 
-                                {/* Product Details */}
-                                <div className="p-4 space-y-2 flex-grow flex flex-col justify-between">
-                                  <div className="text-center">
-                                    <h3 className="text-lg font-serif font-medium text-gray-900 leading-tight mb-2">
+                                <div className="p-5 sm:p-6 space-y-4 flex-grow flex flex-col justify-between">
+                                  <div className="text-center space-y-2">
+                                    <h3 className="text-lg sm:text-xl font-serif font-medium text-gray-950 leading-tight">
                                       {fragrance.name}
                                     </h3>
-                                    <p className="text-sm text-gray-600 font-light mb-3 line-clamp-2 min-h-[2.5rem]">
+                                    <p className="text-sm text-gray-600 font-light line-clamp-2 min-h-[2.75rem] leading-relaxed">
                                       {fragrance.tagline}
                                     </p>
                                   </div>
 
-                                  {/* Price and CTA */}
                                   <div className="text-center">
                                     <p className="text-sm font-semibold text-gray-900 mb-3">
                                       Rs {fragrance.price.toFixed(2)}
                                     </p>
-                                    <div className="w-full h-9 bg-gray-900 rounded-xl flex items-center justify-center opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0 transition-all duration-300">
-                                      <span className="text-white text-xs sm:text-sm font-medium">
+                                    <div className="w-full h-10 rounded-full border border-gray-900 bg-gray-900 flex items-center justify-center opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0 transition-all duration-300">
+                                      <span className="text-white text-xs sm:text-sm font-medium tracking-wide">
                                         Shop Now
                                       </span>
                                     </div>

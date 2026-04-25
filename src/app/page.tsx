@@ -19,6 +19,7 @@ export default function HomePage() {
   const [content, setContent] = useState<ContentItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [activeHeroSlide, setActiveHeroSlide] = useState(0);
 
   useEffect(() => {
     async function fetchContent() {
@@ -133,6 +134,16 @@ export default function HomePage() {
     };
   }, [loading]);
 
+  useEffect(() => {
+    const slideTimer = window.setInterval(() => {
+      setActiveHeroSlide((prev) => (prev + 1) % 2);
+    }, 4500);
+
+    return () => {
+      window.clearInterval(slideTimer);
+    };
+  }, []);
+
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-[#fafafa] ">
@@ -172,6 +183,11 @@ export default function HomePage() {
   const heroBannerImage =
     "https://res.cloudinary.com/djb0ekljm/image/upload/v1777143245/b1628cb8-edec-4b26-986d-b0ac5a39a394_cyxep3.png";
 
+  const heroCarouselImages = [
+    heroBannerImage,
+    "https://res.cloudinary.com/djb0ekljm/image/upload/v1777143715/9adba9f6-a8d1-4452-9656-38061cd04178_jlucyl.png",
+  ];
+
   return (
     <>
       <div className="bg-[#fafafa] ">
@@ -194,16 +210,37 @@ export default function HomePage() {
             <div className="relative overflow-hidden rounded-[2.25rem] border border-gray-200 bg-white shadow-[0_24px_80px_rgba(15,23,42,0.10)]">
               <div className="grid lg:grid-cols-[1.45fr_0.85fr] min-h-[70vh] lg:min-h-[78vh]">
                 <div className="relative order-2 lg:order-1 min-h-[28rem] lg:min-h-full">
-                  <Image
-                    src={heroBannerImage}
-                    alt="e'eora hero banner"
-                    fill
-                    priority
-                    sizes="(max-width: 1024px) 100vw, 65vw"
-                    className="object-cover object-center"
-                  />
+                  {heroCarouselImages.map((src, index) => (
+                    <Image
+                      key={src}
+                      src={src}
+                      alt={`e'eora hero banner ${index + 1}`}
+                      fill
+                      priority={index === 0}
+                      sizes="(max-width: 1024px) 100vw, 65vw"
+                      className={`object-cover object-center transition-opacity duration-700 ${
+                        activeHeroSlide === index ? "opacity-100" : "opacity-0"
+                      }`}
+                    />
+                  ))}
                   <div className="absolute inset-0 bg-gradient-to-tr from-black/30 via-black/8 to-transparent" />
                   <div className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-black/35 to-transparent" />
+
+                  <div className="absolute bottom-5 left-5 z-20 flex items-center gap-2">
+                    {heroCarouselImages.map((_, index) => (
+                      <button
+                        key={`hero-dot-${index}`}
+                        type="button"
+                        aria-label={`Show hero image ${index + 1}`}
+                        onClick={() => setActiveHeroSlide(index)}
+                        className={`h-2 rounded-full transition-all duration-300 ${
+                          activeHeroSlide === index
+                            ? "w-7 bg-white"
+                            : "w-2 bg-white/60 hover:bg-white/80"
+                        }`}
+                      />
+                    ))}
+                  </div>
                 </div>
 
                 <div className="order-1 lg:order-2 flex items-end lg:items-center bg-gradient-to-br from-white via-white to-gray-50 px-6 py-8 sm:px-10 sm:py-10 lg:px-12 lg:py-14">

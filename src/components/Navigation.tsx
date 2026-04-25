@@ -349,7 +349,7 @@ export default function Navigation() {
           {/* Logo — Agrandir Bold, no space */}
           <Link
             href="/"
-            className="text-2xl font-agrandir font-bold tracking-tighter hover:opacity-80 transition-opacity duration-300 text-black "
+            className="text-2xl font-agrandir font-semibold tracking-tighter hover:opacity-80 transition-opacity duration-300 text-black "
             style={{ letterSpacing: "-0.04em" }}
           >
             e'eora
@@ -460,7 +460,7 @@ export default function Navigation() {
           <div className="p-4 text-center border-t border-gray-200 ">
             <Link
               href="/"
-              className="text-2xl font-agrandir font-bold tracking-tighter hover:opacity-80 transition-opacity duration-300 text-black "
+              className="text-2xl font-agrandir font-semibold tracking-tighter hover:opacity-80 transition-opacity duration-300 text-black "
               style={{ letterSpacing: "-0.04em" }}
               onClick={toggleMobileMenu}
             >

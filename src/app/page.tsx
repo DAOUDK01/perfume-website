@@ -250,7 +250,7 @@ export default function HomePage() {
                     </span>
 
                     <h1
-                      className="font-agrandir font-bold tracking-tighter text-[clamp(3rem,7vw,6.5rem)] leading-[0.84] text-gray-950 mb-5 md:mb-6 animate-fade-in-up"
+                      className="font-agrandir font-semibold tracking-tighter text-[clamp(3rem,7vw,6.5rem)] leading-[0.84] text-gray-950 mb-5 md:mb-6 animate-fade-in-up"
                       style={{ letterSpacing: "-0.055em" }}
                       title="e'eora"
                     >

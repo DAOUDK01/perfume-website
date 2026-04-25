@@ -170,7 +170,7 @@ export default function HomePage() {
     "https://res.cloudinary.com/djb0ekljm/image/upload/v1777026902/Gemini_Generated_Image_6t2le76t2le76t2l_upmov5.png";
 
   const heroBannerImage =
-    "https://res.cloudinary.com/djb0ekljm/image/upload/v1776965814/9998ef50-ff25-4cb8-9aa9-72900ec898e0_inoulk.png";
+    "https://res.cloudinary.com/djb0ekljm/image/upload/v1777143245/b1628cb8-edec-4b26-986d-b0ac5a39a394_cyxep3.png";
 
   return (
     <>

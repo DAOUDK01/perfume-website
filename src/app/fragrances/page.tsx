@@ -604,9 +604,7 @@ function FragranceCard({
       testerInCart >= TESTER_MAX_QTY);
 
   useEffect(() => {
-    if (forceTesterMode) {
-      setSelectedVariant("tester");
-    }
+    setSelectedVariant(forceTesterMode ? "tester" : "full");
   }, [forceTesterMode]);
 
   const handleAdd = (e: React.MouseEvent) => {
@@ -678,7 +676,7 @@ function FragranceCard({
                 </button>
               </div>
             ) : null}
-            {selectedVariant === "tester" && (
+            {showTesterOption && selectedVariant === "tester" && (
               <p className="mt-2 text-[11px] uppercase tracking-[0.14em] text-gray-500">
                 Tester quantity: {TESTER_MIN_QTY} only
               </p>

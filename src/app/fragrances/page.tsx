@@ -509,7 +509,7 @@ function FragrancesContent() {
           )}
 
           {loading ? (
-            <div className="grid grid-cols-2 items-stretch lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 items-stretch lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
               {[1, 2, 3, 4, 5, 6].map((i) => (
                 <div
                   key={i}
@@ -533,7 +533,7 @@ function FragrancesContent() {
               </p>
             </div>
           ) : (
-            <div className="grid grid-cols-2 items-stretch lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 items-stretch lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
               {sortedList.map((fragrance) => {
                 const fullCartItem = cart.find(
                   (item) => item.id === fragrance.id,
@@ -692,7 +692,7 @@ function FragranceCard({
               <button
                 onClick={handleAdd}
                 disabled={isAddDisabled}
-                className={`w-full max-w-[180px] py-2 px-5 text-xs tracking-[0.2em] uppercase rounded-full transition-all duration-300 ${
+                className={`w-full max-w-[180px] py-2 px-4 text-[11px] sm:text-xs tracking-[0.12em] sm:tracking-[0.2em] uppercase rounded-full whitespace-nowrap transition-all duration-300 ${
                   isAddDisabled
                     ? "bg-gray-200 text-gray-500 cursor-not-allowed"
                     : selectedInCart > 0
@@ -703,7 +703,7 @@ function FragranceCard({
                 {isAddDisabled
                   ? testerInCart >= TESTER_MAX_QTY
                     ? "Tester Selected"
-                    : "Tester Limit Reached"
+                    : "Limit Reached"
                   : selectedInCart > 0
                     ? selectedVariant === "tester"
                       ? "Tester Selected"

@@ -233,14 +233,14 @@ export default function HomePage() {
 
                     <div className="flex flex-row flex-nowrap items-center gap-2 sm:gap-4 mt-8 sm:mt-10 animate-fade-in-up delay-200">
                       <Link href="/fragrances" className="inline-flex">
-                        <Button className="px-6 sm:px-7 py-3.5 text-sm sm:text-base font-medium bg-gray-900 hover:bg-black text-white shadow-md hover:shadow-lg rounded-full transition-all duration-300 whitespace-nowrap">
+                        <Button className="px-4 sm:px-7 py-3 sm:py-3.5 text-xs sm:text-base font-medium bg-gray-900 hover:bg-black text-white shadow-md hover:shadow-lg rounded-full transition-all duration-300 whitespace-nowrap">
                           Discover the Collection
                         </Button>
                       </Link>
                       <Link href="/policies" className="inline-flex">
                         <Button
                           variant="secondary"
-                          className="px-6 sm:px-7 py-3.5 text-sm sm:text-base border-2 border-gray-300 hover:border-gray-900 hover:bg-gray-100 text-gray-900 transition-all duration-300 transform hover:scale-105 rounded-full whitespace-nowrap"
+                          className="px-4 sm:px-7 py-3 sm:py-3.5 text-xs sm:text-base border-2 border-gray-300 hover:border-gray-900 hover:bg-gray-100 text-gray-900 transition-all duration-300 transform hover:scale-105 rounded-full whitespace-nowrap"
                         >
                           Our Policies
                         </Button>

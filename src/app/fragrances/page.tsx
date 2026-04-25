@@ -509,7 +509,7 @@ function FragrancesContent() {
           )}
 
           {loading ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 items-stretch lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
+            <div className="grid grid-cols-2 items-stretch lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
               {[1, 2, 3, 4, 5, 6].map((i) => (
                 <div
                   key={i}
@@ -533,7 +533,7 @@ function FragrancesContent() {
               </p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 items-stretch lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
+            <div className="grid grid-cols-2 items-stretch lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 md:gap-6">
               {sortedList.map((fragrance) => {
                 const fullCartItem = cart.find(
                   (item) => item.id === fragrance.id,
@@ -731,3 +731,4 @@ function FragranceCard({
     </article>
   );
 }
+

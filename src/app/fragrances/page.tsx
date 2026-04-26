@@ -442,7 +442,7 @@ function FragrancesContent() {
 
               {/* CATEGORIES - Centered */}
               <div className="order-2 flex justify-center md:order-2 md:justify-self-center">
-                <div className="inline-flex max-w-full flex-nowrap items-center justify-start gap-2 sm:gap-3 rounded-full border border-gray-200 bg-white/90 px-3 py-2 shadow-sm overflow-x-auto whitespace-nowrap [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+                <div className="flex w-full max-w-full flex-wrap items-center justify-center gap-2 rounded-full border border-gray-200 bg-white/90 px-3 py-2 shadow-sm md:inline-flex md:w-auto md:flex-nowrap md:justify-start md:overflow-x-auto md:whitespace-nowrap md:[scrollbar-width:none] md:[-ms-overflow-style:none] md:[&::-webkit-scrollbar]:hidden">
                   {categoryOptions.map((option) => {
                     const isActive = selectedCategory === option.value;
 
@@ -450,7 +450,7 @@ function FragrancesContent() {
                       <button
                         key={option.value}
                         onClick={() => setSelectedCategory(option.value)}
-                        className={`whitespace-nowrap rounded-full border px-4 py-2 text-xs sm:text-sm tracking-wide transition-all duration-300 ${
+                        className={`shrink-0 whitespace-nowrap rounded-full border px-3 py-2 text-[11px] sm:px-4 sm:text-sm tracking-wide transition-all duration-300 ${
                           isActive
                             ? "border-gray-900 bg-gray-900 text-white"
                             : "border-gray-200 bg-white text-gray-700 hover:border-gray-400"
@@ -731,4 +731,3 @@ function FragranceCard({
     </article>
   );
 }
-

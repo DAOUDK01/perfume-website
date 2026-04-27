@@ -8,8 +8,12 @@ export async function GET() {
     const { db: localDb } = await connectToLocalDb();
     const { db: atlasDb } = await connectToAtlasDb();
 
-    const localDoc = await localDb.collection('settings').findOne({ _id: SETTINGS_ID });
-    const atlasDoc = await atlasDb.collection('settings').findOne({ _id: SETTINGS_ID });
+    const localDoc = await localDb
+      .collection("settings")
+      .findOne({ _id: SETTINGS_ID });
+    const atlasDoc = await atlasDb
+      .collection("settings")
+      .findOne({ _id: SETTINGS_ID });
 
     const doc = localDoc || atlasDoc;
 
@@ -19,12 +23,15 @@ export async function GET() {
         _id: SETTINGS_ID,
         storeName: "e'eora",
         supportEmail: "support@example.com",
-        currency: "USD",
+        currency: "PKR",
       },
     });
   } catch (error) {
     console.error("Error fetching settings:", error);
-    return NextResponse.json({ error: "Failed to fetch settings" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to fetch settings" },
+      { status: 500 },
+    );
   }
 }
 
@@ -43,7 +50,7 @@ export async function PATCH(request) {
     if (typeof currency === "string") update.currency = currency.trim();
 
     const [localResult, atlasResult] = await Promise.all([
-      localDb.collection('settings').updateOne(
+      localDb.collection("settings").updateOne(
         { _id: SETTINGS_ID },
         {
           $set: {
@@ -52,9 +59,9 @@ export async function PATCH(request) {
             updatedAt: new Date(),
           },
         },
-        { upsert: true }
+        { upsert: true },
       ),
-      atlasDb.collection('settings').updateOne(
+      atlasDb.collection("settings").updateOne(
         { _id: SETTINGS_ID },
         {
           $set: {
@@ -63,17 +70,20 @@ export async function PATCH(request) {
             updatedAt: new Date(),
           },
         },
-        { upsert: true }
-      )
+        { upsert: true },
+      ),
     ]);
 
     return NextResponse.json({
       success: true,
-      upsertedId: localResult.upsertedId || atlasResult.upsertedId || SETTINGS_ID,
+      upsertedId:
+        localResult.upsertedId || atlasResult.upsertedId || SETTINGS_ID,
     });
   } catch (error) {
     console.error("Error updating settings:", error);
-    return NextResponse.json({ error: "Failed to update settings" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to update settings" },
+      { status: 500 },
+    );
   }
 }
-

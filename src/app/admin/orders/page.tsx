@@ -34,6 +34,7 @@ const STATUSES = [
   "processing",
   "shipped",
   "delivered",
+  "complete",
   "cancelled",
 ] as const;
 

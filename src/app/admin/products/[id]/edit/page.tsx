@@ -65,6 +65,8 @@ export default function EditProduct({
   const [tagline, setTagline] = useState("");
   const [price, setPrice] = useState<number>(150);
   const [stock, setStock] = useState<number>(10);
+  const [manualOutOfStock, setManualOutOfStock] = useState(false);
+  const [showOnWebsite, setShowOnWebsite] = useState(true);
   const [category, setCategory] = useState("");
   const [images, setImages] = useState<string[]>([""]);
   const [topNotes, setTopNotes] = useState("");
@@ -79,9 +81,10 @@ export default function EditProduct({
       setLoading(true);
       setError(null);
       try {
-        const res = await fetch(`/api/products/${encodeURIComponent(id)}`, {
-          cache: "no-store",
-        });
+        const res = await fetch(
+          `/api/products/${encodeURIComponent(id)}?includeHidden=true`,
+          { cache: "no-store" },
+        );
         const data = await res.json().catch(() => ({}));
         if (!res.ok) throw new Error(data?.error || "Failed to load product");
         const p = data.product;
@@ -89,6 +92,8 @@ export default function EditProduct({
         setTagline(p?.tagline || "");
         setPrice(Number(p?.price || 0));
         setStock(Number(p?.stock || 0));
+        setManualOutOfStock(Boolean(p?.manualOutOfStock));
+        setShowOnWebsite(p?.showOnWebsite !== false);
         setCategory(normalizeCategoryValue(p?.category || ""));
         if (Array.isArray(p?.images) && p.images.length > 0) {
           setImages(p.images);
@@ -123,6 +128,8 @@ export default function EditProduct({
           tagline,
           price,
           stock,
+          manualOutOfStock,
+          showOnWebsite,
           category: normalizeCategoryValue(category),
           image: images[0] || "",
           images: images.filter(Boolean),
@@ -241,6 +248,44 @@ export default function EditProduct({
                   Used by storefront filters: All, Men, Women, Uni.
                 </p>
               </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <button
+                type="button"
+                onClick={() => setManualOutOfStock((value) => !value)}
+                className={`rounded-2xl border px-4 py-4 text-left transition-colors ${
+                  manualOutOfStock
+                    ? "border-red-300 bg-red-50 text-red-900"
+                    : "border-gray-200 bg-white text-gray-800 hover:bg-gray-50"
+                }`}
+              >
+                <p className="text-sm font-medium">Out of Stock</p>
+                <p className="mt-1 text-xs text-gray-500">
+                  {manualOutOfStock
+                    ? "Manual out-of-stock is enabled."
+                    : "Force this fragrance to appear as out of stock."}
+                </p>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => setShowOnWebsite((value) => !value)}
+                className={`rounded-2xl border px-4 py-4 text-left transition-colors ${
+                  showOnWebsite
+                    ? "border-blue-300 bg-blue-50 text-blue-900"
+                    : "border-gray-200 bg-white text-gray-800 hover:bg-gray-50"
+                }`}
+              >
+                <p className="text-sm font-medium">
+                  {showOnWebsite ? "Shown on Website" : "Hidden from Website"}
+                </p>
+                <p className="mt-1 text-xs text-gray-500">
+                  {showOnWebsite
+                    ? "Customers can see and open this product."
+                    : "Hide this product from the storefront."}
+                </p>
+              </button>
             </div>
 
             <div>

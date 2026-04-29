@@ -57,6 +57,8 @@ export default function AddProduct() {
   const [tagline, setTagline] = useState("");
   const [price, setPrice] = useState<number>(150);
   const [stock, setStock] = useState<number>(10);
+  const [manualOutOfStock, setManualOutOfStock] = useState(false);
+  const [showOnWebsite, setShowOnWebsite] = useState(true);
   const [category, setCategory] = useState("");
   const [images, setImages] = useState<string[]>([""]);
   const [topNotes, setTopNotes] = useState("");
@@ -78,6 +80,8 @@ export default function AddProduct() {
           tagline,
           price,
           stock,
+          manualOutOfStock,
+          showOnWebsite,
           category: normalizeCategoryValue(category),
           image: images[0] || "",
           images: images.filter(Boolean),
@@ -208,6 +212,44 @@ export default function AddProduct() {
                 Used by storefront filters: All, Men, Women, Uni.
               </p>
             </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <button
+              type="button"
+              onClick={() => setManualOutOfStock((value) => !value)}
+              className={`rounded-2xl border px-4 py-4 text-left transition-colors ${
+                manualOutOfStock
+                  ? "border-red-300 bg-red-50 text-red-900"
+                  : "border-gray-200 bg-white text-gray-800 hover:bg-gray-50"
+              }`}
+            >
+              <p className="text-sm font-medium">Out of Stock</p>
+              <p className="mt-1 text-xs text-gray-500">
+                {manualOutOfStock
+                  ? "Manual out-of-stock is enabled."
+                  : "Force this fragrance to appear as out of stock."}
+              </p>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setShowOnWebsite((value) => !value)}
+              className={`rounded-2xl border px-4 py-4 text-left transition-colors ${
+                showOnWebsite
+                  ? "border-blue-300 bg-blue-50 text-blue-900"
+                  : "border-gray-200 bg-white text-gray-800 hover:bg-gray-50"
+              }`}
+            >
+              <p className="text-sm font-medium">
+                {showOnWebsite ? "Shown on Website" : "Hidden from Website"}
+              </p>
+              <p className="mt-1 text-xs text-gray-500">
+                {showOnWebsite
+                  ? "Customers can see and open this product."
+                  : "Hide this product from the storefront."}
+              </p>
+            </button>
           </div>
 
           <div>

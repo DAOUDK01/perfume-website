@@ -28,6 +28,9 @@ type FragranceItem = {
   price: number;
   image?: string;
   category?: string;
+  stock?: number;
+  manualOutOfStock?: boolean;
+  showOnWebsite?: boolean;
 };
 
 type ProductVariant = "full" | "tester";
@@ -595,13 +598,16 @@ function FragranceCard({
   const [selectedVariant, setSelectedVariant] =
     useState<ProductVariant>("full");
   const [imgError, setImgError] = useState(false);
+  const isOutOfStock =
+    Boolean(fragrance.manualOutOfStock) || Number(fragrance.stock || 0) <= 0;
   const showImage = isValidImageUrl(fragrance.image) && !imgError;
   const selectedInCart =
     selectedVariant === "tester" ? testerInCart : fullInCart;
   const isAddDisabled =
-    selectedVariant === "tester" &&
-    ((disableTesterAdd && testerInCart === 0) ||
-      testerInCart >= TESTER_MAX_QTY);
+    isOutOfStock ||
+    (selectedVariant === "tester" &&
+      ((disableTesterAdd && testerInCart === 0) ||
+        testerInCart >= TESTER_MAX_QTY));
 
   useEffect(() => {
     setSelectedVariant(forceTesterMode ? "tester" : "full");
@@ -651,6 +657,11 @@ function FragranceCard({
               </div>
             </div>
           )}
+          {isOutOfStock ? (
+            <div className="absolute left-3 top-3 rounded-full bg-black/80 px-3 py-1 text-[10px] uppercase tracking-[0.18em] text-white">
+              Out of Stock
+            </div>
+          ) : null}
         </div>
 
         {/* CONTENT */}
@@ -698,17 +709,19 @@ function FragranceCard({
                       : "bg-white/90  backdrop-blur-sm text-black  border border-gray-200  hover:border-black  hover:bg-black  hover:text-white  shadow-sm"
                 }`}
               >
-                {isAddDisabled
-                  ? testerInCart >= TESTER_MAX_QTY
-                    ? "Tester Selected"
-                    : "Limit Reached"
-                  : selectedInCart > 0
-                    ? selectedVariant === "tester"
+                {isOutOfStock
+                  ? "Out of Stock"
+                  : isAddDisabled
+                    ? testerInCart >= TESTER_MAX_QTY
                       ? "Tester Selected"
-                      : `In Bag (${selectedInCart})`
-                    : selectedVariant === "tester"
-                      ? "Add Tester"
-                      : "Add to Bag"}
+                      : "Limit Reached"
+                    : selectedInCart > 0
+                      ? selectedVariant === "tester"
+                        ? "Tester Selected"
+                        : `In Bag (${selectedInCart})`
+                      : selectedVariant === "tester"
+                        ? "Add Tester"
+                        : "Add to Bag"}
               </button>
             </div>
           </div>

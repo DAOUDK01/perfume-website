@@ -5,6 +5,46 @@ import {
 } from "@/lib/mongodb";
 import { NextResponse } from "next/server";
 
+function parseBoolean(value, fallback = false) {
+  if (typeof value === "boolean") return value;
+  if (typeof value === "string") {
+    const normalized = value.trim().toLowerCase();
+    if (["true", "1", "yes", "on"].includes(normalized)) return true;
+    if (["false", "0", "no", "off"].includes(normalized)) return false;
+  }
+  return fallback;
+}
+
+function normalizeProduct(product) {
+  if (!product) return null;
+
+  const stock = Number(product.stock);
+  return {
+    ...product,
+    _id: product._id?.toString?.() || product._id,
+    category: normalizeCategoryValue(String(product.category || "")),
+    stock: Number.isFinite(stock) ? stock : 0,
+    manualOutOfStock: parseBoolean(product.manualOutOfStock, false),
+    showOnWebsite: parseBoolean(product.showOnWebsite, true),
+  };
+}
+
+function normalizeProductId(value) {
+  let next = String(value || "").trim();
+
+  for (let index = 0; index < 3; index += 1) {
+    try {
+      const decoded = decodeURIComponent(next);
+      if (decoded === next) break;
+      next = decoded;
+    } catch {
+      break;
+    }
+  }
+
+  return next;
+}
+
 function normalizeCategoryValue(value = "") {
   const raw = typeof value === "string" ? value.trim() : "";
   const category = raw.toLowerCase();
@@ -35,15 +75,19 @@ function normalizeCategoryValue(value = "") {
   return raw;
 }
 
-export async function GET(_request, { params }) {
+export async function GET(request, { params }) {
   try {
     const { id } = await params;
-    if (!id) {
+    const normalizedId = normalizeProductId(id);
+    if (!normalizedId) {
       return NextResponse.json(
         { error: "Invalid product id" },
         { status: 400 },
       );
     }
+
+    const { searchParams } = new URL(request.url);
+    const includeHidden = searchParams.get("includeHidden") === "true";
 
     // Connect with timeout protection
     const [localDbResult, atlasDbResult] = await Promise.allSettled([
@@ -66,43 +110,45 @@ export async function GET(_request, { params }) {
     const { db: atlasDb } =
       atlasDbResult.status === "fulfilled" ? atlasDbResult.value : { db: null };
 
-    // Find product with timeout protection
-    const [localProduct, atlasProduct] = await Promise.allSettled([
-      safeDbOperation(
-        () =>
-          localDb?.collection("products").findOne({ id }) ||
-          Promise.resolve(null),
-        null,
-        4000,
-        "Local product lookup",
-      ),
-      safeDbOperation(
-        () =>
-          atlasDb?.collection("products").findOne({ id }) ||
-          Promise.resolve(null),
-        null,
-        6000,
-        "Atlas product lookup",
-      ),
+    async function findProduct(db, label) {
+      if (!db) return null;
+
+      const collections = ["products", "product"];
+      for (const collectionName of collections) {
+        const found = await safeDbOperation(
+          () => db.collection(collectionName).findOne({ id: normalizedId }),
+          null,
+          collectionName === "products" ? 4000 : 3000,
+          `${label} ${collectionName} lookup`,
+        );
+        if (found) return found;
+      }
+
+      return null;
+    }
+
+    const [localResult, atlasResult] = await Promise.allSettled([
+      findProduct(localDb, "Local product"),
+      findProduct(atlasDb, "Atlas product"),
     ]);
 
-    const localResult =
-      localProduct.status === "fulfilled" ? localProduct.value : null;
-    const atlasResult =
-      atlasProduct.status === "fulfilled" ? atlasProduct.value : null;
-    const product = localResult || atlasResult;
+    const localProduct =
+      localResult.status === "fulfilled" ? localResult.value : null;
+    const atlasProduct =
+      atlasResult.status === "fulfilled" ? atlasResult.value : null;
+    const product = localProduct || atlasProduct;
 
     if (!product) {
       return NextResponse.json({ error: "Product not found" }, { status: 404 });
     }
 
+    if (!includeHidden && parseBoolean(product.showOnWebsite, true) === false) {
+      return NextResponse.json({ error: "Product not found" }, { status: 404 });
+    }
+
     return NextResponse.json({
       success: true,
-      product: {
-        ...product,
-        _id: product._id?.toString?.() || product._id,
-        category: normalizeCategoryValue(String(product.category || "")),
-      },
+      product: normalizeProduct(product),
     });
   } catch (error) {
     console.error("Error fetching product:", error);
@@ -116,7 +162,8 @@ export async function GET(_request, { params }) {
 export async function PATCH(request, { params }) {
   try {
     const { id } = await params;
-    if (!id) {
+    const normalizedId = normalizeProductId(id);
+    if (!normalizedId) {
       return NextResponse.json(
         { error: "Invalid product id" },
         { status: 400 },
@@ -138,6 +185,8 @@ export async function PATCH(request, { params }) {
       "heartNotes",
       "baseNotes",
       "fullDescription",
+      "manualOutOfStock",
+      "showOnWebsite",
     ];
 
     for (const key of allowed) {
@@ -173,6 +222,10 @@ export async function PATCH(request, { params }) {
         update.category = normalizeCategoryValue(String(val || ""));
         continue;
       }
+      if (key === "manualOutOfStock" || key === "showOnWebsite") {
+        update[key] = parseBoolean(val, key === "showOnWebsite");
+        continue;
+      }
       update[key] = typeof val === "string" ? val.trim() : val;
     }
 
@@ -182,8 +235,12 @@ export async function PATCH(request, { params }) {
     const { db: atlasDb } = await connectToAtlasDb();
 
     const [localResult, atlasResult] = await Promise.all([
-      localDb.collection("products").updateOne({ id }, { $set: update }),
-      atlasDb.collection("products").updateOne({ id }, { $set: update }),
+      localDb
+        .collection("products")
+        .updateOne({ id: normalizedId }, { $set: update }),
+      atlasDb
+        .collection("products")
+        .updateOne({ id: normalizedId }, { $set: update }),
     ]);
 
     if (localResult.matchedCount === 0 && atlasResult.matchedCount === 0) {
@@ -208,7 +265,8 @@ export async function PATCH(request, { params }) {
 export async function DELETE(_request, { params }) {
   try {
     const { id } = await params;
-    if (!id) {
+    const normalizedId = normalizeProductId(id);
+    if (!normalizedId) {
       return NextResponse.json(
         { error: "Invalid product id" },
         { status: 400 },
@@ -219,8 +277,8 @@ export async function DELETE(_request, { params }) {
     const { db: atlasDb } = await connectToAtlasDb();
 
     const [localResult, atlasResult] = await Promise.all([
-      localDb.collection("products").deleteOne({ id }),
-      atlasDb.collection("products").deleteOne({ id }),
+      localDb.collection("products").deleteOne({ id: normalizedId }),
+      atlasDb.collection("products").deleteOne({ id: normalizedId }),
     ]);
 
     if (localResult.deletedCount === 0 && atlasResult.deletedCount === 0) {

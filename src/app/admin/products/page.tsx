@@ -39,6 +39,7 @@ export default function ProductsPage() {
       const url = new URL("/api/products", window.location.origin);
       if (q.trim()) url.searchParams.set("q", q.trim());
       if (category) url.searchParams.set("category", category);
+      url.searchParams.set("includeHidden", "true");
       const res = await fetch(url.toString(), { cache: "no-store" });
       const data = await res.json();
       if (!res.ok) throw new Error(data?.error || "Failed to load products");
@@ -80,6 +81,30 @@ export default function ProductsPage() {
       return;
     }
     await load();
+  }
+
+  async function updateProduct(id: string, patch: Record<string, unknown>) {
+    const res = await fetch(`/api/products/${encodeURIComponent(id)}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(patch),
+    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) {
+      alert(data?.error || "Failed to update product");
+      return false;
+    }
+    setProducts((current) =>
+      current.map((product) =>
+        product.id === id
+          ? {
+              ...product,
+              ...patch,
+            }
+          : product,
+      ),
+    );
+    return true;
   }
 
   return (
@@ -205,15 +230,62 @@ export default function ProductsPage() {
                       {formatMoney(Number(product.price || 0), currency)}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span
-                        className={`px-3 py-1 rounded-full text-xs font-medium ${
-                          Number(product.stock || 0) > 0
-                            ? "bg-green-100 text-green-800"
-                            : "bg-red-100 text-red-800"
-                        }`}
-                      >
-                        {product.stock ?? 0}
-                      </span>
+                      <div className="flex flex-col gap-2">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <span
+                            className={`px-3 py-1 rounded-full text-xs font-medium ${
+                              product.manualOutOfStock ||
+                              Number(product.stock || 0) <= 0
+                                ? "bg-red-100 text-red-800"
+                                : "bg-green-100 text-green-800"
+                            }`}
+                          >
+                            {product.manualOutOfStock ||
+                            Number(product.stock || 0) <= 0
+                              ? "Out of stock"
+                              : `Stock: ${product.stock ?? 0}`}
+                          </span>
+                          <span
+                            className={`px-3 py-1 rounded-full text-xs font-medium ${
+                              product.showOnWebsite === false
+                                ? "bg-gray-200 text-gray-700"
+                                : "bg-blue-100 text-blue-800"
+                            }`}
+                          >
+                            {product.showOnWebsite === false
+                              ? "Hidden"
+                              : "Visible"}
+                          </span>
+                        </div>
+                        <div className="flex flex-wrap gap-2">
+                          <button
+                            type="button"
+                            onClick={() =>
+                              updateProduct(product.id, {
+                                manualOutOfStock: !product.manualOutOfStock,
+                              })
+                            }
+                            className="inline-flex items-center gap-2 px-3 py-2 rounded-lg border border-gray-200 hover:bg-gray-50 text-sm"
+                          >
+                            {product.manualOutOfStock
+                              ? "Mark In Stock"
+                              : "Mark Out of Stock"}
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() =>
+                              updateProduct(product.id, {
+                                showOnWebsite: product.showOnWebsite === false,
+                              })
+                            }
+                            className="inline-flex items-center gap-2 px-3 py-2 rounded-lg border border-gray-200 hover:bg-gray-50 text-sm"
+                          >
+                            {product.showOnWebsite === false
+                              ? "Show on Website"
+                              : "Hide from Website"}
+                          </button>
+                        </div>
+                      </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span className="px-3 py-1 bg-gray-100 text-xs rounded-full text-gray-800 font-medium">

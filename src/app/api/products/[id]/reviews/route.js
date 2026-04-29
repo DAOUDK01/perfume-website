@@ -5,6 +5,22 @@ import {
 } from "@/lib/mongodb";
 import { NextResponse } from "next/server";
 
+function normalizeProductId(value) {
+  let next = String(value || "").trim();
+
+  for (let index = 0; index < 3; index += 1) {
+    try {
+      const decoded = decodeURIComponent(next);
+      if (decoded === next) break;
+      next = decoded;
+    } catch {
+      break;
+    }
+  }
+
+  return next;
+}
+
 function normalizeReview(review) {
   const rating = Number(review?.rating);
 
@@ -43,11 +59,12 @@ function summarizeReviews(reviews) {
 }
 
 async function findProduct(localDb, atlasDb, id) {
+  const normalizedId = normalizeProductId(id);
   const [localProduct, atlasProductsProduct, atlasProductSingular] =
     await Promise.allSettled([
       safeDbOperation(
         () =>
-          localDb?.collection("products").findOne({ id }) ||
+          localDb?.collection("products").findOne({ id: normalizedId }) ||
           Promise.resolve(null),
         null,
         4000,
@@ -55,7 +72,7 @@ async function findProduct(localDb, atlasDb, id) {
       ),
       safeDbOperation(
         () =>
-          atlasDb?.collection("products").findOne({ id }) ||
+          atlasDb?.collection("products").findOne({ id: normalizedId }) ||
           Promise.resolve(null),
         null,
         6000,
@@ -63,7 +80,7 @@ async function findProduct(localDb, atlasDb, id) {
       ),
       safeDbOperation(
         () =>
-          atlasDb?.collection("product").findOne({ id }) ||
+          atlasDb?.collection("product").findOne({ id: normalizedId }) ||
           Promise.resolve(null),
         null,
         6000,
@@ -88,8 +105,9 @@ async function findProduct(localDb, atlasDb, id) {
 export async function GET(_request, { params }) {
   try {
     const { id } = await params;
+    const normalizedId = normalizeProductId(id);
 
-    if (!id) {
+    if (!normalizedId) {
       return NextResponse.json(
         { error: "Invalid product id" },
         { status: 400 },
@@ -116,7 +134,7 @@ export async function GET(_request, { params }) {
     const { db: atlasDb } =
       atlasDbResult.status === "fulfilled" ? atlasDbResult.value : { db: null };
 
-    const product = await findProduct(localDb, atlasDb, id);
+    const product = await findProduct(localDb, atlasDb, normalizedId);
 
     if (!product) {
       return NextResponse.json({ error: "Product not found" }, { status: 404 });
@@ -146,8 +164,9 @@ export async function GET(_request, { params }) {
 export async function POST(request, { params }) {
   try {
     const { id } = await params;
+    const normalizedId = normalizeProductId(id);
 
-    if (!id) {
+    if (!normalizedId) {
       return NextResponse.json(
         { error: "Invalid product id" },
         { status: 400 },
@@ -206,7 +225,7 @@ export async function POST(request, { params }) {
           localDb
             ?.collection("products")
             .updateOne(
-              { id },
+              { id: normalizedId },
               { $push: { reviews: review }, $set: { updatedAt: new Date() } },
             ) || Promise.resolve({ matchedCount: 0 }),
         { matchedCount: 0 },
@@ -218,7 +237,7 @@ export async function POST(request, { params }) {
           atlasDb
             ?.collection("products")
             .updateOne(
-              { id },
+              { id: normalizedId },
               { $push: { reviews: review }, $set: { updatedAt: new Date() } },
             ) || Promise.resolve({ matchedCount: 0 }),
         { matchedCount: 0 },
@@ -230,7 +249,7 @@ export async function POST(request, { params }) {
           atlasDb
             ?.collection("product")
             .updateOne(
-              { id },
+              { id: normalizedId },
               { $push: { reviews: review }, $set: { updatedAt: new Date() } },
             ) || Promise.resolve({ matchedCount: 0 }),
         { matchedCount: 0 },
@@ -248,7 +267,7 @@ export async function POST(request, { params }) {
       return NextResponse.json({ error: "Product not found" }, { status: 404 });
     }
 
-    const product = await findProduct(localDb, atlasDb, id);
+    const product = await findProduct(localDb, atlasDb, normalizedId);
     const reviews = Array.isArray(product?.reviews)
       ? product.reviews.map(normalizeReview)
       : [review];

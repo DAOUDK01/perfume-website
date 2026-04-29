@@ -5,6 +5,16 @@ import {
 } from "@/lib/mongodb";
 import { NextResponse } from "next/server";
 
+function parseBoolean(value, fallback = false) {
+  if (typeof value === "boolean") return value;
+  if (typeof value === "string") {
+    const normalized = value.trim().toLowerCase();
+    if (["true", "1", "yes", "on"].includes(normalized)) return true;
+    if (["false", "0", "no", "off"].includes(normalized)) return false;
+  }
+  return fallback;
+}
+
 function normalizeCategoryValue(value = "") {
   const raw = typeof value === "string" ? value.trim() : "";
   const category = raw.toLowerCase();
@@ -40,6 +50,7 @@ export async function GET(request) {
     const { searchParams } = new URL(request.url);
     const q = (searchParams.get("q") || "").trim();
     const category = (searchParams.get("category") || "").trim();
+    const includeHidden = searchParams.get("includeHidden") === "true";
     const normalizedCategory = normalizeCategoryValue(category);
 
     // TEMPORARY: Ignore filters if we are debugging empty results
@@ -182,6 +193,7 @@ export async function GET(request) {
         combinedProducts.map((p) => {
           const productId =
             p.id || p._id?.toString() || `temp-${Math.random()}`;
+          const stock = Number(p.stock);
           return [
             productId,
             {
@@ -189,20 +201,27 @@ export async function GET(request) {
               id: productId,
               _id: p._id?.toString?.() || p._id,
               category: normalizeCategoryValue(String(p.category || "")),
+              stock: Number.isFinite(stock) ? stock : 0,
+              manualOutOfStock: parseBoolean(p.manualOutOfStock, false),
+              showOnWebsite: parseBoolean(p.showOnWebsite, true),
             },
           ];
         }),
       ).values(),
     );
 
+    const visibleProducts = includeHidden
+      ? uniqueProducts
+      : uniqueProducts.filter((product) => product.showOnWebsite !== false);
+
     console.log(
-      `[Products API] Total unique products to return: ${uniqueProducts.length}`,
+      `[Products API] Total unique products to return: ${visibleProducts.length}`,
     );
 
     return NextResponse.json({
       success: true,
-      count: uniqueProducts.length,
-      products: uniqueProducts,
+      count: visibleProducts.length,
+      products: visibleProducts,
       debug: {
         local: localResult.length,
         atlas_products: atlasResult.length,
@@ -235,6 +254,8 @@ export async function POST(request) {
       tagline = "",
       price,
       stock = 0,
+      manualOutOfStock = false,
+      showOnWebsite = true,
       category = "",
       image = "",
       images = [],
@@ -301,6 +322,8 @@ export async function POST(request) {
       baseNotes: Array.isArray(baseNotes) ? baseNotes.filter(Boolean) : [],
       fullDescription:
         typeof fullDescription === "string" ? fullDescription.trim() : "",
+      manualOutOfStock: parseBoolean(manualOutOfStock, false),
+      showOnWebsite: parseBoolean(showOnWebsite, true),
       createdAt: new Date(),
       updatedAt: new Date(),
     };

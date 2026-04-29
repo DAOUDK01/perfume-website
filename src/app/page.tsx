@@ -13,6 +13,8 @@ type FragranceItem = {
   tagline: string;
   price: number;
   image?: string;
+  stock?: number;
+  manualOutOfStock?: boolean;
 };
 
 export default function HomePage() {
@@ -861,6 +863,9 @@ function FeaturedProductGrid({ fragrances }: { fragrances: FragranceItem[] }) {
                         }
 
                         const fragrance = slideItem;
+                        const isOutOfStock =
+                          Boolean(fragrance.manualOutOfStock) ||
+                          Number(fragrance.stock || 0) <= 0;
 
                         return (
                           <ScrollReveal
@@ -874,6 +879,11 @@ function FeaturedProductGrid({ fragrances }: { fragrances: FragranceItem[] }) {
                             >
                               <div className="bg-white rounded-[1.75rem] border border-gray-200 overflow-hidden hover:shadow-[0_20px_60px_rgba(15,23,42,0.12)] transition-all duration-300 group h-full flex flex-col min-h-[340px] sm:min-h-[380px] w-full">
                                 <div className="relative aspect-[5/6] bg-gray-50 overflow-hidden">
+                                  {isOutOfStock ? (
+                                    <div className="absolute left-3 top-3 z-10 rounded-full bg-black/80 px-3 py-1 text-[10px] uppercase tracking-[0.18em] text-white shadow-lg">
+                                      Out of Stock
+                                    </div>
+                                  ) : null}
                                   {isValidImageUrl(fragrance.image) &&
                                   !imageErrors[fragrance.id] ? (
                                     <Image
@@ -917,9 +927,23 @@ function FeaturedProductGrid({ fragrances }: { fragrances: FragranceItem[] }) {
                                     <p className="text-sm font-semibold text-gray-900 mb-3">
                                       Rs {fragrance.price.toFixed(2)}
                                     </p>
-                                    <div className="w-full h-10 rounded-full border border-gray-900 bg-gray-900 flex items-center justify-center opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0 transition-all duration-300">
-                                      <span className="text-white text-xs sm:text-sm font-medium tracking-wide">
-                                        Shop Now
+                                    <div
+                                      className={`w-full h-10 rounded-full border flex items-center justify-center transition-all duration-300 ${
+                                        isOutOfStock
+                                          ? "border-gray-200 bg-gray-100"
+                                          : "border-gray-900 bg-gray-900 opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0"
+                                      }`}
+                                    >
+                                      <span
+                                        className={`text-xs sm:text-sm font-medium tracking-wide ${
+                                          isOutOfStock
+                                            ? "text-gray-400"
+                                            : "text-white"
+                                        }`}
+                                      >
+                                        {isOutOfStock
+                                          ? "Out of Stock"
+                                          : "Shop Now"}
                                       </span>
                                     </div>
                                   </div>

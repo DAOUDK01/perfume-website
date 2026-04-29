@@ -28,6 +28,9 @@ type ReviewItem = {
 
 type ProductDetail = Fragrance & {
   category?: string;
+  stock?: number;
+  manualOutOfStock?: boolean;
+  showOnWebsite?: boolean;
 };
 
 type RelatedFragrance = {
@@ -78,6 +81,22 @@ const formatReviewDate = (value: string) => {
   });
 };
 
+function normalizeProductId(value: string) {
+  let next = String(value || "").trim();
+
+  for (let index = 0; index < 3; index += 1) {
+    try {
+      const decoded = decodeURIComponent(next);
+      if (decoded === next) break;
+      next = decoded;
+    } catch {
+      break;
+    }
+  }
+
+  return next;
+}
+
 function Stars({
   rating,
   sizeClass = "h-5 w-5",
@@ -109,6 +128,7 @@ function Stars({
 
 export default function ProductPage({ params }: ProductPageProps) {
   const { id } = use(params);
+  const productId = normalizeProductId(id);
   const router = useRouter();
   const [fragrance, setFragrance] = useState<ProductDetail | null>(null);
   const [relatedFragrances, setRelatedFragrances] = useState<
@@ -129,19 +149,21 @@ export default function ProductPage({ params }: ProductPageProps) {
   const [showMessage, setShowMessage] = useState(false);
   const [quantity, setQuantity] = useState(1);
   const relatedCarouselRef = useRef<HTMLDivElement | null>(null);
+  const isOutOfStock =
+    Boolean(fragrance?.manualOutOfStock) || Number(fragrance?.stock || 0) <= 0;
 
   useEffect(() => {
-    if (!id) return;
+    if (!productId) return;
     let cancelled = false;
 
     async function load() {
       try {
         const [productRes, listRes, reviewsRes] = await Promise.all([
-          fetch(`/api/products/${encodeURIComponent(id)}`, {
+          fetch(`/api/products/${encodeURIComponent(productId)}`, {
             cache: "no-store",
           }),
           fetch("/api/products", { cache: "no-store" }),
-          fetch(`/api/products/${encodeURIComponent(id)}/reviews`, {
+          fetch(`/api/products/${encodeURIComponent(productId)}/reviews`, {
             cache: "no-store",
           }),
         ]);
@@ -175,6 +197,9 @@ export default function ProductPage({ params }: ProductPageProps) {
               : [],
             fullDescription: productData.product.fullDescription ?? "",
             category: productData.product.category ?? "",
+            stock: Number(productData.product.stock) || 0,
+            manualOutOfStock: Boolean(productData.product.manualOutOfStock),
+            showOnWebsite: productData.product.showOnWebsite !== false,
           };
 
           setFragrance(currentProduct);
@@ -266,7 +291,7 @@ export default function ProductPage({ params }: ProductPageProps) {
     return () => {
       cancelled = true;
     };
-  }, [id]);
+  }, [productId]);
 
   if (loading) {
     return (
@@ -282,6 +307,7 @@ export default function ProductPage({ params }: ProductPageProps) {
 
   /* ✅ ADD TO CART */
   const handleAddToCart = () => {
+    if (isOutOfStock) return;
     const cart = getCart();
     const existingItem = cart.find((item) => item.id === fragrance.id);
 
@@ -299,6 +325,7 @@ export default function ProductPage({ params }: ProductPageProps) {
 
   /* ✅ BUY NOW */
   const handleBuyNow = () => {
+    if (isOutOfStock) return;
     const cart = getCart();
     const existingItem = cart.find((item) => item.id === fragrance.id);
 
@@ -413,12 +440,19 @@ export default function ProductPage({ params }: ProductPageProps) {
         {/* IMAGE */}
         <ScrollReveal>
           <div className="sticky top-24">
-            <ProductImageCarousel
-              images={
-                fragrance.images || (fragrance.image ? [fragrance.image] : [])
-              }
-              name={fragrance.name}
-            />
+            <div className="relative">
+              {isOutOfStock ? (
+                <div className="absolute left-4 top-4 z-20 rounded-full bg-black/80 px-3 py-1 text-[10px] uppercase tracking-[0.18em] text-white shadow-lg">
+                  Out of Stock
+                </div>
+              ) : null}
+              <ProductImageCarousel
+                images={
+                  fragrance.images || (fragrance.image ? [fragrance.image] : [])
+                }
+                name={fragrance.name}
+              />
+            </div>
           </div>
         </ScrollReveal>
 
@@ -448,6 +482,15 @@ export default function ProductPage({ params }: ProductPageProps) {
             <div className="border-y border-gray-100  py-8">
               <p className="text-3xl font-light tracking-wide text-gray-900 ">
                 Rs {fragrance.price}
+              </p>
+              <p
+                className={`mt-3 inline-flex rounded-full px-3 py-1 text-xs uppercase tracking-[0.2em] ${
+                  isOutOfStock
+                    ? "bg-red-50 text-red-700"
+                    : "bg-green-50 text-green-700"
+                }`}
+              >
+                {isOutOfStock ? "Out of stock" : "Available"}
               </p>
             </div>
 
@@ -505,9 +548,9 @@ export default function ProductPage({ params }: ProductPageProps) {
                 <button
                   type="button"
                   onClick={handleDecrement}
-                  disabled={quantity === 1}
+                  disabled={quantity === 1 || isOutOfStock}
                   className={`h-10 w-10 rounded-full flex items-center justify-center transition-all duration-200 ${
-                    quantity === 1
+                    quantity === 1 || isOutOfStock
                       ? "text-gray-300 cursor-not-allowed"
                       : "text-gray-500 hover:text-black hover:bg-gray-100"
                   }`}
@@ -525,7 +568,8 @@ export default function ProductPage({ params }: ProductPageProps) {
                 <button
                   type="button"
                   onClick={handleIncrement}
-                  className="h-10 w-10 rounded-full flex items-center justify-center text-gray-500 hover:text-black hover:bg-gray-100 transition-all duration-200"
+                  disabled={isOutOfStock}
+                  className="h-10 w-10 rounded-full flex items-center justify-center text-gray-500 hover:text-black hover:bg-gray-100 transition-all duration-200 disabled:cursor-not-allowed disabled:text-gray-300 disabled:hover:bg-transparent"
                   aria-label="Increase quantity"
                 >
                   <PlusIcon className="h-4 w-4" aria-hidden="true" />
@@ -535,18 +579,29 @@ export default function ProductPage({ params }: ProductPageProps) {
 
             {/* ACTIONS */}
             <div className="flex gap-4 flex-col sm:flex-row">
-              <button
-                onClick={handleAddToCart}
-                className="flex-1 border border-black rounded-full py-4 px-8 uppercase text-sm tracking-widest hover:bg-black hover:text-white   transition-all duration-500 ease-out"
-              >
-                Add to Cart
-              </button>
-              <button
-                onClick={handleBuyNow}
-                className="flex-1 bg-black text-white rounded-full py-4 px-8 uppercase text-sm tracking-widest border border-black  hover:bg-white hover:text-black     transition-all duration-500 ease-out"
-              >
-                Buy Now
-              </button>
+              {isOutOfStock ? (
+                <button
+                  disabled
+                  className="w-full border border-gray-200 bg-gray-100 text-gray-400 rounded-full py-4 px-8 uppercase text-sm tracking-widest cursor-not-allowed"
+                >
+                  Out of Stock
+                </button>
+              ) : (
+                <>
+                  <button
+                    onClick={handleAddToCart}
+                    className="flex-1 border border-black rounded-full py-4 px-8 uppercase text-sm tracking-widest hover:bg-black hover:text-white transition-all duration-500 ease-out"
+                  >
+                    Add to Cart
+                  </button>
+                  <button
+                    onClick={handleBuyNow}
+                    className="flex-1 bg-black text-white rounded-full py-4 px-8 uppercase text-sm tracking-widest border border-black hover:bg-white hover:text-black transition-all duration-500 ease-out"
+                  >
+                    Buy Now
+                  </button>
+                </>
+              )}
             </div>
 
             {showMessage && (

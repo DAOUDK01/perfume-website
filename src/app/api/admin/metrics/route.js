@@ -6,6 +6,11 @@ function toTime(value) {
   return Number.isFinite(time) ? time : 0;
 }
 
+function toAmount(value) {
+  const amount = Number(value);
+  return Number.isFinite(amount) ? amount : 0;
+}
+
 function getOrderKey(order) {
   const id = order?._id?.toString?.() || order?._id;
   if (id) return String(id);
@@ -16,6 +21,34 @@ function getOrderKey(order) {
     String(order?.createdAt || ""),
     String(order?.totalAmount || ""),
   ].join("|");
+}
+
+function dedupeOrders(orders) {
+  const deduped = new Map();
+
+  for (const order of orders) {
+    const key = getOrderKey(order);
+    const existing = deduped.get(key);
+
+    if (!existing) {
+      deduped.set(key, order);
+      continue;
+    }
+
+    if (
+      toTime(order?.updatedAt || order?.createdAt) >=
+      toTime(existing?.updatedAt || existing?.createdAt)
+    ) {
+      deduped.set(key, order);
+    }
+  }
+
+  return Array.from(deduped.values());
+}
+
+function isInRange(value, start, end) {
+  const time = toTime(value);
+  return time >= start.getTime() && time < end.getTime();
 }
 
 export async function GET() {
@@ -33,43 +66,11 @@ export async function GET() {
 
     const [
       localProductsCount,
-      localOrdersCount,
-      localRevenueAgg,
-      localMonthlyRevenueAgg,
-      localYearlyRevenueAgg,
-      localNewOrdersCount,
       localUsersCount,
       localRecentOrders,
+      localAllOrders,
     ] = await Promise.all([
       localDb.collection("products").countDocuments({}),
-      localDb.collection("orders").countDocuments({}),
-      localDb
-        .collection("orders")
-        .aggregate([{ $group: { _id: null, total: { $sum: "$totalAmount" } } }])
-        .toArray(),
-      localDb
-        .collection("orders")
-        .aggregate([
-          {
-            $match: {
-              createdAt: { $gte: monthStart, $lt: nextMonthStart },
-            },
-          },
-          { $group: { _id: null, total: { $sum: "$totalAmount" } } },
-        ])
-        .toArray(),
-      localDb
-        .collection("orders")
-        .aggregate([
-          {
-            $match: {
-              createdAt: { $gte: yearStart, $lt: nextYearStart },
-            },
-          },
-          { $group: { _id: null, total: { $sum: "$totalAmount" } } },
-        ])
-        .toArray(),
-      localDb.collection("orders").countDocuments({ status: "new" }),
       localDb.collection("users").countDocuments({}),
       localDb
         .collection("orders")
@@ -77,47 +78,16 @@ export async function GET() {
         .sort({ createdAt: -1 })
         .limit(5)
         .toArray(),
+      localDb.collection("orders").find({}).toArray(),
     ]);
 
     const [
       atlasProductsCount,
-      atlasOrdersCount,
-      atlasRevenueAgg,
-      atlasMonthlyRevenueAgg,
-      atlasYearlyRevenueAgg,
-      atlasNewOrdersCount,
       atlasUsersCount,
       atlasRecentOrders,
+      atlasAllOrders,
     ] = await Promise.all([
       atlasDb.collection("products").countDocuments({}),
-      atlasDb.collection("orders").countDocuments({}),
-      atlasDb
-        .collection("orders")
-        .aggregate([{ $group: { _id: null, total: { $sum: "$totalAmount" } } }])
-        .toArray(),
-      atlasDb
-        .collection("orders")
-        .aggregate([
-          {
-            $match: {
-              createdAt: { $gte: monthStart, $lt: nextMonthStart },
-            },
-          },
-          { $group: { _id: null, total: { $sum: "$totalAmount" } } },
-        ])
-        .toArray(),
-      atlasDb
-        .collection("orders")
-        .aggregate([
-          {
-            $match: {
-              createdAt: { $gte: yearStart, $lt: nextYearStart },
-            },
-          },
-          { $group: { _id: null, total: { $sum: "$totalAmount" } } },
-        ])
-        .toArray(),
-      atlasDb.collection("orders").countDocuments({ status: "new" }),
       atlasDb.collection("users").countDocuments({}),
       atlasDb
         .collection("orders")
@@ -125,41 +95,39 @@ export async function GET() {
         .sort({ createdAt: -1 })
         .limit(5)
         .toArray(),
+      atlasDb.collection("orders").find({}).toArray(),
     ]);
 
     const productsCount = localProductsCount + atlasProductsCount;
-    const ordersCount = localOrdersCount + atlasOrdersCount;
-    const revenue =
-      (localRevenueAgg?.[0]?.total || 0) + (atlasRevenueAgg?.[0]?.total || 0);
-    const monthlyRevenue =
-      (localMonthlyRevenueAgg?.[0]?.total || 0) +
-      (atlasMonthlyRevenueAgg?.[0]?.total || 0);
-    const yearlyRevenue =
-      (localYearlyRevenueAgg?.[0]?.total || 0) +
-      (atlasYearlyRevenueAgg?.[0]?.total || 0);
-    const newOrdersCount = localNewOrdersCount + atlasNewOrdersCount;
     const usersCount = localUsersCount + atlasUsersCount;
-
-    // Combine and deduplicate recent orders (local + atlas), then take latest 5.
-    const dedupedRecentMap = new Map();
-    for (const order of [...localRecentOrders, ...atlasRecentOrders]) {
-      const key = getOrderKey(order);
-      const existing = dedupedRecentMap.get(key);
-
-      if (!existing) {
-        dedupedRecentMap.set(key, order);
-        continue;
+    const combinedOrders = dedupeOrders([...localAllOrders, ...atlasAllOrders]);
+    const ordersCount = combinedOrders.length;
+    const newOrdersCount = combinedOrders.filter(
+      (order) => String(order?.status || "").toLowerCase() === "new",
+    ).length;
+    const revenue = combinedOrders.reduce(
+      (sum, order) => sum + toAmount(order?.totalAmount),
+      0,
+    );
+    const monthlyRevenue = combinedOrders.reduce((sum, order) => {
+      if (!isInRange(order?.createdAt, monthStart, nextMonthStart)) {
+        return sum;
       }
 
-      if (
-        toTime(order?.updatedAt || order?.createdAt) >=
-        toTime(existing?.updatedAt || existing?.createdAt)
-      ) {
-        dedupedRecentMap.set(key, order);
+      return sum + toAmount(order?.totalAmount);
+    }, 0);
+    const yearlyRevenue = combinedOrders.reduce((sum, order) => {
+      if (!isInRange(order?.createdAt, yearStart, nextYearStart)) {
+        return sum;
       }
-    }
 
-    const combinedRecentOrders = Array.from(dedupedRecentMap.values())
+      return sum + toAmount(order?.totalAmount);
+    }, 0);
+
+    const combinedRecentOrders = dedupeOrders([
+      ...localRecentOrders,
+      ...atlasRecentOrders,
+    ])
       .sort((a, b) => toTime(b?.createdAt) - toTime(a?.createdAt))
       .slice(0, 5);
 

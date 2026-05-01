@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { Plus, Search, Trash2, Pencil } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 function formatMoney(value: number, currency: string) {
   const code = (currency || "PKR").toUpperCase();
@@ -25,6 +25,7 @@ export default function ProductsPage() {
   const [q, setQ] = useState("");
   const [category, setCategory] = useState("");
   const [currency, setCurrency] = useState("PKR");
+  const queryEffectInitialized = useRef(false);
 
   const categories = useMemo(() => {
     const set = new Set<string>();
@@ -55,6 +56,20 @@ export default function ProductsPage() {
     load();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    if (!queryEffectInitialized.current) {
+      queryEffectInitialized.current = true;
+      return;
+    }
+
+    const timer = window.setTimeout(() => {
+      void load();
+    }, 250);
+
+    return () => window.clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [q, category]);
 
   useEffect(() => {
     async function loadCurrency() {

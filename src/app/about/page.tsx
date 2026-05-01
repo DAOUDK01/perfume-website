@@ -48,9 +48,7 @@ export default function AboutPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-[#fafafa] ">
-        <p className="text-gray-600 ">
-          Loading about page content...
-        </p>
+        <p className="text-gray-600 ">Loading about page content...</p>
       </div>
     );
   }
@@ -100,7 +98,7 @@ export default function AboutPage() {
                     "Our Story",
                     "Image",
                     "image",
-                    "https://res.cloudinary.com/djb0ekljm/image/upload/v1768901373/Photoroom-20240724_161118-01.jpeg_t7ku2f.jpg",
+                    "https://res.cloudinary.com/djb0ekljm/image/upload/v1773687539/Gemini_Generated_Image_cot9wkcot9wkcot9_ap78ug.png",
                   )}
                   alt={getContent(
                     content,
@@ -369,7 +367,7 @@ export default function AboutPage() {
                     "Commitment",
                     "Image",
                     "image",
-                    "https://res.cloudinary.com/djb0ekljm/image/upload/v1768901362/Photoroom-20240724_161017-01.jpeg_jjw0b4.jpg",
+                    "https://res.cloudinary.com/djb0ekljm/image/upload/v1774258159/Gemini_Generated_Image_1yd4jv1yd4jv1yd4_wvpan8.png",
                   )}
                   alt={getContent(
                     content,
